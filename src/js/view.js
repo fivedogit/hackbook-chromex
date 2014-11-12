@@ -9,7 +9,7 @@
 	 bs = bs + "			<table style=\"padding:2px\">";
 	 bs = bs + "				<tr>";
 	 bs = bs + "					<td style=\"width:18px;padding-right:4px;\">";
-	 bs = bs + "						<img id=\"brand_logo\" src=\"" + chrome.extension.getURL("images/hn2go_logo_19.png") + "\" width=\"19\" height=\"19\" style=\"border:1px #ffffff solid;vertical-align:middle\"></img>";
+	 bs = bs + "						<img id=\"brand_logo\" src=\"" + chrome.extension.getURL("images/h_19.png") + "\" width=\"19\" height=\"19\" style=\"border:1px #ffffff solid;vertical-align:middle\"></img>";
 	 bs = bs + "					</td>";
 	 bs = bs + "					<td style=\"line-height:12pt; height:10px;\">";
 	 bs = bs + "							<a id=\"brand_link\" href=\"#\" style=\"font-weight:bold\">Hacker News To-Go</a><img src=\"" + chrome.extension.getURL("images/s.gif") + "\" height=\"1\" width=\"10\">";
