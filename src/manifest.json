@@ -1,0 +1,63 @@
+{
+    "name": "Hackbook",
+    "short_name": "Hackbook",
+    "version": "0.127",
+    "manifest_version": 2,
+    "description": "Hackbook adds a news feed and notifications to Hacker News",
+    "icons": {
+        "16": "images/h_16.png",
+        "48": "images/h_48.png",
+        "128": "images/h_128.png"
+    },
+    "browser_action": {
+        "default_icon": "images/h_19.png",
+        "default_title": "View thread",
+        "default_popup": "overlay.html"
+    },
+     "background": {
+        "page": "background.html"
+    },
+    "content_scripts": [
+       	{
+      		"matches": ["https://news.ycombinator.com/user?id=*","https://news.ycombinator.com/x"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_user.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/*"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_star.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/item?id=*"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_item.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/reply?id=*"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_reply.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/x?fnid=*"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_x.js" ],
+      		"run_at": "document_end"
+    	},
+    	{
+      		"matches": ["https://news.ycombinator.com/undefined"],
+      		"js": ["/js/jquery-1.8.2.min.js","/js/hn_undefined.js" ],
+      		"run_at": "document_end"
+    	}
+  	],
+    "permissions": [
+        "tabs",
+        "https://news.ycombinator.com/*"
+    ],
+    "web_accessible_resources": ["receiver.html", "images/*", "js/jquery-1.8.2.min.js"],
+    "content_security_policy": "script-src 'self'; object-src 'self'"
+}

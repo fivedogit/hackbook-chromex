@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<title>Welcome to HN2GO!</title>
+<head>
+	<link rel="icon" type="image/png" href="hn2go_logo_16.png" />
+	<script type="text/javascript" src="js/login_successful.js"></script>
+	<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+<style>
+.shadowed {
+    -webkit-filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+}
+body{
+	color: white;
+}
+a:link    { color:#FFFFFF; text-decoration:none; }
+a:hover    { text-decoration:underline; }
+a:visited { color:#FFFFFF; text-decoration:none; }
+</style>
+</head>
+
+<body style="margin:0; text-align:center; font-family: arial, helvetica">
+	<div style="background: url('images/footer_lodyas.png') 50% 100% no-repeat;display: table;position: absolute; height: 100%;width: 100%;">
+		<div style="display: table-cell;vertical-align: top;">
+			<table style="width:100%">
+				<tr>
+					<td style="text-align:left;font-size:16px;font-weight:bold;padding-top:10px;padding-left:80px">
+						<img class="shadowed" src="images/hn2go_logo_48.png" style="vertical-align:middle"> You are now logged in.
+					</td>
+					<td style="text-align:right;font-weight:bold;font-size:16px;padding-right:80px;padding-top:10px">
+						Notifications will appear here <img class="shadowed" src="images/gray_to_notification_animated.gif" style="vertical-align:middle"> <img class="shadowed" src="images/arrow_ne_transparent.png" style="vertical-align:middle">
+					</td>
+				</tr>
+			</table>
+			<div>
+				<table style="width:auto;margin-right:auto;margin-left:auto">
+					<tr>
+						<td colspan=4 class="shadowed" style="padding:15px 0px 12px 0px;text-align:center;font-size:24px;font-weight:bold">
+							Follow some users (5+ recommended)
+						</td>
+					</tr>
+					<tr>
+						<td colspan=2 class="shadowed" style="padding-bottom:5px;text-align:center;font-size:16px;font-weight:bold;padding-right:30px;">
+							Most followed:
+						</td>
+						<td colspan=2 class="shadowed" style="padding-bottom:5px;text-align:center;font-size:16px;font-weight:bold;padding-left:30px;">
+							Random:
+						</td>
+					</tr>
+					<tr>
+						<td id="most_followed_left_td" style="text-align:center;font-size:13px;padding-right:20px;">
+							
+						</td>
+						<td id="most_followed_right_td" style="text-align:center;font-size:13px;padding-right:30px;">
+							
+						</td>
+						<td id="random_users_left_td" style="text-align:center;font-size:13px;padding-left:30px;">
+							
+						</td>
+						<td id="random_users_right_td" style="text-align:center;font-size:13px;padding-left:20px;">
+							
+						</td>
+					</tr>
+					<tr>
+						<td colspan=2 class="shadowed" style="padding:25px 0px 12px 0px;text-align:left;font-size:13px">
+							<b>To add specific users: </b> <img class="shadowed" src="images/hn2go_button_19_gray.png" style="vertical-align:middle"> &#10145; profile &#10145; following &#10145; add
+						</td>
+							<td colspan=2 class="shadowed" style="padding:25px 0px 12px 0px;text-align:right;font-size:13px">
+							<img class="shadowed" src="images/y18.png" style="vertical-align:middle"> <a href="#" id="go_to_hacker_news_link">Continue to Hacker News</a> 
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
