@@ -1,7 +1,7 @@
 //INITIALIZE THE BASE HTML FOR THE WORDS VIEW along with all of its event triggers (mouseover + mouseout + click for each tab button + comment form events focus, blur, submit and keyup (charcount))
  function initializeView()
  {
-	 var bs = ""; // body string to be inserted into words_div  (which resides just inside <body>. Why not just use <body>? So this can be used as page injection. Can't override existing body there.
+	 var bs = ""; // body string to be inserted into hackbook_div  (which resides just inside <body>. Why not just use <body>? So this can be used as page injection. Can't override existing body there.
 	 bs = bs + "<center>";
 	 bs = bs + "<table style=\"background-color:#f6f6ef;width:600px;padding:6px;border:0px solid black;border-spacing:0px\">";
 	 bs = bs + "	<tr>";
@@ -12,10 +12,10 @@
 	 bs = bs + "						<img id=\"brand_logo\" src=\"" + chrome.extension.getURL("images/h_19.png") + "\" width=\"19\" height=\"19\" style=\"border:1px #ffffff solid;vertical-align:middle\"></img>";
 	 bs = bs + "					</td>";
 	 bs = bs + "					<td style=\"line-height:12pt; height:10px;\">";
-	 bs = bs + "							<a id=\"brand_link\" href=\"#\" style=\"font-weight:bold\">Hacker News To-Go</a><img src=\"" + chrome.extension.getURL("images/s.gif") + "\" height=\"1\" width=\"10\">";
+	 bs = bs + "							<a id=\"brand_link\" href=\"#\" style=\"font-weight:bold\">Hackbook</a><img src=\"" + chrome.extension.getURL("images/s.gif") + "\" height=\"1\" width=\"10\">";
 	 bs = bs + "							<a href=\"#\" id=\"thread_tab_link\">thread</a>";
 	 bs = bs + " | ";
-	 bs = bs + "							<a href=\"#\" id=\"newsfeed_tab_link\">feed</a>";
+	 bs = bs + "							<a href=\"#\" id=\"newsfeed_tab_link\">feed</a> <span id=\"newsfeed_count_span\">(0)</span>";
 	 bs = bs + " | ";
 	 bs = bs + "							<a href=\"#\" id=\"notifications_tab_link\">notifications</a> <span id=\"notification_count_span\">(0)</span>";
 	 bs = bs + "					</td>";
@@ -39,7 +39,7 @@
 	 bs = bs + "	</tr>";
 	 bs = bs + "</table>";
 	 bs = bs + "</center>";
-	 $("#words_div").html(bs);//OK
+	 $("#hackbook_div").html(bs);//OK
 
  	$("#brand_logo").click( function (event) {	event.preventDefault();
  		chrome.tabs.create({url: "https://news.ycombinator.com/"});
@@ -99,6 +99,7 @@ function updateLogstat()
 			doNotificationsTab();
 		});
 		
+		$("#newsfeed_count_span").html("(<a href=\"#\" id=\"newsfeed_count_link\">" + bg.user_jo.newsfeed_count + "</a>)");
 		$("#newsfeed_count_link").click( function (event) { event.preventDefault();
 			doNewsfeedTab();
 		});

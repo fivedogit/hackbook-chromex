@@ -22,7 +22,7 @@ function doNotificationsTab()
 	
 	$("#utility_header_td").html(h);
 	$("#5star_link").click( function (event) {	event.preventDefault();
-		chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hn2go/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
+		chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hackbook/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
 	});
 	
 	$("#utility_message_td").hide();
@@ -98,12 +98,19 @@ function getNotifications(feedmode)
 				{
 					$("#container_div_" + sorted_ids[x]).css("background-color", "#fffed6");
 				}	
+				else if(feedmode === "newsfeed" && x < bg.user_jo.newsfeed_count )
+				{
+					$("#container_div_" + sorted_ids[x]).css("background-color", "#fffed6");
+				}	
 				doNotificationItem(sorted_ids[x], "comment_div_" + sorted_ids[x], feedmode);
 			}
 		}
 
 		// now that the user has viewed this tab, reset notification count to 0
-		resetNotificationCount();
+		if(feedmode === "notifications")
+			resetNotificationCount();
+		else
+			resetNewsfeedCount();
 	}
 }
 

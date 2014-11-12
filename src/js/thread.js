@@ -24,7 +24,7 @@ function doThreadTab()
 	
 	$("#main_div").text("");
 	
-	if(typeof bg.user_jo && bg.user_jo.url_checking_mode === "notifications_only")
+	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
 	{
 		$("#utility_table").hide();
 		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">You are in \"notifications only\" mode, so no thread will appear here.</div>");

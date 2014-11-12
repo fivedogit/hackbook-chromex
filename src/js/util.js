@@ -1,7 +1,7 @@
 var devel = false;
 var endpoint = "https://secure.hackbook.club/endpoint"
 if(devel === true)
-	endpoint = "http://localhost:8080/hn2go-backend/endpoint";
+	endpoint = "http://localhost:8080/hackbook-backend/endpoint";
 
 // functions found here must be loaded for the background page and the overlay. 
 
@@ -281,7 +281,43 @@ function resetNotificationCount() // error message always goes to utility_messag
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	displayMessage("Ajax alert for resetNotificationCount method.", "red", "utility_message_td");
+        	displayMessage("Ajax error for resetNotificationCount method.", "red", "utility_message_td");
+            console.log(textStatus, errorThrown);
+        } 
+	});
+}
+
+function resetNewsfeedCount() // error message always goes to utility_message_td
+{
+	$.ajax({
+        type: 'GET',
+        url: endpoint,
+        data: {
+            method: "resetNewsfeedCount",
+            screenname: screenname,           
+            this_access_token: this_access_token  
+        },
+        dataType: 'json',
+        async: true,
+        success: function (data, status) {
+
+            if (data.response_status === "error") 
+            {
+            	displayMessage(data.message, "red", "utility_message_td");
+            	if(data.error_code && data.error_code === "0000")
+        		{
+        			displayMessage("Your login has expired. Please relog.", "red");
+        			bg.user_jo = null;
+        			updateLogstat();
+        		}
+            }
+            else 
+            {
+            	bg.user_jo.newsfeed_count = 0;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        	displayMessage("Ajax error for resetNewsfeedCount method.", "red", "utility_message_td");
             console.log(textStatus, errorThrown);
         } 
 	});

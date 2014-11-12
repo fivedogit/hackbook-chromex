@@ -11,12 +11,12 @@ chrome.runtime.onMessage.addListener(
 	  {
 		  sendResponse({endpoint: endpoint});
 	  }  
-	  else if(request.method == "getNotificationCount") // don't need a getter for this as the receiver page can get this directly from cookie
+	  else if(request.method == "getNewsfeedAndNotificationCounts") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
-		  if(user_jo && typeof user_jo.notification_count !== "undefined" && user_jo.notification_count !== null)
-			  sendResponse({notification_count: user_jo.notification_count});
+		  if(user_jo && typeof user_jo.notification_count !== "undefined" && user_jo.notification_count !== null && typeof user_jo.newsfeed_count !== "undefined" && user_jo.newsfeed_count !== null)
+			  sendResponse({notification_count: user_jo.notification_count, newsfeed_count: user_jo.newsfeed_count});
 		  else
-			  sendResponse({notification_count: null});
+			  sendResponse({notification_count: null, newsfeed_count: null});
 	  } 
 	  else if(request.method == "sendRedirect") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
@@ -307,7 +307,7 @@ var likedislikemode = "none";
 		context.fillStyle = "#ffffff";
 		context.font = "8px Silkscreen";
 		context.fillText("PRIMER",0,0);
-		drawHN2GButton("#ff6600", "white", "white", "white", "white");
+		drawHButton("#ff6600", "white");
 		setTimeout(function() {doButtonGen();},2000);
 	});
 })();
@@ -393,7 +393,7 @@ function doButtonGen()
 	}	
 	else if (!isValidURLFormation(currentURL) || (user_jo && user_jo.url_checking_mode === "notifications_only"))
 	{
-		drawHN2GButton("gray", "white", "white", "white", "white");
+		drawHButton("gray", "white");
 		return;
 	}	
 	else 
@@ -435,7 +435,7 @@ function getThread(url_at_function_call)
         		}	
         		else
         		{
-        			//alert("Got objectID from hn2go, querying firebase");
+        			//alert("Got objectID from Hackbook, querying firebase");
         			$.ajax({ 
 	        			type: 'GET', 
 	        			url: "https://hacker-news.firebaseio.com/v0/item/" + data.objectID + ".json", 
@@ -456,7 +456,7 @@ function getThread(url_at_function_call)
 	        	        	if(currentURL === url_at_function_call)
 	        	        	{
 	        	        		threadstatus=0;
-	        	        		drawHN2GButton("gray", "red", "red", "red", "red");
+	        	        		drawHButton("gray", "red");
 	        	        	}
 	        	            console.log(textStatus, errorThrown);
 	        	        }
@@ -466,7 +466,7 @@ function getThread(url_at_function_call)
         	else
         	{
         		console.log("searchForHNItem response_status=error");
-        		drawHN2GButton("gray", "red", "red", "red", "red");
+        		drawHButton("gray", "red");
         	}	
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -476,7 +476,7 @@ function getThread(url_at_function_call)
         		threadstatus=0;
         	}
             console.log(textStatus, errorThrown);
-            drawHN2GButton("gray", "red", "red", "red", "red");
+            drawHButton("gray", "red");
         }
 	});	
 
@@ -484,39 +484,43 @@ function getThread(url_at_function_call)
 	// as ugly as this is, there really isn't a better, more robust way to do animations in a chrome extension. Loops with setTimeout get really hairy. Don't judge.
 	// if there is a better way, please submit a bug report on Github or notify me on twitter (@fivedogit)
 	
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","#ff6600", "white", "white", "white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","#ff6600","white","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","#ff6600","white");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","white","white","white","#ff6600");}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHN2GButton("gray","red","red","red","red");threadstatus=0}if(currentURL!==url_at_function_call){return;}finishThread(url_at_function_call);return;},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)},333)});
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}if(threadstatus===0){finishThread(url_at_function_call);return;}if(currentURL!==url_at_function_call){return;}
+	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","red",null);threadstatus=0}if(currentURL!==url_at_function_call){return;}finishThread(url_at_function_call);return;},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)});
 }
 
 function finishThread(url_at_function_call) 
@@ -533,7 +537,7 @@ function finishThread(url_at_function_call)
 		else
 		{	
 			if(typeof t_jo === "undefined" || t_jo === null)
-				drawHN2GButton("gray", "red", "red", "red", "red"); 
+				drawHButton("gray", "red"); 
 			else if(typeof t_jo !== "undefined" && t_jo !== null)
 			{
 				//alert(JSON.stringify(t_jo));
@@ -542,10 +546,10 @@ function finishThread(url_at_function_call)
 				else if (typeof t_jo.score !== "undefined" && t_jo.score !== null && (typeof t_jo.children === "undefined" || t_jo.children === null)) // score defined, but children undefined or null
 					drawTTUButton(t_jo.score+"", "0");
 				else
-					drawHN2GButton("gray", "white", "white", "white", "white"); // t_jo defined and not null, but has neither a defined+nonnull .score nor a defined+nonnull .children
+					drawHButton("gray", "white"); // t_jo defined and not null, but has neither a defined+nonnull .score nor a defined+nonnull .children
 			}
 			else
-				drawHN2GButton("gray", "white", "white", "white", "white"); 
+				drawHButton("gray", "white"); 
 		}
 	}
 	else
@@ -562,14 +566,6 @@ function drawTTUButton(top, bottom) {
 
  // Specify a 2d drawing context.
  var context = canvas.getContext("2d");
- 
- // this is not yet implemented on the backend
-if(typeof user_jo !== "undefined" && user_jo !== null && typeof user_jo.actbutton_color !== "undefined" && user_jo.actbutton_color !== null)
-{
-	var isOk  = /(^[0-9A-F]{6}$)|(^[0-9A-F]{3}$)/i.test(user_jo.actbutton_color);
-	if(isOk)
-		top_bg = user_jo.actbutton_color;
-}	 
  
  var top_bg_r = "0x" + top_bg.substring(0,2);
  var top_bg_g = "0x" + top_bg.substring(2,4);
@@ -651,6 +647,51 @@ if(typeof user_jo !== "undefined" && user_jo !== null && typeof user_jo.actbutto
    imageData: imageData
  });
 }
+
+function drawHButton(background_color, h_color, aframe) {
+	
+	 // Get the canvas element.
+	 var canvas = document.getElementById("button_canvas");
+	 // Specify a 2d drawing context.
+	 var context = canvas.getContext("2d");
+	// var bg_r = "0x7e";
+	// var bg_g = "0x7e";
+	// var bg_b = "0x7e";
+	 if(devel == true)
+		 background_color = "black";
+	 context.fillStyle = background_color;
+	 context.fillRect (0, 0, 19, 19); 
+	 
+	 context.fillStyle = h_color;
+	 context.fillRect (7, 4, 3, 15); // H left
+	 context.fillRect (8, 3, 2, 1); // H left tilt top
+	 context.fillRect (13, 10, 3, 9); // H right
+	 context.fillRect (11, 8, 3, 1); // H crossbar top row 1
+	 context.fillRect (10, 9, 5, 2); // H crossbar bottom rows 2/3
+	 
+	 if(aframe !== null)
+		 context.fillRect ((aframe*2+-1), (aframe*-.6+7), 2, 2);
+	 
+	 var imageData = context.getImageData(0, 0, 19, 19);
+	 var pix = imageData.data;
+	 var r = 0; var g = 0; var b = 0; var a = 255;
+	 for (var i = 0, n = pix.length; i < n; i += 4) 
+	 {
+	 	r = 0; g = 0; b = 0; a = 255;
+	 	if (i === 0 || i === 72 || i === 1368 || i === 1440)//
+	 	{ 
+	 		r	= 255; g = 255; b = 255; a = 0; 
+	 		pix[i  ] = r; // red
+	 		pix[i+1] = g; // green
+	 		pix[i+2] = b; // blue
+	 		pix[i+3] = a; // i+3 is alpha (the fourth element)
+	 	}
+	 }
+
+	 chrome.browserAction.setIcon({
+	   imageData: imageData
+	 });
+	}
 
 function drawHN2GButton(background_color, h_color, n_color, t_color, g_color) {
 	
@@ -762,7 +803,7 @@ function getUser(retrieve_asynchronously)
 	        },
 	        error: function (XMLHttpRequest, textStatus, errorThrown) {
 	            console.log(textStatus, errorThrown);
-	            drawHN2GButton("gray", "red", "red", "red", "red");
+	            drawHButton("gray", "red");
 	        } 
 		});
 	}

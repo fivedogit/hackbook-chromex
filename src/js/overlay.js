@@ -39,8 +39,17 @@ function doOverlay()
 	 initializeView();
 	 screenname = bg.docCookies.getItem("screenname");
 	 this_access_token = bg.docCookies.getItem("this_access_token");
+	 
+	 // view priority:
+	 // 1. Notifications, if there are new ones
+	 // 2. Newsfeed, if there are new ones
+	 // 3. Thread, if one exists
+	 // 4. Newsfeed
+	 
 	 if((typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.notification_count !== "undefined" && bg.user_jo.notification_count !== null && bg.user_jo.notification_count > 0))
 		 doNotificationsTab();
+	 else if((typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.newsfeed_count !== "undefined" && bg.user_jo.newsfeed_count !== null && bg.user_jo.newsfeed_count > 0))
+		 doNewsfeedTab();
 	 else if(bg.t_jo !== null && !isEmpty(bg.t_jo)) // if there's something
 		 doThreadTab();
 	 else
