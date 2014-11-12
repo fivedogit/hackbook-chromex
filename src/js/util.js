@@ -1,5 +1,5 @@
 var devel = false;
-var endpoint = "https://secure.hn2go.com/endpoint"
+var endpoint = "https://secure.hackbook.club/endpoint"
 if(devel === true)
 	endpoint = "http://localhost:8080/hn2go-backend/endpoint";
 

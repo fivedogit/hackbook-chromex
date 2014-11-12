@@ -54,7 +54,7 @@
 							logmsg = logmsg + "------------------------------------------\n";
 							logmsg = logmsg + "BEGIN|" + t + "|END\n";
 							logmsg = logmsg + "##########################################\n";
-							logmsg = logmsg + "#     HN2GO is verifying that you own    #\n";  
+							logmsg = logmsg + "#   Hackbook is verifying that you own   #\n";  
 							logmsg = logmsg + "#  this acct. Please wait up to 30 sec.  #\n";
 							logmsg = logmsg + "#   The previous text (below) will be    #\n";
 							logmsg = logmsg + "#     restored. Don't close this tab.    #\n";

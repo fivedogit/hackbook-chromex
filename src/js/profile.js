@@ -232,8 +232,8 @@ function getProfile()
 		});
 	    	
 		$("#urlcheckingmode_explainer_link").click(function () {
-			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">ACTIVE: URLs are checked against HN2GO backend to find HN story items, then HN's Algolia search engine if not found. HN2GO <em>never</em> stores URLs. Lookups against Algolia are anonymized through HN2GO." +
-					"<br><br>STEALTH: URLs are checked only against the HN2GO backend, never stored and never sent to Algolia. This works > 99% of the time." +
+			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">ACTIVE: URLs are checked against the Hackbook backend to find HN story items, then HN's Algolia search engine if not found. Hackbook <em>never</em> stores URLs. Lookups against Algolia are anonymized through Hackbook." +
+					"<br><br>STEALTH: URLs are checked only against the Hackbook backend, never stored and never sent to Algolia. This works almost all of the time." +
 					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer.</div>");
 		});
 	}

@@ -108,7 +108,7 @@ chrome.runtime.sendMessage({method: "getLikeDislikeMode"}, function(response) {
 										{	// user might have logged in since this page was loaded. Check again.
 											chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
 												if(response.logged_in === "no")
-													alert("You are not logged in to the HN2GO extension. Do that first.");
+													alert("You are not logged into Hackbook. Do that first.");
 												else
 												{	
 													logged_in = true;
@@ -136,7 +136,7 @@ chrome.runtime.sendMessage({method: "getLikeDislikeMode"}, function(response) {
 										{	// user might have logged in since this page was loaded. Check again.
 											chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
 												if(response.logged_in === "no")
-													alert("You are not logged in to the HN2GO extension. Do that first.");
+													alert("You are not logged into Hackbook. Do that first.");
 												else
 												{	
 													logged_in = true;
@@ -176,7 +176,7 @@ function followUser(target_screenname)
 					{	// user might have logged in since this page was loaded. Check again.
 						chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
 							if(response.logged_in === "no")
-								alert("You are not logged in to the HN2GO extension. Do that first.");
+								alert("You are not logged into Hackbook. Do that first.");
 							else
 							{	
 								logged_in = true;
@@ -215,7 +215,7 @@ function unfollowUser(target_screenname)
 					{	// user might have logged in since this page was loaded. Check again.
 						chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
 							if(response.logged_in === "no")
-								alert("You are not logged in to the HN2GO extension. Do that first.");
+								alert("You are not logged into Hackbook. Do that first.");
 							else
 							{	
 								logged_in = true;

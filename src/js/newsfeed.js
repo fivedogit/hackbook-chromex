@@ -16,7 +16,7 @@ function doNewsfeedTab()
 	var h = "<table style=\"width:100%\">";
 	h = h + "	<tr>";
 	h = h + "		<td style=\"text-align:left\">News feed</td>";
-	h = h + "		<td style=\"text-align:right\"><a href=\"#\" id=\"5star_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Rate HN2GO &#9733;&#9733;&#9733;&#9733;&#9733;</a></td>";
+	h = h + "		<td style=\"text-align:right\"><a href=\"#\" id=\"5star_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Rate Hackbook &#9733;&#9733;&#9733;&#9733;&#9733;</a></td>";
 	h = h + "	</tr>";
 	h = h + "</table>";
 	

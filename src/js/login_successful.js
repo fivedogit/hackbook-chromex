@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			following = response.following;
 			if(typeof following === "undefined" || following === null || typeof following.length === "undefined" || following.length === null || following.length === 0)
 			{
-				var r = confirm("You're not following anyone yet! HN2GO is pretty useless if you don't. Click 'cancel' to follow a few users or OK to continue to Hacker News.");
+				var r = confirm("You're not following anyone yet! Hackbook is pretty useless if you don't. Click 'cancel' to follow a few users or OK to continue to Hacker News.");
 				if (r == true) {
 					chrome.runtime.sendMessage({method: "sendRedirect", location: "https://news.ycombinator.com/"}, function(response) {
 						

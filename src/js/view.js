@@ -33,7 +33,7 @@
 	 bs = bs + "			<div id=\"main_div\" style=\"width:100%;background-color:white\"><div style=\"padding:20px;\"></div></div>";
 	 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#ff6600;height:3px;\"></div>";
 	 bs = bs + "			<div id=\"footer_div\" style=\"background-color:white;height:15px;font-size:11px;text-align:center;padding:10px 0px 3px 0px;color:#828282;font-style:italic\">";
-	 bs = bs + "				HN2GO is not affiliated with or endorsed by Hacker News or YC";
+	 bs = bs + "				Hackbook is not affiliated with or endorsed by Hacker News or YC";
 	 bs = bs + "			</div>";
 	 bs = bs + "		</td>";
 	 bs = bs + "	</tr>";
