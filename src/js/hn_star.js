@@ -16,80 +16,17 @@ if(elements_of_pagetop_class.length && elements_of_pagetop_class.length > 0)
 		return false;
 	});
 	
-	chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
+	chrome.runtime.sendMessage({method: "getCounts"}, function(response) { 
 		if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
 		{
 			$("#notification_count_span").text(response.notification_count);
 			$("#newsfeed_count_span").text(response.newsfeed_count);
 		}	
-		setTimeout(function(){
-			chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-				if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-				{
-					$("#notification_count_span").text(response.notification_count);
-					$("#newsfeed_count_span").text(response.newsfeed_count);
-				}	
-				setTimeout(function(){
-					chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-						if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-						{
-							$("#notification_count_span").text(response.notification_count);
-							$("#newsfeed_count_span").text(response.newsfeed_count);
-						}	
-						setTimeout(function(){
-							chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-								if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-								{
-									$("#notification_count_span").text(response.notification_count);
-									$("#newsfeed_count_span").text(response.newsfeed_count);
-								}	
-								setTimeout(function(){
-									chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-										if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-										{
-											$("#notification_count_span").text(response.notification_count);
-											$("#newsfeed_count_span").text(response.newsfeed_count);
-										}	
-										setTimeout(function(){
-											chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-												if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-												{
-													$("#notification_count_span").text(response.notification_count);
-													$("#newsfeed_count_span").text(response.newsfeed_count);
-												}	
-												setTimeout(function(){
-													chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-														if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-														{
-															$("#notification_count_span").text(response.notification_count);
-															$("#newsfeed_count_span").text(response.newsfeed_count);
-														}	
-														setTimeout(function(){
-															chrome.runtime.sendMessage({method: "getNewsfeedAndNotificationCounts"}, function(response) { 
-																if(typeof response.notification_count !== "undefined" && response.notification_count !== null && typeof response.newsfeed_count !== "undefined" && response.newsfeed_count !== null)
-																{
-																	$("#notification_count_span").text(response.notification_count);
-																	$("#newsfeed_count_span").text(response.newsfeed_count);
-																}	
-																else
-																{
-																	$("#notification_count_span").text("-");
-																	$("#newsfeed_count_span").text("-");
-																}	
-															});
-														},120000 );
-													});
-												},120000 );
-											});
-										},120000 );
-									});
-								},120000 );
-							});
-						},120000 );
-					});
-				},120000 );
-			});
-		},120000 );
+		
+		// this line checks for feed number updates every 30 seconds, stopping after 10 minutes
+		setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}setTimeout(function(){chrome.runtime.sendMessage({method:"getCounts"},function(e){if(typeof e.notification_count!=="undefined"&&e.notification_count!==null&&typeof e.newsfeed_count!=="undefined"&&e.newsfeed_count!==null){$("#notification_count_span").text(e.notification_count);$("#newsfeed_count_span").text(e.newsfeed_count)}else{$("#notification_count_span").text("-");$("#newsfeed_count_span").text("-")}})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)})},3e4)
 	});
 }			
 
+
+	

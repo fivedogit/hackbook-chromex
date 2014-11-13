@@ -1,9 +1,9 @@
 {
     "name": "Hackbook",
     "short_name": "Hackbook",
-    "version": "0.201",
+    "version": "0.202",
     "manifest_version": 2,
-    "description": "Hackbook adds a news feed and notifications to Hacker News",
+    "description": "Adds an activity feed of users you're following to Hacker News",
     "icons": {
         "16": "images/h_16.png",
         "48": "images/h_48.png",

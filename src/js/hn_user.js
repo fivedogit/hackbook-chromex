@@ -56,7 +56,7 @@
 							logmsg = logmsg + "##########################################\n";
 							logmsg = logmsg + "#   Hackbook is verifying that you own   #\n";  
 							logmsg = logmsg + "#  this acct. Please wait up to 30 sec.  #\n";
-							logmsg = logmsg + "#   The previous text (below) will be    #\n";
+							logmsg = logmsg + "#   The previous text (above) will be    #\n";
 							logmsg = logmsg + "#     restored. Don't close this tab.    #\n";
 							logmsg = logmsg + "#       Yes, 30 sec is a long time.      #\n";
 							logmsg = logmsg + "#            Just keep waiting.          #\n";

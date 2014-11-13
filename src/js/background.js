@@ -11,7 +11,7 @@ chrome.runtime.onMessage.addListener(
 	  {
 		  sendResponse({endpoint: endpoint});
 	  }  
-	  else if(request.method == "getNewsfeedAndNotificationCounts") // don't need a getter for this as the receiver page can get this directly from cookie
+	  else if(request.method == "getCounts") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
 		  if(user_jo && typeof user_jo.notification_count !== "undefined" && user_jo.notification_count !== null && typeof user_jo.newsfeed_count !== "undefined" && user_jo.newsfeed_count !== null)
 			  sendResponse({notification_count: user_jo.notification_count, newsfeed_count: user_jo.newsfeed_count});
@@ -383,12 +383,31 @@ function doButtonGen()
 	// 2. go get thread
 	// 		if notification, draw big number in button
 	//      if not, draw thread info in button
-	if(user_jo && user_jo.notification_count > 0)
+	if(user_jo && user_jo.notification_count > 0 && user_jo.newsfeed_count > 0)
+	{
+		if((user_jo.notification_count + user_jo.newsfeed_count) > 9)
+			drawTTUButton("9", "NOTIFICATION");
+		else
+			drawTTUButton((user_jo.notification_count+user_jo.newsfeed_count), "NOTIFICATION");
+		getThread(url_at_function_call);  
+	}	
+	else if(user_jo && user_jo.notification_count > 0)
 	{
 		if(user_jo.notification_count > 9)
 			drawTTUButton("9", "NOTIFICATION");
 		else
 			drawTTUButton(user_jo.notification_count, "NOTIFICATION");
+		getThread(url_at_function_call);  
+	}	
+	else if(user_jo && user_jo.newsfeed_count > 0)
+	{
+		//alert("nfc > 0");
+		if(user_jo.newsfeed_count > 9)
+			drawTTUButton("9", "NOTIFICATION");
+		else
+		{
+			drawTTUButton(user_jo.newsfeed_count, "NOTIFICATION");
+		}
 		getThread(url_at_function_call);  
 	}	
 	else if (!isValidURLFormation(currentURL) || (user_jo && user_jo.url_checking_mode === "notifications_only"))
@@ -398,6 +417,7 @@ function doButtonGen()
 	}	
 	else 
 	{
+		//alert("default");
 		getThread(url_at_function_call); 
 	}
 }
@@ -527,12 +547,29 @@ function finishThread(url_at_function_call)
 {
 	if (url_at_function_call === currentURL) // don't update if the currentURL has changed, the info is irrelevant in that case
 	{
-		if(user_jo && user_jo.notification_count > 0)
+		if(user_jo && user_jo.notification_count > 0 && user_jo.newsfeed_count > 0)
+		{
+			if((user_jo.notification_count + user_jo.newsfeed_count) > 9)
+				drawTTUButton("9", "NOTIFICATION");
+			else
+				drawTTUButton((user_jo.notification_count+user_jo.newsfeed_count), "NOTIFICATION");
+		}	
+		else if(user_jo && user_jo.notification_count > 0)
 		{
 			if(user_jo.notification_count > 9)
 				drawTTUButton("9", "NOTIFICATION");
 			else
 				drawTTUButton(user_jo.notification_count, "NOTIFICATION");
+		}	
+		else if(user_jo && user_jo.newsfeed_count > 0)
+		{
+			//alert("nfc > 0");
+			if(user_jo.newsfeed_count > 9)
+				drawTTUButton("9", "NOTIFICATION");
+			else
+			{
+				drawTTUButton(user_jo.newsfeed_count, "NOTIFICATION");
+			}
 		}	
 		else
 		{	
@@ -626,11 +663,7 @@ function drawTTUButton(top, bottom) {
      
      context.fillStyle = "#" + bottom_fg;
      context.font = "8px Silkscreen";
-     if(bottom === "ITEM")
-     {
-    	 context.fillText(bottom,0,14);
-     }	 
-     else if (bottom.length === 1)
+     if (bottom.length === 1)
      	context.fillText(bottom,7,14);
      else if (bottom.length === 2)
      	context.fillText(bottom,4,14);
