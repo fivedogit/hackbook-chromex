@@ -117,7 +117,8 @@ function getNotifications(feedmode)
 			resetNewsfeedCount();
 			bg.user_jo.newsfeed_count = 0;
 		}
-		bg.doButtonGen();
+		if(bg.threadstatus === 0) // only if not already animating
+			bg.doButtonGen();
 	}
 }
 
@@ -258,10 +259,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        					if(c == "newtab")
                 		        					{
                 		        						var h = $(this).attr('href');
-                		        						if(chrome.tabs)
-                		        							doNewtabClick(h);
-                		        						else
-                		        							window.location = h;
+                		        						doNewtabClick(h);
                 		        					}
                 		        				}
                 		        			});

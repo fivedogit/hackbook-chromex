@@ -38,17 +38,15 @@ function doThreadTab()
 	}	
 	else if(isValidURLFormation(currentURL))
 	{
-		if((typeof bg.t_jo === "undefined" || bg.t_jo === null))// && bg.threadstatus !== 0) // overlay has been loaded, but thread is still being retrieved
-		{
-			var url_at_function_call = currentURL;
-			// wait for thread to load
-			$("#main_div").html("<div style=\"padding:20px\">Retrieving thread... <img id=\"google_favicon_img" + "\" src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div>");//OK
-			gotThread_wedge_for_ntj(url_at_function_call);
-			// the difference between this wedge and the other one is that this one does not animate (or two animations would be happening on top of each other)
-		}
-		else if(bg.t_jo !== null && bg.threadstatus === 0) 
-		{
+		if(bg.threadstatus === 0)
 			gotThread();
+		else  						// ok this isn't super-elegant, but should be a 99% solution.
+		{
+			$("#utility_table").hide();
+			$("#main_div").html("<div style=\"padding:40px;text-align:center;\">Wow you're fast! The comment thread for this URL had not been retrieved by the time you got here.<br><br><a href=\"#\" id=\"try_thread_again_link\">Click here to try again.</a></div>");
+			$("#try_thread_again_link").click(function(){
+				doThreadTab();
+			});
 		}
 	}
 	else // not a valid URL formation
@@ -348,10 +346,7 @@ function writeComment(container_id, feeditem_jo, dom_id)
 			if(c == "newtab")
 			{
 				var h = $(this).attr('href');
-				if(chrome.tabs)
-					doNewtabClick(h);
-				else
-					window.location = h;
+				doNewtabClick(h);
 			}
 		}
 	});
@@ -400,71 +395,4 @@ function writeComment(container_id, feeditem_jo, dom_id)
 			return false;
 		});
 	}
-}
-
-//this ugly function happens when a user has clicked the activation button before
-//the thread has been downloaded from the backend.
-//it waits for up to 7 seconds, letting the OTHER wedge animate all along. 
-//and then populates the appropriate areas when finished (so long as the URL is still correct)
-function gotThread_wedge_for_ntj(url_at_function_call)
-{
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-	{if(url_at_function_call===currentURL){gotThread();}return;}
-	setTimeout(function(){
-		//alert("final");
-		if(typeof bg.t_jo!=="undefined"&&bg.t_jo!==null)
-		{
-			if(url_at_function_call===currentURL)
-			{
-				gotThread();
-			}
-		}
-		else
-		{
-			if(tabmode === "thread")
-			{
-				$("#main_div").html("<div style=\"padding:20px\">Unable to retrieve thread. Your internet connection may be down.</div>");//OK
-				displayMessage("Thread retrieval error.", "red", "utility_message_td");
-			}
-		}
-		return;
-	},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);},333);
 }
