@@ -34,14 +34,14 @@ function doNotificationsTab()
 	$("#profile_link").css("font-weight", "normal");
 	
 	$("#main_div").html("");//OK
-	if(bg.user_jo && typeof bg.user_jo.notification_count !== "undefined" && bg.user_jo.notification_count !== null)
-		$("#notification_count_span").text("(" + bg.user_jo.notification_count + ")");
-	else
-		$("#notification_count_span").text("");
+	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null)
+	{
+		$("#notification_count_span").text(bg.user_jo.notification_count);
+		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);
+		// count resets happen in getNotifications so the display can do the yellow background thing
+	}
 	getNotifications("notifications");
-	if(bg.user_jo)
-		bg.user_jo.notification_count = 0;
-	bg.doButtonGen();
+	
 }
 
 //TYPES
@@ -108,9 +108,16 @@ function getNotifications(feedmode)
 
 		// now that the user has viewed this tab, reset notification count to 0
 		if(feedmode === "notifications")
+		{
 			resetNotificationCount();
+			bg.user_jo.notification_count = 0;
+		}
 		else
+		{
 			resetNewsfeedCount();
+			bg.user_jo.newsfeed_count = 0;
+		}
+		bg.doButtonGen();
 	}
 }
 

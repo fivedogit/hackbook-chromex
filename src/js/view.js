@@ -15,9 +15,9 @@
 	 bs = bs + "							<a id=\"brand_link\" href=\"#\" style=\"font-weight:bold\">Hackbook</a><img src=\"" + chrome.extension.getURL("images/s.gif") + "\" height=\"1\" width=\"10\">";
 	 bs = bs + "							<a href=\"#\" id=\"thread_tab_link\">thread</a>";
 	 bs = bs + " | ";
-	 bs = bs + "							<a href=\"#\" id=\"newsfeed_tab_link\">feed</a> <span id=\"newsfeed_count_span\">(0)</span>";
+	 bs = bs + "							<a href=\"#\" id=\"newsfeed_tab_link\">feed</a> (<span id=\"newsfeed_count_span\">0</span>)";
 	 bs = bs + " | ";
-	 bs = bs + "							<a href=\"#\" id=\"notifications_tab_link\">notifications</a> <span id=\"notification_count_span\">(0)</span>";
+	 bs = bs + "							<a href=\"#\" id=\"notifications_tab_link\">notifications</a> (<span id=\"notification_count_span\">0</span>)";
 	 bs = bs + "					</td>";
 	 bs = bs + "					<td id=\"logstat_td\" style=\"text-align:right;padding-right:4px;line-height:12pt; height:10px;\">"; // this will be populated by updateLogstat()
 	 bs = bs + "					</td>";
@@ -94,15 +94,8 @@ function updateLogstat()
 			});
 		});
 		
-		$("#notification_count_span").html("(<a href=\"#\" id=\"notification_count_link\">" + bg.user_jo.notification_count + "</a>)");
-		$("#notification_count_link").click( function (event) { event.preventDefault();
-			doNotificationsTab();
-		});
-		
-		$("#newsfeed_count_span").html("(<a href=\"#\" id=\"newsfeed_count_link\">" + bg.user_jo.newsfeed_count + "</a>)");
-		$("#newsfeed_count_link").click( function (event) { event.preventDefault();
-			doNewsfeedTab();
-		});
+		$("#notification_count_span").text(bg.user_jo.notification_count);
+		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);
 	}
 	else
 	{

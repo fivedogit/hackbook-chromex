@@ -24,6 +24,13 @@ function doThreadTab()
 	
 	$("#main_div").text("");
 	
+	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null)
+	{
+		$("#notification_count_span").text(bg.user_jo.notification_count);
+		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);
+		// count resets happen in getNotifications so the display can do the yellow background thing
+	}
+	
 	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
 	{
 		$("#utility_table").hide();

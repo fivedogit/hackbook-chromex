@@ -342,7 +342,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 					currentURL = updatingtab.url;
 					currentId = tab.id;
 					currentHostname = getStandardizedHostname(currentURL);
-					drawTTUButton("   ", "   "); // clear out what's there now
 					doButtonGen();
 				}
 			}	
@@ -724,72 +723,10 @@ function drawHButton(background_color, h_color, aframe) {
 	 chrome.browserAction.setIcon({
 	   imageData: imageData
 	 });
-	}
-
-function drawHN2GButton(background_color, h_color, n_color, t_color, g_color) {
-	
-	 // Get the canvas element.
-	 var canvas = document.getElementById("button_canvas");
-	 // Specify a 2d drawing context.
-	 var context = canvas.getContext("2d");
-	// var bg_r = "0x7e";
-	// var bg_g = "0x7e";
-	// var bg_b = "0x7e";
-	 if(devel == true)
-		 background_color = "black";
-	 context.fillStyle = background_color;
-	 context.fillRect (0, 0, 19, 19); 
 	 
-	 context.fillStyle = h_color;
-	 context.fillRect (3, 2, 1, 7); // H left
-	 context.fillRect (7, 2, 1, 7); // H right
-	 context.fillRect (3, 5, 5, 1); // H crossbar
+	 if(h_color === "red")
+		 alert("button has gone red");
 	 
-	 context.fillStyle = n_color;
-	 context.fillRect (11, 2, 1, 7); // N left
-	 context.fillRect (15, 2, 1, 7); // N right
-	 context.fillRect (12, 3, 1, 2); // N top left stepdown
-	 context.fillRect (14, 6, 1, 2); // N bottom right stepdown
-	 context.fillRect (13, 5, 1, 1); // N middle dot
-	 
-	 context.fillStyle = t_color;
-	 context.fillRect (3, 11, 1, 1); // 2 top left dot
-	 context.fillRect (4, 10, 3, 1); // 2 top crossbar
-	 context.fillRect (7, 11, 1, 2); // 2 top right vertical 2-pixel 
-	 context.fillRect (5, 13, 2, 1); // 2 crossbar
-	 context.fillRect (4, 14, 1, 1); // 2 lower left stepdown dot
-	 context.fillRect (3, 15, 1, 1); // 2 lower left vertical 2-pixel
-	 context.fillRect (3, 16, 5, 1); // 2 bottom horiz bar
-	 
-	 context.fillStyle = g_color;
-	 context.fillRect (12, 10, 3, 1); // G top crossbar
-	 context.fillRect (12, 11, 1, 1); // G secondlevel upper left inner pixel
-	 context.fillRect (15, 11, 1, 1); // G secondlevel top right 1 pix hanger
-	 context.fillRect (11, 11, 1, 5); // G left side vertical 5 pixels
-	 context.fillRect (12, 15, 1, 1); // G lower left inner pixel
-	 context.fillRect (12, 16, 3, 1); // G bottom bar
-	 context.fillRect (15, 13, 1, 3); // G lower right vertical bar
-	 context.fillRect (14, 13, 1, 1); // G inner doodad pixel
-	 
-	 var imageData = context.getImageData(0, 0, 19, 19);
-	 var pix = imageData.data;
-	 var r = 0; var g = 0; var b = 0; var a = 255;
-	 for (var i = 0, n = pix.length; i < n; i += 4) 
-	 {
-	 	r = 0; g = 0; b = 0; a = 255;
-	 	if (i === 0 || i === 72 || i === 1368 || i === 1440)//
-	 	{ 
-	 		r	= 255; g = 255; b = 255; a = 0; 
-	 		pix[i  ] = r; // red
-	 		pix[i+1] = g; // green
-	 		pix[i+2] = b; // blue
-	 		pix[i+3] = a; // i+3 is alpha (the fourth element)
-	 	}
-	 }
-
-	 chrome.browserAction.setIcon({
-	   imageData: imageData
-	 });
 	}
 
 function getUser(retrieve_asynchronously)

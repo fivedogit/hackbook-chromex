@@ -51,7 +51,7 @@
 						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 2}, function(response) { 
 							var logmsg = "";
 							logmsg = logmsg + hn_existing_about + "\n";
-							logmsg = logmsg + "------------------------------------------\n";
+							logmsg = logmsg + "------------------------------------------\n\n";
 							logmsg = logmsg + "BEGIN|" + t + "|END\n";
 							logmsg = logmsg + "##########################################\n";
 							logmsg = logmsg + "#   Hackbook is verifying that you own   #\n";  
@@ -120,8 +120,7 @@
 					}	
 					else
 					{
-						//alert("user not validated, setting hn_login_step to 0, replacing previous text (" + existing + ") and triggering submit");
-						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) {
+						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 4}, function(response) {
 							$('textarea[name=about]').val(existing);
 							$('input:submit').trigger("click");
 						});
@@ -134,6 +133,12 @@
 			chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) {
 				//alert("hn_login_step was 3. hn_login_step has been set to 0 and we're redirecting to login_successful.html at " + chrome.extension.getURL("login_successful.html"));
 				chrome.runtime.sendMessage({method: "sendRedirect", location: chrome.extension.getURL("login_successful.html")}, function(response) {});
+			});
+		}
+		else if(response.hn_login_step === 4)
+		{
+			chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) {
+				alert("There was an error logging you in to Hackbook. Our apologies. Please try again.");
 			});
 		}
 	});
