@@ -300,9 +300,9 @@ function getProfile()
 		});
 		
 		$("#urlcheckingmode_explainer_link").click(function () {
-			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">ACTIVE: URLs are checked against the Hackbook backend to find HN story items, then HN's Algolia search engine if not found. Hackbook <em>never</em> stores URLs. Lookups against Algolia are anonymized through Hackbook." +
-					"<br><br>STEALTH: URLs are checked only against the Hackbook backend, never stored and never sent to Algolia. This is sufficient almost all of the time." +
-					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer.</div>");
+			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">ACTIVE: URLs are checked against the Hackbook backend to find HN story threads, then HN's Algolia search engine if not found. Hackbook <em>never</em> stores URLs and lookups against Algolia are anonymized through Hackbook." +
+					"<br><br>STEALTH: URLs are checked for HN story threads only against the Hackbook backend, never stored, and never checked against Algolia. This is sufficient for full functionality almost all of the time." +
+					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but Hackbook cannot display HN threads.</div>");
 		});
 	}
 }

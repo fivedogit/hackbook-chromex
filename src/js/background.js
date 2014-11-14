@@ -422,6 +422,7 @@ function getThread(url_at_function_call)
 	        	        	if(currentURL === url_at_function_call)
 	        	        	{
 	        	        		threadstatus=0;
+	        	        		//alert("drawing red HN ajax");
 	        	        		drawHButton("gray", "red");
 	        	        	}
 	        	            console.log(textStatus, errorThrown);
@@ -432,6 +433,7 @@ function getThread(url_at_function_call)
         	else if(data.response_status === "error")
         	{
         		console.log("searchForHNItem response_status=error");
+        		//alert("drawing red searchForHNItem response_status error");
         		drawHButton("gray", "red");
         	}	
         },
@@ -442,6 +444,7 @@ function getThread(url_at_function_call)
         		threadstatus=0;
         	}
             console.log(textStatus, errorThrown);
+            //alert("drawing red searchForHNItem ajax");
             drawHButton("gray", "red");
         }
 	});	
@@ -521,6 +524,7 @@ function finishThread(url_at_function_call)
 		{	
 			if(typeof t_jo === "undefined" || t_jo === null)
 			{
+				//alert("drawing red finishThread t_jo undefined or null");
 				drawHButton("gray", "red");
 			}
 			else if(typeof t_jo !== "undefined" && t_jo !== null)

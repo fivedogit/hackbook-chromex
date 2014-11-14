@@ -1,9 +1,9 @@
 {
     "name": "Hackbook",
     "short_name": "Hackbook",
-    "version": "0.205",
+    "version": "0.206",
     "manifest_version": 2,
-    "description": "Adds an activity feed of users you're following to Hacker News",
+    "description": "Hackbook lets you follow HN users and creates a news feed, like Twitter or Facebook",
     "icons": {
         "16": "images/h_16.png",
         "48": "images/h_48.png",
@@ -11,7 +11,7 @@
     },
     "browser_action": {
         "default_icon": "images/h_19.png",
-        "default_title": "View thread",
+        "default_title": "View activity",
         "default_popup": "overlay.html"
     },
      "background": {
