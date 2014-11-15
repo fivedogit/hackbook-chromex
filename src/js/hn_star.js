@@ -2,7 +2,7 @@ var elements_of_pagetop_class = $(".pagetop");
 if(elements_of_pagetop_class.length && elements_of_pagetop_class.length > 0)
 {
 	var prev = $(elements_of_pagetop_class[0]).html();
-	var newhtml = prev + " | <a href=\"#\" id=\"feed_link\">feed</a> (<span id=\"newsfeed_count_span\">-</span>) | <a href=\"#\" id=\"notification_link\">notifications</a> (<span id=\"notification_count_span\">-</span>) ";
+	var newhtml = prev + " | <a href=\"#\" id=\"feed_link\">feed</a> (<span id=\"newsfeed_count_span\">-</span>) | <a href=\"#\" id=\"notification_link\">notif.</a> (<span id=\"notification_count_span\">-</span>) ";
 	newhtml = newhtml + "<span id=\"use_button_span\" style=\"padding-left:5px;display:none\">Use <img style=\"width:16px;height:16px;vertical-align:middle\" src=\"" + chrome.extension.getURL("images/h_button_19_gray.png") + "\"></span>";
 	$(elements_of_pagetop_class[0]).html(newhtml);
 	$("#feed_link").click(function(){

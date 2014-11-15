@@ -64,6 +64,15 @@ function getProfile()
     	main_div_string = main_div_string + "		<table style=\"width:auto;border-collapse:separate;border-spacing:4px\">";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">user:</td><td style=\"text-align:left\"><span id=\"profile_page_screenname_span\"></span></td><td></td></tr>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">karma:</td><td style=\"text-align:left\" id=\"profile_page_karma_td\"></td><td></td></tr>";
+    /*	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">HN \"new\" header: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<select id=\"hide_hn_new_selector\">";
+		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
+		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
+		main_div_string = main_div_string + "					</select> ";
+		main_div_string = main_div_string + "					<span id=\"hide_hn_new_result_span\"></span>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";*/
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">notification mode: </td>";
 		main_div_string = main_div_string + "				<td colspan=2 style=\"text-align:left\">";
 		main_div_string = main_div_string + "				<select id=\"notificationmode_selector\">";
@@ -187,6 +196,12 @@ function getProfile()
 			return false;
 		});
 
+		/*
+		if (bg.user_jo.hide_hn_new === false)
+			$("#hide_hn_new_selector").val("show");
+		else if (bg.user_jo.hide_hn_new === true)
+			$("#hide_hn_new_selector").val("hide");*/
+		
 		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
 			$("#notificationmode_selector").val("newsfeed_and_notifications");
 		else if (bg.user_jo.notification_mode === "notifications_only")
@@ -198,6 +213,58 @@ function getProfile()
 			$("#urlcheckingmode_selector").val("stealth");
 		else if (bg.user_jo.url_checking_mode === "notifications_only")
 			$("#urlcheckingmode_selector").val("notifications_only");
+		
+		/*
+		$("#hide_hn_new_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "hide_hn_new",
+		            value: $("#hide_hn_new_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#hide_hn_new_result_span").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.hide_hn_new === false)
+		        			$("#hide_hn_new_selector").val("show");
+		        		else if (bg.user_jo.hide_hn_new === true)
+		        			$("#hide_hn_new_selector").val("hide");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		if($("#hide_hn_new_selector").val() === "show")
+		        			bg.user_jo.hide_hn_new = false;
+		        		else if($("#hide_hn_new_selector").val() === "hide")
+		        			bg.user_jo.hide_hn_new = true;
+		        		$("#hide_hn_new_result_span").text("updated");
+		        		bg.doButtonGen();
+		        	}
+		        	setTimeout(function(){$("#hide_hn_new_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#hide_hn_new_result_span").text("ajax error");
+		        	setTimeout(function(){$("#hide_hn_new_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});*/
+		
 		
 		$("#urlcheckingmode_selector").change(function () {
 			$.ajax({
