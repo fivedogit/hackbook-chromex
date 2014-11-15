@@ -352,9 +352,9 @@ function followOrUnfollowUser(target_screenname, method) // which = "followUser"
 	        }
 	        else if (data.response_status === "success")
 	        {
+	        	bg.getUser(true);
 	        	if(tabmode === "thread")
 	        	{
-	        		bg.getUser(true);
 	        		$("[id=follow_link_" + target_screenname + "]").unbind();
 	        		if(method === "unfollowUser")
 	        		{
@@ -377,7 +377,6 @@ function followOrUnfollowUser(target_screenname, method) // which = "followUser"
 	        	}
 	        	else if(tabmode === "profile")
 	        	{
-	        		bg.getUser(true);
 	        		setTimeout(function() {
 	        			viewProfile();
 	        		}, 1500);

@@ -22,6 +22,7 @@ var thread_request_data = "";
 var hn_login_step = 0;
 var hn_existing_about = "";
 var likedislikemode = "none";
+var masterid = "none"; // this is the master user retrieval id
 
 (function() {
 	getUser(true); // user_jo should always be null when this is called
@@ -284,6 +285,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 		chrome.tabs.getSelected(null, function(tab) { // only follow through if the updating tab is the same as the selected tab, don't want background tabs reloading and wrecking stuff
 			if(updatingtab.url === tab.url) // the one that's updating is the one we're looking at. good. proceed
 			{
+				//alert("starting user retrieval loop onUpdated");
+				startUserRetrievalLoop();
 				if(currentURL !== tab.url) //  && tab.url.indexOf("chrome-extension://") !== 0) // only do this if the update is of a new url, no point in reloading the existing url again
 				{	
 					currentURL = updatingtab.url;
@@ -307,7 +310,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
 	chrome.tabs.getSelected(null, function(tab) {
-		getUser(); // get user on every valid tab change. This updates notifications and logstat (do not getUser on random page updates)
+		//getUser(); // get user on every valid tab change. This updates notifications and logstat (do not getUser on random page updates)
+		//alert("starting user retrieval loop onActivated");
+		startUserRetrievalLoop();
 		if(typeof tab.url !== "undefined" && tab.url !== null && tab.url !== "")
 		{
 			currentURL = tab.url;
@@ -677,6 +682,7 @@ function drawHButton(background_color, h_color, aframe) {
 
 function getUser(retrieve_asynchronously)
 {
+	
 	var async = true;
 	if(retrieve_asynchronously !== null && retrieve_asynchronously === false)
 	{
@@ -687,7 +693,6 @@ function getUser(retrieve_asynchronously)
 	var this_access_token = docCookies.getItem("this_access_token");
 	if(screenname !== null && this_access_token !== null && this_access_token.length == 32)// the shortest possible screenname length is x@b.co = 6.
 	{
-		//alert("bg.getUserSelf()");
 		$.ajax({ 
 			type: 'GET', 
 			url: endpoint, 
@@ -711,7 +716,13 @@ function getUser(retrieve_asynchronously)
             		}
             	} 
             	else if (data.response_status === "success") 
-            	{	if(data.user_jo) { 	user_jo = data.user_jo; }    }
+            	{	
+            		if(data.user_jo) 
+            		{ 	
+            			user_jo = data.user_jo;
+            			doButtonGen();
+            		}    
+            	}
             	else
             	{
             		//alert("getUser problem. response_status neither success nor error");
@@ -734,8 +745,27 @@ function getUser(retrieve_asynchronously)
 	}
 }
 
+function startUserRetrievalLoop()
+{
+	// rather than get the user on every new page update or thread update only, also get it once every minute so that notifications will show up even when there is no tab or page update.
+	// Generate a new id and as long as it is the same as the masterid, get the user every minute for up to 10 minutes.
+	var newid = makeid();
+	masterid = newid;
+	getUser(true);
+	setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)
+}
+	
+	
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for( var i=0; i < 32; i++ )
+    	text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+	
 // FIRSTRUN 
-
 chrome.runtime.onInstalled.addListener(function(details){
     if(details.reason == "install"){
     	chrome.tabs.create({url: chrome.extension.getURL("firstrun.html")});
