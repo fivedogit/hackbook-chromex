@@ -198,12 +198,18 @@ chrome.runtime.onMessage.addListener(
 		  {
 			  if(screenname === target_screenname)
 			  {
-				  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {
-				  });
+				  if(request.runtime_or_tabs === "runtime")
+					  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {});
+				  else
+				  {
+					  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+						  chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {});  
+					  });
+				  }
 			  }  
 			  else
 			  {
-					$.ajax({
+				  $.ajax({
 				  	    type: 'GET',
 				  	    url: endpoint,
 				  	    data: {
@@ -218,20 +224,38 @@ chrome.runtime.onMessage.addListener(
 				  	    success: function (data, status) {
 				  	        if (data.response_status == "error") 
 				  	        {
-				  	        	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {
-				  	        	});
+				  	        	if(request.runtime_or_tabs === "runtime")
+									  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {});
+				  	        	else
+				  	        	{
+									  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+										  chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {});  
+									  });
+				  	        	}
 				  	        }
 				  	        else //if (data.response_status === "success")
 				  	        {
-				  	        	chrome.runtime.sendMessage({method: "userSuccessfullyFollowedSomeone", target_screenname:target_screenname}, function(response) {
-				  	        	});
+				  	        	if(request.runtime_or_tabs === "runtime")
+				  	        		chrome.runtime.sendMessage({method: "userSuccessfullyFollowedSomeone", target_screenname:target_screenname}, function(response) {});
+				  	        	else
+				  	        	{
+				  	        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+					  	        	    chrome.tabs.sendMessage(tabs[0].id, {method: "userSuccessfullyFollowedSomeone", target_screenname:target_screenname}, function(response) {});  
+					  	        	});
+				  	        	}
 				  	        	getUser(true); // refresh the user object with this new follow
 				  	        }
 				  	    },
 				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
 				  	    	console.log(textStatus, errorThrown); 
-				  	    	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname}, function(response) {
-			  	        	});
+				  	    	if(request.runtime_or_tabs === "runtime")
+								  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "ajax error"}, function(response) {});
+			  	        	else
+			  	        	{
+								  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+									  chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "ajax error"}, function(response) {});  
+								  });
+			  	        	}
 				  	    }
 				  	});
 			  }
@@ -246,8 +270,14 @@ chrome.runtime.onMessage.addListener(
 		  {
 			  if(screenname === target_screenname)
 			  {
-				  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {
-				  });
+				  if(request.runtime_or_tabs === "runtime")
+					  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {});
+				  else
+				  {
+					  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+						  chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {});  
+					  });
+				  }
 			  }  
 			  else
 			  {
@@ -266,20 +296,38 @@ chrome.runtime.onMessage.addListener(
 				  	    success: function (data, status) {
 				  	        if (data.response_status == "error") 
 				  	        {
-				  	        	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {
-				  	        	});
+				  	        	if(request.runtime_or_tabs === "runtime")
+									  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {});
+				  	        	else
+				  	        	{
+				  	        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+				  	        			chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {});  
+				  	        		});
+				  	        	}
 				  	        }
 				  	        else //if (data.response_status === "success")
 				  	        {
-				  	        	chrome.runtime.sendMessage({method: "userSuccessfullyUnfollowedSomeone", target_screenname:target_screenname}, function(response) {
-				  	        	});
+				  	        	if(request.runtime_or_tabs === "runtime")
+				  	        		chrome.runtime.sendMessage({method: "userSuccessfullyUnfollowedSomeone", target_screenname:target_screenname}, function(response) {});
+				  	        	else
+				  	        	{
+				  	        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+					  	        	    chrome.tabs.sendMessage(tabs[0].id, {method: "userSuccessfullyUnfollowedSomeone", target_screenname:target_screenname}, function(response) {});  
+					  	        	});
+				  	        	}
 				  	        	getUser(true); // refresh the user object with this new follow
 				  	        }
 				  	    },
 				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
 				  	    	console.log(textStatus, errorThrown); 
-				  	    	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname}, function(response) {
-			  	        	});
+				  	    	if(request.runtime_or_tabs === "runtime")
+								  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "ajax error"}, function(response) {});
+			  	        	else
+			  	        	{
+								  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+									  chrome.tabs.sendMessage(tabs[0].id, {method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "ajax error"}, function(response) {});  
+								  });
+			  	        	}
 				  	    }
 				  	});
 			  }

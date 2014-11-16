@@ -1,3 +1,39 @@
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.method === "userSuccessfullyFollowedSomeone") {
+            //alert("received successful follow");
+            $("[id=follow_user_link_" + request.target_screenname + "]").text("unfollow");
+            $("[id=follow_user_link_" + request.target_screenname + "]").unbind('click');
+            $("[id=follow_user_link_" + request.target_screenname + "]").click({
+                u: request.target_screenname
+            }, function(event) {
+                if (typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+                {
+                    event.processed = true;
+                    unfollowUser(event.data.u);
+                }
+                return false;
+            });
+        } else if (request.method === "userSuccessfullyUnfollowedSomeone") {
+            //alert("received successful unfollow");
+            $("[id=follow_user_link_" + request.target_screenname + "]").text("follow");
+            $("[id=follow_user_link_" + request.target_screenname + "]").unbind('click');
+            $("[id=follow_user_link_" + request.target_screenname + "]").click({
+                u: request.target_screenname
+            }, function(event) {
+                if (typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+                {
+                    event.processed = true;
+                    followUser(event.data.u);
+                }
+                return false;
+            });
+        } else if (request.method === "userFailedToFollowOrUnfollowSomeone") {
+            //alert("received follow/unfollow failure");
+            $("[id=follow_user_link_" + request.target_screenname + "]").text(request.message); // just leave the link active
+        }
+    });
+
 // comment like/dislike:
 // 1. user clicks arrow. likedislikemode set to "like" or "dislike". Tab opened to /reply
 // 2. on /reply, first up arrow is located and tab redirectd to location at /vote
@@ -111,6 +147,7 @@ chrome.runtime.sendMessage({method: "getLikeDislikeMode"}, function(response) {
 													alert("You are not logged into Hackbook. Do that first.");
 												else
 												{	
+													//alert("follow click + newly logged in");
 													logged_in = true;
 													followUser(event.data.u);
 												}
@@ -118,6 +155,7 @@ chrome.runtime.sendMessage({method: "getLikeDislikeMode"}, function(response) {
 										}
 										else
 										{
+											//alert("follow click + logged in");
 											followUser(event.data.u);
 										}
 			        				}
@@ -158,84 +196,26 @@ chrome.runtime.sendMessage({method: "getLikeDislikeMode"}, function(response) {
 				});
 			});
 		}
-	}	
+	}
+	
+	
+
+	
 });
+
+
 
 function followUser(target_screenname)
 {
-	chrome.runtime.sendMessage({method: "followUser", target_screenname:target_screenname}, function(response) {
-		if(response.result === true)
-		{
-			$("[id=follow_user_link_" + target_screenname + "]").html("unfollow"); // just leave the link active
-			$("[id=follow_user_link_" + target_screenname + "]").unbind('click'); // lazy, but whatever
-			$("[id=follow_user_link_" + target_screenname + "]").click({u:target_screenname}, function(event){
-				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-				{
-					event.processed = true;
-					if(logged_in === false) 
-					{	// user might have logged in since this page was loaded. Check again.
-						chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
-							if(response.logged_in === "no")
-								alert("You are not logged into Hackbook. Do that first.");
-							else
-							{	
-								logged_in = true;
-								unfollowUser(event.data.u);
-							}
-						});
-					}
-					else
-					{
-						unfollowUser(event.data.u);
-					}
-				}
-				return false;
-			});
-		}
-		else // result === false
-		{
-			$("[id=follow_user_link_" + target_screenname + "]").html("error");
-			$("[id=follow_user_link_" + target_screenname + "]").unbind('click'); // lazy, but whatever
-		}
+	$("[id=follow_user_link_" + target_screenname + "]").text("processing");
+	chrome.runtime.sendMessage({method: "followUser", target_screenname:target_screenname, runtime_or_tabs: "tabs"}, function(response) {
 	});
 }
 
 function unfollowUser(target_screenname)
 {
-	chrome.runtime.sendMessage({method: "unfollowUser", target_screenname:target_screenname}, function(response) {
-		if(response.result === true)
-		{
-			$("[id=follow_user_link_" + target_screenname + "]").html("follow"); // just leave the link active
-			$("[id=follow_user_link_" + target_screenname + "]").unbind('click'); // lazy, but whatever
-			$("[id=follow_user_link_" + target_screenname + "]").click({u:target_screenname}, function(event){
-				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-				{
-					event.processed = true;
-					if(logged_in === false) 
-					{	// user might have logged in since this page was loaded. Check again.
-						chrome.runtime.sendMessage({method: "isUserLoggedInToExtension", detected_screenname: detected_screenname}, function(response) {
-							if(response.logged_in === "no")
-								alert("You are not logged into Hackbook. Do that first.");
-							else
-							{	
-								logged_in = true;
-								followUser(event.data.u);
-							}
-						});
-					}
-					else
-					{
-						followUser(event.data.u);
-					}
-				}
-				return false;
-			});
-		}
-		else // result === false
-		{
-			$("[id=follow_user_link_" + target_screenname + "]").html("error");
-			$("[id=follow_user_link_" + target_screenname + "]").unbind('click'); // lazy, but whatever
-		}
+	$("[id=follow_user_link_" + target_screenname + "]").text("processing");
+	chrome.runtime.sendMessage({method: "unfollowUser", target_screenname:target_screenname, runtime_or_tabs: "tabs"}, function(response) {
 	});
 }
 
