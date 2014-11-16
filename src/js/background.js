@@ -434,6 +434,12 @@ function doButtonGen()
 		}
 		getThread(url_at_function_call);  
 	}	
+	// for now, default on not logged in is "stealth" mode, showing threads. That's why this is commented out.
+	/*else if (typeof user_jo === "undefined" || user_jo === null)
+	{
+		drawHButton("gray", "white");
+		return;
+	}*/	
 	else if (!isValidURLFormation(currentURL) || (user_jo && user_jo.url_checking_mode === "notifications_only"))
 	{
 		drawHButton("gray", "white");
@@ -847,5 +853,3 @@ chrome.runtime.onInstalled.addListener(function(details){
       //  alert("Updated from " + details.previousVersion + " to " + thisVersion + "!");
     }
 });
-
-

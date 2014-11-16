@@ -83,7 +83,7 @@ function getProfile()
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"notificationmode_explainer_td\"></td>";
-    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">url checking mode: </td>";
+    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">URL-checking mode: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"urlcheckingmode_selector\">";
 		main_div_string = main_div_string + "						<option SELECTED value=\"stealth\">stealth</option>";
