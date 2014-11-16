@@ -110,33 +110,39 @@ chrome.runtime.onMessage.addListener(
 		            screenname: request.detected_screenname
 		        },
 		        dataType: 'json',
-		        timeout: 3000,
-		        async: false, // not sure how to accomplish this otherwise
+		        timeout: 10000,
+		        async: true, 
 		        success: function (data, status) {
 		        	if(data.response_status === "success")
 		        	{	
-		        		//alert("got token=" + data.token);
-		        		sendResponse({token: data.token});
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: data.token}, function(response) {});
+		        		});
 		        	}
 		        	else if(data.response_status === "error")
 		        	{
-		        		sendResponse({token: null});
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
+		        		});
 		        	}	
 		        	else
 		        	{
-		        		sendResponse({token: null});
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
+		        		});
 		        	}
 		        },
 		        error: function (XMLHttpRequest, textStatus, errorThrown) {
 		            console.log(textStatus, errorThrown);
-		            sendResponse({token: null});
+		            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+	        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
+	        		});
 		        }
 			});
 	  }
 	  else if(request.method === "tellBackendToCheckUser")
 	  {
 		  // set up ajax to backend and have it check the user's page
-		  //alert("this is where a check should be made by the backend");
 		  hn_login_status = "none";
 		  $.ajax({ 
 				type: 'GET', 
@@ -146,39 +152,40 @@ chrome.runtime.onMessage.addListener(
 		            screenname: request.detected_screenname
 		        },
 		        dataType: 'json', 
-		        timeout: 35000,
-		        async: false,  // not sure how to accomplish this otherwise
+		        timeout: 32000,
+		        async: true,  // not sure how to accomplish this otherwise
 		        success: function (data, status) {
 		        	if(data.response_status === "success")
 		        	{	
 		        		if(data.verified === true)
 		        		{
-		        			//alert("User verified!");
 		        			docCookies.setItem("screenname", data.screenname, 31536e3);
 							docCookies.setItem("this_access_token", data.this_access_token, 31536e3);
-							getUser(false);
-							sendResponse({user_validated: true});
+							getUser(true);
+							
 		        		}	
-		        		else 
-		        		{
-		        			//alert("successful call, but not verified");
-		        			sendResponse({user_validated: false});
-		        		}	
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: data.verified}, function(response) {});
+		        		});
 		        	}
 		        	else if(data.response_status === "error")
 		        	{
-		        		//alert("response_status === \"error\" message=" + data.message);
-		        		sendResponse({user_validated: false});
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+		        		});
 		        	}	
 		        	else
 		        	{
-		        		//alert("response neither success nor error. Fix this.");
-		        		sendResponse({user_validated: false});
+		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+		        		});
 		        	}
 		        },
 		        error: function (XMLHttpRequest, textStatus, errorThrown) {
 		            console.log(textStatus, errorThrown);
-		            sendResponse({user_validated: false});
+		            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+	        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+	        		});
 		        }
 			});
 	  }  

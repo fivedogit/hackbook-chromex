@@ -86,7 +86,6 @@ function getProfile()
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">url checking mode: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"urlcheckingmode_selector\">";
-		main_div_string = main_div_string + "						<option value=\"active\">active</option>";
 		main_div_string = main_div_string + "						<option SELECTED value=\"stealth\">stealth</option>";
 		main_div_string = main_div_string + "						<option value=\"notifications_only\">notifications only</option>";
 		main_div_string = main_div_string + "					</select> ";
@@ -207,9 +206,7 @@ function getProfile()
 		else if (bg.user_jo.notification_mode === "notifications_only")
 			$("#notificationmode_selector").val("notifications_only");
 		
-		if (bg.user_jo.url_checking_mode === "active")
-			$("#urlcheckingmode_selector").val("active");
-		else if (bg.user_jo.url_checking_mode === "stealth")
+		if (bg.user_jo.url_checking_mode === "stealth")
 			$("#urlcheckingmode_selector").val("stealth");
 		else if (bg.user_jo.url_checking_mode === "notifications_only")
 			$("#urlcheckingmode_selector").val("notifications_only");
@@ -286,9 +283,7 @@ function getProfile()
 		        		// on error, reset the selector to the bg.user_jo value
 		        		if (bg.user_jo.url_checking_mode === "stealth")
 		            		$("#urlcheckingmode_selector").val("stealth");
-		        		else if (bg.user_jo.url_checking_mode === "active")
-		            		$("#urlcheckingmode_selector").val("active");
-		            	else if (bg.user_jo.url_checking_mode === "notifications_only")
+		        		else if (bg.user_jo.url_checking_mode === "notifications_only")
 		            		$("#urlcheckingmode_selector").val("notifications_only");
 		        		displayMessage(data.message, "red", "utility_message_td");
 		            	if(data.error_code && data.error_code === "0000")
@@ -367,9 +362,8 @@ function getProfile()
 		});
 		
 		$("#urlcheckingmode_explainer_link").click(function () {
-			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">ACTIVE: URLs are checked against the Hackbook backend to find HN story threads, then HN's Algolia search engine if not found. Hackbook <em>never</em> stores URLs and lookups against Algolia are anonymized through Hackbook." +
-					"<br><br>STEALTH: URLs are checked for HN story threads only against the Hackbook backend, never stored, and never checked against Algolia. This is sufficient for full functionality almost all of the time." +
-					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but Hackbook cannot display HN threads.</div>");
+			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
+					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
 		});
 	}
 }

@@ -1,4 +1,51 @@
-
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.method === "gotHNAuthToken") {
+        	if(request.token !== null)
+        	{	
+				var t = request.token;
+				chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 2}, function(response) { 
+					var hn_existing_about = "";
+					chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
+						var hn_existing_about = response.hn_existing_about;
+						var logmsg = "";
+						logmsg = logmsg + hn_existing_about + "\n\n";
+						logmsg = logmsg + "BEGIN|" + t + "|END";
+						$('textarea[name=about]').val(logmsg);
+						$('input:submit').trigger("click");
+					});
+				});
+        	}
+        	else
+        	{
+        		chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) { 
+        			alert("There was an error getting the auth token. Check your network\nand if that doesn't work, please notify the developer @fivedogit.")
+        		});
+        	}	
+        } 
+        else if (request.method === "gotHNUserVerificationResponse") {
+        	if(request.user_verified === true)
+        	{
+        		chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 3}, function(response) { 
+        			chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
+        				var hn_existing_about = response.hn_existing_about;
+        				$('textarea[name=about]').val(hn_existing_about);
+        				$('input:submit').trigger("click");
+                	});
+        		});
+        	}	
+        	else
+        	{
+        		chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 4}, function(response) { 
+        			chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
+        				var hn_existing_about = response.hn_existing_about;
+        				$('textarea[name=about]').val(hn_existing_about);
+        				$('input:submit').trigger("click");
+                	});
+        		});
+        	}	
+        }
+    });
 
 	chrome.runtime.sendMessage({method: "getHNLoginStep"}, function(response) { 
 		if(response.hn_login_step === 0)
@@ -7,6 +54,15 @@
 		}
 		else if(response.hn_login_step === 1)
 		{
+			// Remove lingering BEGIN|asdfasdfa|END if it exists.
+			var existing = $('textarea[name=about]').val();
+			if(existing !== null && existing.indexOf("BEGIN|") !== -1 && existing.indexOf("|END") !== -1)
+			{
+				existing = existing.substring(0,existing.indexOf("BEGIN|")) + existing.substring(existing.indexOf("|END")+4);
+				$('textarea[name=about]').val(existing);
+				$('input:submit').trigger("click");
+				return;
+			}
 			var elements_of_pagetop_class = $(".pagetop");
 			var kids = null;
 			var kid = null;
@@ -42,35 +98,7 @@
 			var hn_existing_about = $('textarea[name=about]').val();
 			chrome.runtime.sendMessage({method: "setHNExistingAbout", hn_existing_about: hn_existing_about}, function(response) {
 				//alert("cs done setting bg.hn_existing_about... getting auth token from backend with detected_screenname=" + detected_screenname);
-				chrome.runtime.sendMessage({method: "getHNAuthToken", detected_screenname: detected_screenname}, function(response) { 
-					//alert("cs got response, checking token");
-					if(response.token !== null)
-					{	
-						//alert("cs Got response token=" + response.token + " setting hn_login_step to 2 and submitting");
-						var t = response.token;
-						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 2}, function(response) { 
-							var logmsg = "";
-							logmsg = logmsg + hn_existing_about + "\n";
-							logmsg = logmsg + "------------------------------------------\n\n";
-							logmsg = logmsg + "BEGIN|" + t + "|END\n";
-							logmsg = logmsg + "##########################################\n";
-							logmsg = logmsg + "#   Hackbook is verifying that you own   #\n";  
-							logmsg = logmsg + "#  this acct. Please wait up to 30 sec.  #\n";
-							logmsg = logmsg + "#   The previous text (above) will be    #\n";
-							logmsg = logmsg + "#     restored. Don't close this tab.    #\n";
-							logmsg = logmsg + "#       Yes, 30 sec is a long time.      #\n";
-							logmsg = logmsg + "#            Just keep waiting.          #\n";
-							logmsg = logmsg + "##########################################\n";
-							$('textarea[name=about]').val(logmsg);
-							$('input:submit').trigger("click");
-						});
-					}
-					else
-					{
-						//alert("cs Couldn't get auth token from backend");
-						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) {});
-					}	
-				});
+				chrome.runtime.sendMessage({method: "getHNAuthToken", detected_screenname: detected_screenname}, function(response) { });
 			});
 		}	
 		else if(response.hn_login_step === 2)
@@ -105,28 +133,21 @@
 					}	
 				}	
 			}	
-			
-			//alert("hn_login_step was 2. Getting previous text. Telling backend to check user.");
-			chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
-				var existing = response.hn_existing_about;
-				chrome.runtime.sendMessage({method: "tellBackendToCheckUser", detected_screenname: detected_screenname}, function(response) { 
-					if(response.user_validated === true)
-					{
-						//alert("user validated, setting hn_login_step to 3, replacing previous text (" + existing + ") and triggering submit");
-						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 3}, function(response) {
-							$('textarea[name=about]').val(existing);
-							$('input:submit').trigger("click");
-						});
-					}	
-					else
-					{
-						chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 4}, function(response) {
-							$('textarea[name=about]').val(existing);
-							$('input:submit').trigger("click");
-						});
-					}	
-				});
+			var h = "<tr>";
+			h = h + "	<td></td>";
+			h = h + "	<td>";
+			h = h + "		<div style=\"color:black;text-align:center\">";
+			h = h + "			Hackbook has added a unique token below to verify that you own<br>";
+			h = h + "			this HN acct. When verified, the previous text will be restored.<br>";
+			h = h + "			<b>This may take up to 30 seconds.</b> Do not close the tab or window.";
+			h = h + "		<div style=\"color:#ff6600;font-weight:bold;text-align:center;padding:10px\">PLEASE WAIT: <span id=\"vss\"></span></div>";
+			h = h + "	</td>";
+			h = h + "</tr>";
+			$('textarea[name=about]').parent().prepend(h);
+			chrome.runtime.sendMessage({method: "tellBackendToCheckUser", detected_screenname: detected_screenname}, function(response) { 
+				
 			});
+			$("#vss").text("30");setTimeout(function(){$("#vss").text("29");setTimeout(function(){$("#vss").text("28");setTimeout(function(){$("#vss").text("27");setTimeout(function(){$("#vss").text("26");setTimeout(function(){$("#vss").text("25");setTimeout(function(){$("#vss").text("24");setTimeout(function(){$("#vss").text("23");setTimeout(function(){$("#vss").text("22");setTimeout(function(){$("#vss").text("21");setTimeout(function(){$("#vss").text("20");setTimeout(function(){$("#vss").text("19");setTimeout(function(){$("#vss").text("18");setTimeout(function(){$("#vss").text("17");setTimeout(function(){$("#vss").text("16");setTimeout(function(){$("#vss").text("15");setTimeout(function(){$("#vss").text("14");setTimeout(function(){$("#vss").text("13");setTimeout(function(){$("#vss").text("12");setTimeout(function(){$("#vss").text("11");setTimeout(function(){$("#vss").text("10");setTimeout(function(){$("#vss").text("9");setTimeout(function(){$("#vss").text("8");setTimeout(function(){$("#vss").text("7");setTimeout(function(){$("#vss").text("6");setTimeout(function(){$("#vss").text("5");setTimeout(function(){$("#vss").text("4");setTimeout(function(){$("#vss").text("3");setTimeout(function(){$("#vss").text("2");setTimeout(function(){$("#vss").text("1");setTimeout(function(){$("#vss").text("0")},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)},1e3)
 		}
 		else if(response.hn_login_step === 3)
 		{
