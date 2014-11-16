@@ -1,3 +1,48 @@
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+	  if(request.method === "userSuccessfullyFollowedSomeone")
+	  {
+		  //alert("received successful follow");
+		  $("#follow_user_link_" + request.target_screenname).text("unfollow"); // just leave the link active
+		  $("#follower_count_span_" + request.target_screenname).text($("#follower_count_span_" + request.target_screenname).text()*1+1);
+		  $("#follow_user_link_" + request.target_screenname).unbind('click'); // lazy, but whatever
+		  $("#follow_user_link_" + request.target_screenname).click({u:request.target_screenname}, function(event){
+			  if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+			  {
+				  event.processed = true;
+				  unfollowUser(event.data.u);
+			  }
+			  return false;
+		  });
+	  }
+	  else if(request.method === "userSuccessfullyUnfollowedSomeone")
+	  {
+		  //alert("received successful unfollow");
+		  $("#follow_user_link_" + request.target_screenname).text("follow"); // just leave the link active
+		  var followercount = $("#follower_count_span_" + request.target_screenname).text()*1;
+		  if(followercount == 0) // never go below 0
+			  $("#follower_count_span_" + request.target_screenname).text(0);
+		  else
+			  $("#follower_count_span_" + request.target_screenname).text(followercount-1);
+		  $("#follow_user_link_" + request.target_screenname).unbind('click'); // lazy, but whatever
+		  $("#follow_user_link_" + request.target_screenname).click({u:request.target_screenname}, function(event){
+			  if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+			  {
+				  event.processed = true;
+				  logged_in = true;
+				  followUser(event.data.u);
+			  }
+			  return false;
+		  });
+	  } 
+	  else if(request.method === "userFailedToFollowOrUnfollowSomeone")
+	  {
+		  //alert("received follow/unfollow failure");
+		  $("#follow_user_link_" + request.target_screenname).text(request.message); // just leave the link active
+	  } 
+  });
+
+
 document.addEventListener('DOMContentLoaded', function () {
 	
 	$("#go_to_hacker_news_link").click(function(){
@@ -219,25 +264,7 @@ function followUser(target_screenname)
 {
 	$("#follow_user_link_" + target_screenname).html("processing");
 	chrome.runtime.sendMessage({method: "followUser", target_screenname:target_screenname}, function(response) {
-		if(response.result === true)
-		{
-			$("#follow_user_link_" + target_screenname).html("unfollow"); // just leave the link active
-			$("#follower_count_span_" + target_screenname).text($("#follower_count_span_" + target_screenname).text()*1+1);
-			$("#follow_user_link_" + target_screenname).unbind('click'); // lazy, but whatever
-			$("#follow_user_link_" + target_screenname).click({u:target_screenname}, function(event){
-				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-				{
-					event.processed = true;
-					unfollowUser(event.data.u);
-				}
-				return false;
-			});
-		}
-		else // result === false
-		{
-			$("#follow_user_link_" + target_screenname).html("error");
-			$("#follow_user_link_" + target_screenname).unbind('click'); // lazy, but whatever
-		}
+			
 	});
 }
 
@@ -245,29 +272,5 @@ function unfollowUser(target_screenname)
 {
 	$("#follow_user_link_" + target_screenname).html("processing");
 	chrome.runtime.sendMessage({method: "unfollowUser", target_screenname:target_screenname}, function(response) {
-		if(response.result === true)
-		{
-			$("#follow_user_link_" + target_screenname).html("follow"); // just leave the link active
-			var followercount = $("#follower_count_span_" + target_screenname).text()*1;
-			if(followercount == 0) // never go below 0
-				$("#follower_count_span_" + target_screenname).text(0);
-			else
-				$("#follower_count_span_" + target_screenname).text(followercount-1);
-			$("#follow_user_link_" + target_screenname).unbind('click'); // lazy, but whatever
-			$("#follow_user_link_" + target_screenname).click({u:target_screenname}, function(event){
-				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-				{
-					event.processed = true;
-					logged_in = true;
-					followUser(event.data.u);
-				}
-				return false;
-			});
-		}
-		else // result === false
-		{
-			$("#follow_user_link_" + target_screenname).html("error");
-			$("#follow_user_link_" + target_screenname).unbind('click'); // lazy, but whatever
-		}
 	});
 }

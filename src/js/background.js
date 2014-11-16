@@ -196,33 +196,45 @@ chrome.runtime.onMessage.addListener(
 		  var this_access_token = docCookies.getItem("this_access_token");
 		  if(screenname !== null && this_access_token !== null && this_access_token.length == 32)// the shortest possible screenname length is x@b.co = 6.
 		  {
-		  	$.ajax({
-		  	    type: 'GET',
-		  	    url: endpoint,
-		  	    data: {
-		  	        method: "followUser",
-		  	        target_screenname: target_screenname,
-		  	        screenname: screenname,  
-		  	        this_access_token: this_access_token
-		  	    },
-		  	    dataType: 'json',
-		  	    timeout: 3000,
-		  	    async: false,  // not sure how to accomplish this otherwise
-		  	    success: function (data, status) {
-		  	        if (data.response_status == "error") 
-		  	        	sendResponse({result: false});
-		  	        else //if (data.response_status === "success")
-		  	        {
-		  	        	if(typeof user_jo.following === "undefined" || user_jo.following === null || isEmpty(user_jo.following))
-			        		user_jo.following = [target_screenname];
-			        	else
-			        		user_jo.following.push(target_screenname);
-		  	        	sendResponse({result: true});
-		  	        }
-		  	    },
-		  	    error: function (XMLHttpRequest, textStatus, errorThrown) {console.log(textStatus, errorThrown); sendResponse({result: false});}
-		  	});
-		  	getUser(true); // refresh the user object with this new follow
+			  if(screenname === target_screenname)
+			  {
+				  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {
+				  });
+			  }  
+			  else
+			  {
+					$.ajax({
+				  	    type: 'GET',
+				  	    url: endpoint,
+				  	    data: {
+				  	        method: "followUser",
+				  	        target_screenname: target_screenname,
+				  	        screenname: screenname,  
+				  	        this_access_token: this_access_token
+				  	    },
+				  	    dataType: 'json',
+				  	    timeout: 10000,
+				  	    async: true, 
+				  	    success: function (data, status) {
+				  	        if (data.response_status == "error") 
+				  	        {
+				  	        	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {
+				  	        	});
+				  	        }
+				  	        else //if (data.response_status === "success")
+				  	        {
+				  	        	chrome.runtime.sendMessage({method: "userSuccessfullyFollowedSomeone", target_screenname:target_screenname}, function(response) {
+				  	        	});
+				  	        	getUser(true); // refresh the user object with this new follow
+				  	        }
+				  	    },
+				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
+				  	    	console.log(textStatus, errorThrown); 
+				  	    	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname}, function(response) {
+			  	        	});
+				  	    }
+				  	});
+			  }
 		  }
 	  }
 	  else if(request.method === "unfollowUser") // don't need a getter for this as the receiver page can get this directly from cookie
@@ -232,39 +244,45 @@ chrome.runtime.onMessage.addListener(
 		  var this_access_token = docCookies.getItem("this_access_token");
 		  if(screenname !== null && this_access_token !== null && this_access_token.length == 32)// the shortest possible screenname length is x@b.co = 6.
 		  {
-		  	$.ajax({
-		  	    type: 'GET',
-		  	    url: endpoint,
-		  	    data: {
-		  	        method: "unfollowUser",
-		  	        target_screenname: target_screenname,
-		  	        screenname: screenname,  
-		  	        this_access_token: this_access_token
-		  	    },
-		  	    dataType: 'json',
-		  	    timeout: 3000,
-		  	    async: false,  // not sure how to accomplish this otherwise
-		  	    success: function (data, status) {
-		  	        if (data.response_status == "error") 
-		  	        	sendResponse({result: false});
-		  	        else //if (data.response_status === "success")
-		  	        {
-		  	        	if(typeof user_jo.following === "undefined" || user_jo.following === null || isEmpty(user_jo.following))
-			        	{
-			        		// this should not happen because if we're unfollowing somebody, then user_jo.following had something 
-			        	}
-			        	else
-			        	{
-			        		var index = user_jo.following.indexOf(target_screenname);
-			        		if(index >= 0) // i.e. not -1
-			        			user_jo.following.splice(index,1);
-			        	}
-		  	        	sendResponse({result: true});
-		  	        }
-		  	    },
-		  	    error: function (XMLHttpRequest, textStatus, errorThrown) {console.log(textStatus, errorThrown); sendResponse({result: false});}
-		  	});
-		  	getUser(true); // refresh the user object with this new unfollow
+			  if(screenname === target_screenname)
+			  {
+				  chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "that's you"}, function(response) {
+				  });
+			  }  
+			  else
+			  {
+				  $.ajax({
+					    type: 'GET',
+				  	    url: endpoint,
+				  	    data: {
+				  	        method: "unfollowUser",
+				  	        target_screenname: target_screenname,
+				  	        screenname: screenname,  
+				  	        this_access_token: this_access_token
+				  	    },
+				  	    dataType: 'json',
+				  	    timeout: 10000,
+				  	    async: true, 
+				  	    success: function (data, status) {
+				  	        if (data.response_status == "error") 
+				  	        {
+				  	        	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname, message: "error"}, function(response) {
+				  	        	});
+				  	        }
+				  	        else //if (data.response_status === "success")
+				  	        {
+				  	        	chrome.runtime.sendMessage({method: "userSuccessfullyUnfollowedSomeone", target_screenname:target_screenname}, function(response) {
+				  	        	});
+				  	        	getUser(true); // refresh the user object with this new follow
+				  	        }
+				  	    },
+				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
+				  	    	console.log(textStatus, errorThrown); 
+				  	    	chrome.runtime.sendMessage({method: "userFailedToFollowOrUnfollowSomeone", target_screenname:target_screenname}, function(response) {
+			  	        	});
+				  	    }
+				  	});
+			  }
 		  }
 	  }
 	  else if(request.method === "getLikeDislikeMode") // don't need a getter for this as the receiver page can get this directly from cookie
