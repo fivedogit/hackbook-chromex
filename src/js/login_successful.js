@@ -3,10 +3,20 @@ chrome.runtime.onMessage.addListener(
 	  if(request.method === "userSuccessfullyFollowedSomeone")
 	  {
 		  //alert("received successful follow");
-		  $("#follow_user_link_" + request.target_screenname).text("unfollow"); 
-		  $("#follower_count_span_" + request.target_screenname).text($("#follower_count_span_" + request.target_screenname).text()*1+1);
-		  $("#follow_user_link_" + request.target_screenname).unbind('click'); 
-		  $("#follow_user_link_" + request.target_screenname).click({u:request.target_screenname}, function(event){
+		  if(request.target_screenname === $("#add_follow_input").val()) // if this username is in the specific box, then this must be a response to a specific follow
+		  {
+			  $("#add_follow_input").val("");
+			  $("#add_follow_result_span").text("Success!");
+			  setTimeout(function() {
+					$("#add_follow_result_span").text("");
+			  },2000);
+		  } 
+		  
+		  // do these regardless of the above.
+		  $("[id=follow_user_link_" + request.target_screenname + "]").text("unfollow"); 
+		  $("[id=follower_count_span_" + request.target_screenname + "]").text($("[id=follower_count_span_" + request.target_screenname + "]").text()*1+1);
+		  $("[id=follow_user_link_" + request.target_screenname + "]").unbind('click'); 
+		  $("[id=follow_user_link_" + request.target_screenname + "]").click({u:request.target_screenname}, function(event){
 			  if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			  {
 				  event.processed = true;
@@ -18,14 +28,14 @@ chrome.runtime.onMessage.addListener(
 	  else if(request.method === "userSuccessfullyUnfollowedSomeone")
 	  {
 		  //alert("received successful unfollow");
-		  $("#follow_user_link_" + request.target_screenname).text("follow");
-		  var followercount = $("#follower_count_span_" + request.target_screenname).text()*1;
+		  $("[id=follow_user_link_" + request.target_screenname + "]").text("follow");
+		  var followercount = $("[id=follower_count_span_" + request.target_screenname + "]").text()*1;
 		  if(followercount == 0) // never go below 0
-			  $("#follower_count_span_" + request.target_screenname).text(0);
+			  $("[id=follower_count_span_" + request.target_screenname + "]").text(0);
 		  else
-			  $("#follower_count_span_" + request.target_screenname).text(followercount-1);
-		  $("#follow_user_link_" + request.target_screenname).unbind('click'); 
-		  $("#follow_user_link_" + request.target_screenname).click({u:request.target_screenname}, function(event){
+			  $("[id=follower_count_span_" + request.target_screenname + "]").text(followercount-1);
+		  $("[id=follow_user_link_" + request.target_screenname + "]").unbind('click'); 
+		  $("[id=follow_user_link_" + request.target_screenname + "]").click({u:request.target_screenname}, function(event){
 			  if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			  {
 				  event.processed = true;
@@ -37,12 +47,29 @@ chrome.runtime.onMessage.addListener(
 	  else if(request.method === "userFailedToFollowOrUnfollowSomeone")
 	  {
 		  //alert("received follow/unfollow failure");
-		  $("#follow_user_link_" + request.target_screenname).text(request.message); // just leave the link active
+		  if(request.target_screenname === $("#add_follow_input").val()) // if this username is in the specific box, then this must be a response to a specific follow
+		  {
+			  $("#add_follow_input").val("");
+			  $("#add_follow_result_span").text("Error");
+			  setTimeout(function() {
+					$("#add_follow_result_span").text("");
+			  },2000);
+		  }
+		  
+		  // do this regardless of the above.
+		  $("[id=follow_user_link_" + request.target_screenname + "]").text(request.message); // just leave the link active
 	  } 
   });
 
 
 document.addEventListener('DOMContentLoaded', function () {
+	
+	$("#add_follow_go_button").click(function () {
+		$("#add_follow_result_span").text("Processing...");
+		chrome.runtime.sendMessage({method: "followUser", target_screenname:$("#add_follow_input").val(), runtime_or_tabs: "runtime"}, function(response) {
+		});
+		return false;
+	});
 	
 	$("#go_to_hacker_news_link").click(function(){
 		var following = null;
@@ -129,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		        		{
 		        			if(typeof following === "undefined" || following === null || following.indexOf(most_followed_users[x].id) === -1)
 		        			{	
-		        				$("#follow_user_link_" + most_followed_users[x].id).click({u:most_followed_users[x].id}, function(event){
+		        				$("[id=follow_user_link_" + most_followed_users[x].id + "]").click({u:most_followed_users[x].id}, function(event){
 			        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			        				{
 			        					event.processed = true;
@@ -140,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		        			}
 		        			else
 		        			{
-		        				$("#follow_user_link_" + most_followed_users[x].id).click({u:most_followed_users[x].id}, function(event){
+		        				$("[id=follow_user_link_" + most_followed_users[x].id + "]").click({u:most_followed_users[x].id}, function(event){
 			        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			        				{
 			        					event.processed = true;
@@ -218,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		        		{
 		        			if(typeof following === "undefined" || following === null || following.indexOf(random_users[x].id) === -1)
 		        			{
-		        				$("#follow_user_link_" + random_users[x].id).click({u:random_users[x].id}, function(event){
+		        				$("[id=follow_user_link_" + random_users[x].id + "]").click({u:random_users[x].id}, function(event){
 			        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			        				{
 			        					event.processed = true;
@@ -229,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		        			}
 		        			else
 		        			{
-		        				$("#follow_user_link_" + random_users[x].id).click({u:random_users[x].id}, function(event){
+		        				$("[id=follow_user_link_" + random_users[x].id + "]").click({u:random_users[x].id}, function(event){
 			        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
 			        				{
 			        					event.processed = true;
@@ -261,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function followUser(target_screenname)
 {
-	$("#follow_user_link_" + target_screenname).html("processing");
+	$("[id=follow_user_link_" + target_screenname + "]").html("processing");
 	chrome.runtime.sendMessage({method: "followUser", target_screenname:target_screenname, runtime_or_tabs: "runtime"}, function(response) {
 			
 	});
@@ -269,7 +296,7 @@ function followUser(target_screenname)
 
 function unfollowUser(target_screenname)
 {
-	$("#follow_user_link_" + target_screenname).html("processing");
+	$("[id=follow_user_link_" + target_screenname + "]").html("processing");
 	chrome.runtime.sendMessage({method: "unfollowUser", target_screenname:target_screenname, runtime_or_tabs: "runtime"}, function(response) {
 	});
 }
