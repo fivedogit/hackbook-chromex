@@ -164,7 +164,10 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         					$("#comment_div_" + notification_id).hide();
         				else if(notification_jo.type === "1" || notification_jo.type === "2")
         				{
-        					$("#comment_div_" + notification_id).html("View your <a href=\"#\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> or <a href=\"#\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>");
+        					var c_html = "";
+        					c_html = c_html + "View your <a href=\"#\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> or <a href=\"#\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>";
+        					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, the HN API doesn't allow Hackbook to know which of your items was up or downvoted.</div>";
+        					$("#comment_div_" + notification_id).html(c_html);
         					$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
         						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
         					});
