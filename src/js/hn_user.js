@@ -129,10 +129,8 @@ chrome.runtime.sendMessage({
         h = h + "	</td>";
         h = h + "</tr>";
         $('textarea[name=about]').parent().prepend(h);
-        chrome.runtime.sendMessage({
-            method: "tellBackendToCheckUser",
-            detected_screenname: detected_screenname
-        }, function(response) {
+        var tabid = 0;
+        chrome.runtime.sendMessage({method: "tellBackendToCheckUser", detected_screenname: detected_screenname}, function(response) {
 
         });
         

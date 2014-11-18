@@ -102,93 +102,95 @@ chrome.runtime.onMessage.addListener(
 	  }  
 	  else if(request.method === "getHNAuthToken") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
-		  $.ajax({ 
-				type: 'GET', 
-				url: endpoint, 
-				data: {
-					method: "getHNAuthToken",
-		            screenname: request.detected_screenname
-		        },
-		        dataType: 'json',
-		        timeout: 10000,
-		        async: true, 
-		        success: function (data, status) {
-		        	if(data.response_status === "success")
-		        	{	
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: data.token}, function(response) {});
+		  var tabid = 0;
+		  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			  tabid = tabs[0].id;
+			  $.ajax({ 
+					type: 'GET', 
+					url: endpoint, 
+					data: {
+						method: "getHNAuthToken",
+			            screenname: request.detected_screenname
+			        },
+			        dataType: 'json',
+			        timeout: 10000,
+			        async: true, 
+			        success: function (data, status) {
+			        	if(data.response_status === "success")
+			        	{	
+			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: data.token}, function(response) {});
+			        		});
+			        	}
+			        	else if(data.response_status === "error")
+			        	{
+			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			        		});
+			        	}	
+			        	else
+			        	{
+			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			        		});
+			        	}
+			        },
+			        error: function (XMLHttpRequest, textStatus, errorThrown) {
+			            console.log(textStatus, errorThrown);
+			            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
 		        		});
-		        	}
-		        	else if(data.response_status === "error")
-		        	{
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
-		        		});
-		        	}	
-		        	else
-		        	{
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
-		        		});
-		        	}
-		        },
-		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		            console.log(textStatus, errorThrown);
-		            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-	        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNAuthToken", token: null}, function(response) {});
-	        		});
-		        }
-			});
+			        }
+			  });
+		  });
 	  }
 	  else if(request.method === "tellBackendToCheckUser")
 	  {
 		  // set up ajax to backend and have it check the user's page
-		  $.ajax({ 
-				type: 'GET', 
-				url: endpoint, 
-				data: {
-					method: "verifyHNUser",
-		            screenname: request.detected_screenname
-		        },
-		        dataType: 'json', 
-		        timeout: 33000,
-		        async: true,  // not sure how to accomplish this otherwise
-		        success: function (data, status) {
-		        	if(data.response_status === "success")
-		        	{	
-		        		if(data.verified === true)
-		        		{
-		        			docCookies.setItem("screenname", data.screenname, 31536e3);
-							docCookies.setItem("this_access_token", data.this_access_token, 31536e3);
-							getUser(true);
-		        		}	
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: data.verified}, function(response) {});
+		  var tabid = 0;
+		  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			  tabid = tabs[0].id;
+			  $.ajax({ 
+					type: 'GET', 
+					url: endpoint, 
+					data: {
+						method: "verifyHNUser",
+			            screenname: request.detected_screenname
+			        },
+			        dataType: 'json', 
+			        timeout: 33000,
+			        async: true,  // not sure how to accomplish this otherwise
+			        success: function (data, status) {
+			        	if(data.response_status === "success")
+			        	{	
+			        		if(data.verified === true)
+			        		{
+			        			docCookies.setItem("screenname", data.screenname, 31536e3);
+								docCookies.setItem("this_access_token", data.this_access_token, 31536e3);
+								getUser(true);
+			        		}	
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: data.verified}, function(response) {});
+			        	}
+			        	else if(data.response_status === "error")
+			        	{
+			        		console.log("verifyHNUser ajax success but r_s error");
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+			        	}	
+			        	else
+			        	{
+			        		console.log("verifyHNUser ajax success but r_s neither success nor error");
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+			        	}
+			        },
+			        error: function (XMLHttpRequest, textStatus, errorThrown) {
+			        	console.log("verifyHNUser ajax error");
+			            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+		        			chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 		        		});
-		        	}
-		        	else if(data.response_status === "error")
-		        	{
-		        		console.log("verifyHNUser ajax success but r_s error");
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
-		        		});
-		        	}	
-		        	else
-		        	{
-		        		console.log("verifyHNUser ajax success but r_s neither success nor error");
-		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
-		        		});
-		        	}
-		        },
-		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		        	console.log("verifyHNUser ajax error");
-		            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-	        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
-	        		});
-		            console.log(textStatus, errorThrown);
-		        }
-			});
+			            console.log(textStatus, errorThrown);
+			        }
+				});
+		  });
 	  }  
 	  else if(request.method === "getFollowing")
 	  {
