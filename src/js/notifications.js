@@ -275,7 +275,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                     		        				        success: function (data, status) {
                     		        				        	if(data.type === "comment")
                     		        				        	{
-                    		        				        		var p_html = "<div style=\"padding-bottom:5px;font-weight:bold\">" + data.by + " <a class=\"newtab\" href=\"https://news.ycombinator.com/item?id=" + data.id + "\">commented</a>:</div>";
+                    		        				        		var p_html = "<div style=\"padding-bottom:5px;font-weight:bold\"><a class=\"newtab\" href=\"https://news.ycombinator.com/user?id=" + data.by + "\">" + data.by + "</a> <a class=\"newtab\" href=\"https://news.ycombinator.com/item?id=" + data.id + "\">commented</a>:</div>";
                     		        				        		p_html = p_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
                     		        				        		$("#parent_div_" + notification_jo.id).html(p_html);
                     		        				        		$("a").click(function(event) {
