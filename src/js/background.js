@@ -12,7 +12,7 @@ var user_jo = null;
 var currentURL = "";
 var currentId = "";
 var currentHostname = "";
-var t_jo;
+var t_jo = null;
 var threadstatus = 0;
 var top="???";
 var bottom="???";
@@ -25,8 +25,6 @@ var likedislikemode = "none";
 var masterid = "none"; // this is the master user retrieval id
 
 (function() {
-	getUser(true); // user_jo should always be null when this is called
-	t_jo = null;
 	chrome.tabs.getSelected(null, function(tab) {
 		currentURL = tab.url;
 		currentId = tab.id;
@@ -37,6 +35,7 @@ var masterid = "none"; // this is the master user retrieval id
 		context.font = "8px Silkscreen";
 		context.fillText("PRIMER",0,0);
 		drawHButton("gray", "white");
+		getUser(true); // user_jo should always be null when this is called
 	});
 })();
 
