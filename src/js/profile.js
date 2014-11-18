@@ -93,7 +93,12 @@ function getProfile()
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"urlcheckingmode_explainer_td\"></td>";
-		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">following: <span style=\"font-size:8pt\">(<a href=\"#\" id=\"add_follower_link\" style=\"color:#828282\">add</a>)</span></td>";
+		main_div_string = main_div_string + "			<tr>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left;color:#828282;width:25%;vertical-align:top\">";
+		main_div_string = main_div_string + "					following:";
+		main_div_string = main_div_string + "					<div style=\"padding-left:12px;font-size:8pt\"><a href=\"#\" id=\"get_suggestions_link\" style=\"color:#828282\">get suggestions</a></div>";
+		main_div_string = main_div_string + "					<div style=\"padding-left:12px;font-size:8pt\"><a href=\"#\" id=\"add_follow_link\" style=\"color:#828282\">add specific</a></div>";
+		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "				<td colspan=2 style=\"text-align:left;font-size:11px\">";
 		if(typeof bg.user_jo.following === "undefined" || bg.user_jo.following === null || isEmpty(bg.user_jo.following))
 			main_div_string = main_div_string + "<i>none</i>";
@@ -107,12 +112,11 @@ function getProfile()
 			}	
 			main_div_string = main_div_string + "<a href=\"#\" id=\"unfollow_" + bg.user_jo.following[x] + "_link\">" + bg.user_jo.following[x] + "</a>";
 		}
-		main_div_string = main_div_string + "							</td>";
+		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "						</tr>";
-		main_div_string = main_div_string + "						<tr id=\"add_follower_tr\" style=\"display:none\">";
-		main_div_string = main_div_string + "							<td style=\"text-align:left;color:#828282;width:25%\">add follower: </td>";
-		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;color:#828282;\"><input type=text style=\"width:150px\" id=\"add_follower_input\"> <input id=\"add_follower_go_button\" type=\"button\" value=\"add\"> <span id=\"add_follower_result_span\"></span></td>";
-		//main_div_string = main_div_string + "							<td style=\"text-align:left;color:#828282;font-size:8pt\" id=\"add_follower_result_td\"></td>";
+		main_div_string = main_div_string + "						<tr id=\"add_follow_tr\" style=\"display:none\">";
+		main_div_string = main_div_string + "							<td style=\"text-align:left;color:#828282;width:25%\"></td>";
+		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;color:#828282;\"><input type=text style=\"width:150px\" id=\"add_follow_input\"> <input id=\"add_follow_go_button\" type=\"button\" value=\"add\"> <span id=\"add_follow_result_span\"></span></td>";
 		main_div_string = main_div_string + "						</tr>";
 		main_div_string = main_div_string + "						<tr><td style=\"text-align:left;color:#828282\">followers: </td>";
 		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;font-size:11px\">";
@@ -184,17 +188,22 @@ function getProfile()
 			
 	    	
 		
-	 	$("#add_follower_link").click(function () {
-			$("#add_follower_tr").show();
+	 	$("#add_follow_link").click(function () {
+			$("#add_follow_tr").show();
 			return false;
 		});
 		
-		$("#add_follower_go_button").click(function () {
-			followOrUnfollowUser($("#add_follower_input").val(), "followUser");
-			$("#add_follower_result_span").text("Processing...");
+		$("#add_follow_go_button").click(function () {
+			followOrUnfollowUser($("#add_follow_input").val(), "followUser");
+			$("#add_follow_result_span").text("Processing...");
 			return false;
 		});
 
+		$("#get_suggestions_link").click(function () {
+			chrome.tabs.create({url: chrome.extension.getURL("login_successful.html")});
+			return false;
+		});
+		
 		/*
 		if (bg.user_jo.hide_hn_new === false)
 			$("#hide_hn_new_selector").val("show");

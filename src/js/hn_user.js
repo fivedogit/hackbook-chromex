@@ -3,14 +3,9 @@ chrome.runtime.onMessage.addListener(
         if (request.method === "gotHNAuthToken") {
             if (request.token !== null) {
                 var t = request.token;
-                chrome.runtime.sendMessage({
-                    method: "setHNLoginStep",
-                    hn_login_step: 2
-                }, function(response) {
+                chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 2}, function(response) {
                     var hn_existing_about = "";
-                    chrome.runtime.sendMessage({
-                        method: "getHNExistingAbout"
-                    }, function(response) {
+                    chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
                         var hn_existing_about = response.hn_existing_about;
                         var logmsg = "";
                         logmsg = logmsg + hn_existing_about + "\n\n";
@@ -20,19 +15,13 @@ chrome.runtime.onMessage.addListener(
                     });
                 });
             } else {
-                chrome.runtime.sendMessage({
-                    method: "setHNLoginStep",
-                    hn_login_step: 0
-                }, function(response) {
+                chrome.runtime.sendMessage({method: "setHNLoginStep", hn_login_step: 0}, function(response) {
                     alert("There was an error getting the auth token. Check your network\nand if that doesn't work, please notify the developer @fivedogit.")
                 });
             }
         } else if (request.method === "gotHNUserVerificationResponse") {
             if (request.user_verified === true) {
-                chrome.runtime.sendMessage({
-                    method: "setHNLoginStep",
-                    hn_login_step: 3
-                }, function(response) {
+                chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 3}, function(response) {
                     chrome.runtime.sendMessage({
                         method: "getHNExistingAbout"
                     }, function(response) {
@@ -42,13 +31,8 @@ chrome.runtime.onMessage.addListener(
                     });
                 });
             } else {
-                chrome.runtime.sendMessage({
-                    method: "setHNLoginStep",
-                    hn_login_step: 4
-                }, function(response) {
-                    chrome.runtime.sendMessage({
-                        method: "getHNExistingAbout"
-                    }, function(response) {
+                chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 4}, function(response) {
+                    chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
                         var hn_existing_about = response.hn_existing_about;
                         $('textarea[name=about]').val(hn_existing_about);
                         $('input:submit').trigger("click");
@@ -138,8 +122,8 @@ chrome.runtime.sendMessage({
         h = h + "	<td></td>";
         h = h + "	<td>";
         h = h + "		<div style=\"color:black;text-align:center\">";
-        h = h + "			Hackbook has added a unique token below to verify that you own<br>";
-        h = h + "			this HN acct. When verified, the previous text will be restored.<br>";
+        h = h + "			Hackbook has added a unique token to your \"about\" text below and is<br>";
+        h = h + "			verifying it via the Hacker News API as proof that you own this acct.<br>";
         h = h + "			<b>This may take up to 30 seconds.</b> Do not close the tab or window.";
         h = h + "		<div style=\"color:#ff6600;font-weight:bold;text-align:center;padding:10px\">PLEASE WAIT: <span id=\"vss\"></span></div>";
         h = h + "	</td>";
@@ -214,36 +198,36 @@ chrome.runtime.sendMessage({
                                                                                                                             $("#vss").text("1");
                                                                                                                             setTimeout(function() {
                                                                                                                                 $("#vss").text("0")
-                                                                                                                            }, 1e3)
-                                                                                                                        }, 1e3)
-                                                                                                                    }, 1e3)
-                                                                                                                }, 1e3)
-                                                                                                            }, 1e3)
-                                                                                                        }, 1e3)
-                                                                                                    }, 1e3)
-                                                                                                }, 1e3)
-                                                                                            }, 1e3)
-                                                                                        }, 1e3)
-                                                                                    }, 1e3)
-                                                                                }, 1e3)
-                                                                            }, 1e3)
-                                                                        }, 1e3)
-                                                                    }, 1e3)
-                                                                }, 1e3)
-                                                            }, 1e3)
-                                                        }, 1e3)
-                                                    }, 1e3)
-                                                }, 1e3)
-                                            }, 1e3)
-                                        }, 1e3)
-                                    }, 1e3)
-                                }, 1e3)
-                            }, 1e3)
-                        }, 1e3)
-                    }, 1e3)
-                }, 1e3)
-            }, 1e3)
-        }, 1e3)
+                                                                                                                            }, 1100)
+                                                                                                                        }, 1100)
+                                                                                                                    }, 1100)
+                                                                                                                }, 1100)
+                                                                                                            }, 1100)
+                                                                                                        }, 1100)
+                                                                                                    }, 1100)
+                                                                                                }, 1100)
+                                                                                            }, 1100)
+                                                                                        }, 1100)
+                                                                                    }, 1100)
+                                                                                }, 1100)
+                                                                            }, 1100)
+                                                                        }, 1100)
+                                                                    }, 1100)
+                                                                }, 1100)
+                                                            }, 1100)
+                                                        }, 1100)
+                                                    }, 1100)
+                                                }, 1100)
+                                            }, 1100)
+                                        }, 1100)
+                                    }, 1100)
+                                }, 1100)
+                            }, 1100)
+                        }, 1100)
+                    }, 1100)
+                }, 1100)
+            }, 1100)
+        }, 1100)
     } else if (response.hn_login_step === 3) {
         chrome.runtime.sendMessage({
             method: "setHNLoginStep",

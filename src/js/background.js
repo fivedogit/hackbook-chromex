@@ -143,7 +143,6 @@ chrome.runtime.onMessage.addListener(
 	  else if(request.method === "tellBackendToCheckUser")
 	  {
 		  // set up ajax to backend and have it check the user's page
-		  hn_login_status = "none";
 		  $.ajax({ 
 				type: 'GET', 
 				url: endpoint, 
@@ -152,7 +151,7 @@ chrome.runtime.onMessage.addListener(
 		            screenname: request.detected_screenname
 		        },
 		        dataType: 'json', 
-		        timeout: 32000,
+		        timeout: 33000,
 		        async: true,  // not sure how to accomplish this otherwise
 		        success: function (data, status) {
 		        	if(data.response_status === "success")
@@ -162,7 +161,6 @@ chrome.runtime.onMessage.addListener(
 		        			docCookies.setItem("screenname", data.screenname, 31536e3);
 							docCookies.setItem("this_access_token", data.this_access_token, 31536e3);
 							getUser(true);
-							
 		        		}	
 		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
 		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: data.verified}, function(response) {});
@@ -170,22 +168,25 @@ chrome.runtime.onMessage.addListener(
 		        	}
 		        	else if(data.response_status === "error")
 		        	{
+		        		console.log("verifyHNUser ajax success but r_s error");
 		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
 		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 		        		});
 		        	}	
 		        	else
 		        	{
+		        		console.log("verifyHNUser ajax success but r_s neither success nor error");
 		        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
 		        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 		        		});
 		        	}
 		        },
 		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		            console.log(textStatus, errorThrown);
+		        	console.log("verifyHNUser ajax error");
 		            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
 	        			chrome.tabs.sendMessage(tabs[0].id, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 	        		});
+		            console.log(textStatus, errorThrown);
 		        }
 			});
 	  }  
@@ -507,7 +508,7 @@ function getThread(url_at_function_call)
 	        	        	{
 	        	        		threadstatus=0;
 	        	        		//alert("drawing red HN ajax");
-	        	        		drawHButton("gray", "red");
+	        	        		drawHButton("gray", "darkred");
 	        	        	}
 	        	            console.log(textStatus, errorThrown);
 	        	        }
@@ -518,7 +519,7 @@ function getThread(url_at_function_call)
         	{
         		console.log("searchForHNItem response_status=error");
         		//alert("drawing red searchForHNItem response_status error");
-        		drawHButton("gray", "red");
+        		drawHButton("gray", "midnightblue");
         	}	
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -609,7 +610,7 @@ function finishThread(url_at_function_call)
 			if(typeof t_jo === "undefined" || t_jo === null)
 			{
 				//alert("drawing red finishThread t_jo undefined or null");
-				drawHButton("gray", "red");
+				drawHButton("gray", "blue");
 			}
 			else if(typeof t_jo !== "undefined" && t_jo !== null)
 			{
