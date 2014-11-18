@@ -400,63 +400,56 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 	});
 }); 
 
+function drawNotificationNumber()
+{
+	if(user_jo)
+	{
+		var n = 0;
+		if(user_jo.url_checking_mode === "notifications_only")
+			n = user_jo.notification_count;
+		else 
+			n = user_jo.notification_count + user_jo.newsfeed_count;
+		
+		if(n>9)
+			n = 9;
+		
+		if(n === 0)
+			return false; // we didn't draw anything
+
+		drawTTUButton(n, "NOTIFICATION");
+		return true; // we drew a notification number
+	}	
+}
+
 function doButtonGen()
 {
+	
 	var url_at_function_call = currentURL;	   // need to save the currentURL bc if it has changed by the time threads come back, they are irrelevant at that point
 	t_jo = null;
 	
-	// priority order: 
-	// 1. display a url error, if applicable
-	// 2. go get thread
-	// 		if notification, draw big number in button
-	//      if not, draw thread info in button
-	if(user_jo && user_jo.notification_count > 0 && user_jo.newsfeed_count > 0)
+	var drew_notification_number = false;
+	if(user_jo)
+		drew_notification_number = drawNotificationNumber();
+	
+	if(drew_notification_number) // if we drew a notification number, don't overwrite it
 	{
-		if((user_jo.notification_count + user_jo.newsfeed_count) > 9)
-			drawTTUButton("9", "NOTIFICATION");
+		if(!isValidURLFormation(currentURL))
+			return;
 		else
-			drawTTUButton((user_jo.notification_count+user_jo.newsfeed_count), "NOTIFICATION");
-		getThread(url_at_function_call);  
-	}	
-	else if(user_jo && user_jo.notification_count > 0)
+			getThread(url_at_function_call, false); // don't overwrite notification number
+	}
+	else
 	{
-		if(user_jo.notification_count > 9)
-			drawTTUButton("9", "NOTIFICATION");
+		if(!isValidURLFormation(currentURL))
+		{	drawHButton("gray", "white"); return; } // no notification number, overwrite
 		else
-			drawTTUButton(user_jo.notification_count, "NOTIFICATION");
-		getThread(url_at_function_call);  
-	}	
-	else if(user_jo && user_jo.newsfeed_count > 0)
-	{
-		//alert("nfc > 0");
-		if(user_jo.newsfeed_count > 9)
-			drawTTUButton("9", "NOTIFICATION");
-		else
-		{
-			drawTTUButton(user_jo.newsfeed_count, "NOTIFICATION");
-		}
-		getThread(url_at_function_call);  
-	}	
-	// for now, default on not logged in is "stealth" mode, showing threads. That's why this is commented out.
-	/*else if (typeof user_jo === "undefined" || user_jo === null)
-	{
-		drawHButton("gray", "white");
-		return;
-	}*/	
-	else if (!isValidURLFormation(currentURL) || (user_jo && user_jo.url_checking_mode === "notifications_only"))
-	{
-		drawHButton("gray", "white");
-		return;
-	}	
-	else 
-	{
-		//alert("default");
-		getThread(url_at_function_call); 
+			getThread(url_at_function_call, true); // no notification number, overwrite
 	}
 }
 
-function getThread(url_at_function_call) 
+function getThread(url_at_function_call, updatebutton) 
 {
+	
 	// This function always calls getThread and getUserSelf (if credentials available) at the same time. 
 	// Once it is finished getting the thread, it updates the button and goes to a ready state for thread viewing.
 	// The reason these are not called together is because the getThread call can be cached. The user call cannot.
@@ -539,7 +532,8 @@ function getThread(url_at_function_call)
 	// the following ugly piece of code waits for up to 14 seconds for the thread to finish. Checking every .333 seconds, exiting upon completion
 	// as ugly as this is, there really isn't a better, more robust way to do animations in a chrome extension. Loops with setTimeout get really hairy. Don't judge.
 	// if there is a better way, please submit a bug report on Github or notify me on twitter (@fivedogit)
-	
+	if(updatebutton)
+	{	
 	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
 	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
 	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
@@ -577,56 +571,30 @@ function getThread(url_at_function_call)
 	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
 	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
 	setTimeout(function(){if(url_at_function_call===currentURL){threadstatus=0}if(currentURL!==url_at_function_call){return;}finishThread(url_at_function_call);return;},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)});
+	}
 }
 
 function finishThread(url_at_function_call) 
 {
 	if (url_at_function_call === currentURL) // don't update if the currentURL has changed, the info is irrelevant in that case
 	{
-		if(user_jo && user_jo.notification_count > 0 && user_jo.newsfeed_count > 0)
+		// *** we can only get here if no notification number has been drawn. No need to check again.
+		if(typeof t_jo === "undefined" || t_jo === null)
 		{
-			if((user_jo.notification_count + user_jo.newsfeed_count) > 9)
-				drawTTUButton("9", "NOTIFICATION");
-			else
-				drawTTUButton((user_jo.notification_count+user_jo.newsfeed_count), "NOTIFICATION");
-		}	
-		else if(user_jo && user_jo.notification_count > 0)
-		{
-			if(user_jo.notification_count > 9)
-				drawTTUButton("9", "NOTIFICATION");
-			else
-				drawTTUButton(user_jo.notification_count, "NOTIFICATION");
-		}	
-		else if(user_jo && user_jo.newsfeed_count > 0)
-		{
-			//alert("nfc > 0");
-			if(user_jo.newsfeed_count > 9)
-				drawTTUButton("9", "NOTIFICATION");
-			else
-			{
-				drawTTUButton(user_jo.newsfeed_count, "NOTIFICATION");
-			}
-		}	
-		else
-		{	
-			if(typeof t_jo === "undefined" || t_jo === null)
-			{
-				//alert("drawing red finishThread t_jo undefined or null");
-				drawHButton("gray", "blue");
-			}
-			else if(typeof t_jo !== "undefined" && t_jo !== null)
-			{
-				//alert(JSON.stringify(t_jo));
-				if(typeof t_jo.score !== "undefined" && t_jo.score !== null && typeof t_jo.children !== "undefined" && t_jo.children !== null && t_jo.children.length) // both defined and not null
-					drawTTUButton(t_jo.score+"", t_jo.children.length+"");
-				else if (typeof t_jo.score !== "undefined" && t_jo.score !== null && (typeof t_jo.children === "undefined" || t_jo.children === null)) // score defined, but children undefined or null
-					drawTTUButton(t_jo.score+"", "0");
-				else
-					drawHButton("gray", "white"); // t_jo defined and not null, but has neither a defined+nonnull .score nor a defined+nonnull .children
-			}
-			else
-				drawHButton("gray", "white"); 
+			//alert("drawing red finishThread t_jo undefined or null");
+			drawHButton("gray", "blue");
 		}
+		else if(typeof t_jo !== "undefined" && t_jo !== null)
+		{
+			if(typeof t_jo.score !== "undefined" && t_jo.score !== null && typeof t_jo.children !== "undefined" && t_jo.children !== null && t_jo.children.length) // both defined and not null
+				drawTTUButton(t_jo.score+"", t_jo.children.length+"");
+			else if (typeof t_jo.score !== "undefined" && t_jo.score !== null && (typeof t_jo.children === "undefined" || t_jo.children === null)) // score defined, but children undefined or null
+				drawTTUButton(t_jo.score+"", "0");
+			else
+				drawHButton("gray", "white"); // t_jo defined and not null, but has neither a defined+nonnull .score nor a defined+nonnull .children
+		}
+		else
+			drawHButton("gray", "white"); 		
 	}
 	else
 	{
@@ -802,7 +770,7 @@ function getUser(retrieve_asynchronously)
             		if(data.user_jo) 
             		{ 	
             			user_jo = data.user_jo;
-            			doButtonGen();
+            			drawNotificationNumber();
             		}    
             	}
             	else
