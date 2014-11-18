@@ -1,7 +1,7 @@
 {
     "name": "Hackbook",
     "short_name": "Hackbook",
-    "version": "0.212",
+    "version": "0.213",
     "manifest_version": 2,
     "description": "Follow/unfollow, news feed and notifications for Hacker News",
     "icons": {
@@ -58,6 +58,6 @@
         "tabs",
         "https://news.ycombinator.com/*"
     ],
-    "web_accessible_resources": ["receiver.html", "images/*", "js/jquery-1.8.2.min.js"],
+    "web_accessible_resources": ["images/*"],
     "content_security_policy": "script-src 'self'; object-src 'self'"
 }
