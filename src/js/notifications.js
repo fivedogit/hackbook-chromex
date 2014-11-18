@@ -146,8 +146,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         			if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2")
         			{
         				var act_html = "";
-        				act_html = act_html + "";
-        				//alert($("#container_div_" + notification_jo.id).css("background-color"));
+        				act_html = act_html + "<div style=\"padding-bottom:5px;\">";
+        				act_html = act_html + "	<table style=\"width:100%\">";
+        				act_html = act_html + "		<tr>";
+        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
+        				act_html = act_html + agoIt(notification_jo.action_msfe);
+        				act_html = act_html + "			</td>";
+        				act_html = act_html + "			<td style=\"text-align:right\"></td>"; // no parent for types 0/1/2
+        				act_html = act_html + "		</tr>";
+        				act_html = act_html + "	</table>";
+        				act_html = act_html + "</div>";
         				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)")
         					act_html = act_html + "<span style=\"color:#ff6600\">&#9733;</span>";
         				else
@@ -158,16 +166,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         					act_html = act_html + " Your karma increased by " + notification_jo.karma_change + " points";
         				else if(notification_jo.type === "2" )
         					act_html = act_html + " Your karma decreased by " + notification_jo.karma_change + " points";
-        				$("#header_div_" + notification_id).html(act_html);
-        				$("#header_div_" + notification_id).show();
+        				$("#header_div_" + notification_jo.id).html(act_html);
+        				$("#header_div_" + notification_jo.id).show();
         				if(notification_jo.type === "0")
-        					$("#comment_div_" + notification_id).hide();
+        					$("#comment_div_" + notification_jo.id).hide();
         				else if(notification_jo.type === "1" || notification_jo.type === "2")
         				{
         					var c_html = "";
         					c_html = c_html + "View your <a href=\"#\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> or <a href=\"#\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>";
         					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, the HN API doesn't allow Hackbook to know which of your items was up or downvoted.</div>";
-        					$("#comment_div_" + notification_id).html(c_html);
+        					$("#comment_div_" + notification_jo.id).html(c_html);
         					$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
         						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
         					});
@@ -189,96 +197,153 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        success: function (data, status) {
             		        	if(tabmode === feedmode) // as these come in, only process them if we're still on the notifications tab
             		    		{	
-            		        		if(notification_jo.type*1 >= 3 && notification_jo.type*1 <= 9)
-            		        		{	
-            		        			if(notification_jo.hn_root_id !== null)
-            		        			{
-            		        				var act_html = "";
-            		        				act_html = act_html + "";
-            		        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)") // hacky
-            		        					act_html = act_html + "<span style=\"color:#ff6600\">&#9733;</span>";
-            		        				else
-            		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span>";
-            		        				if(notification_jo.type === "3")
-            		        					act_html = act_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was upvoted ";
-            		        				else if(notification_jo.type === "4")
-            		        					act_html = act_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was downvoted ";
-            		        				else if(notification_jo.type === "7" || notification_jo.type === "9")
-            		        					act_html = act_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>";
-            		        				else if(notification_jo.type === "5")
-            		        					act_html = act_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">replied</a> to you";
-            		        				else if(notification_jo.type === "6")
-            		        					act_html = act_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a> on your story";
-            		        				else if(notification_jo.type === "8")
-            		        					act_html = act_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a>";
-            		        				act_html = act_html + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
-            		        				act_html = act_html + " (<a href=\"#\" id=\"comments_link_" + notification_jo.id + "\">comments</a>)";
-            		        				$("#header_div_" + notification_id).html(act_html);
-            		        				$("#header_div_" + notification_id).show();
-            		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_id + ".json", 
-            		            		        dataType: 'json', async: true, 
-            		            		        success: function (data, status) {
-            		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && data.type === "story")
-            		            		        	{
-            		            		        		$("#title_link_" + notification_jo.id).text(data.title);
-            		            		        		$("#title_link_" + notification_jo.id).click(function(){
-            		            		        			if(typeof data.url !== "undefined" && data.url !== null && data.url !== "")
-            		            		        				chrome.tabs.create({url: data.url});
-            		            		        			else
-            		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-            		            		        		});
-            		            		        		$("#comments_link_" + notification_jo.id).click(function(){
-            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-            		            		        		});
-            		            		        		$("#item_link_" + notification_jo.id).click(function(){
-            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + notification_jo.hn_target_id});
-            		            		        		});
-            		            		        	}
-            		            		        	else if (data === null)
-            		            		        	{
-            		            		        		$("#title_link_" + notification_jo.id).text("deleted");
-            		            		        		$("#title_link_" + notification_jo.id).css("font-style", "italic");
-            		            		        		$("#comments_link_" + notification_jo.id).text("deleted");
-            		            		        		$("#comments_link_" + notification_jo.id).css("font-style", "italic");
-            		            		        	}	
-            		            		        },
-            		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_id);
-            		            		        	console.log(textStatus, errorThrown);
-            		            		        }
-            		            			});	
-            		        			}
-            		        			else
-            		        				$("#header_div_" + notification_id).html("<a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> wrote a comment at \"Unknown title\" (comments)");
-            		        			
-            		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
-            		        			{
-            		        				$("#comment_div_" + notification_id).html(replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=") + "<br><br><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a>");
-            		        				$("a").click(function(event) {
-                		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-                		        				{
-                		        					event.processed = true;
-                		        					var c = $(this).attr('class');
-                		        					if(c == "newtab")
-                		        					{
-                		        						var h = $(this).attr('href');
-                		        						doNewtabClick(h);
-                		        					}
-                		        				}
-                		        			});
-            		        			}
-            		        			else if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
-            		        			{
-            		        				$("#comment_div_" + notification_id).text("(deleted)");
-            		        				$("#comment_div_" + notification_id).css("font-style", "italic");
-            		        			}	
-            		        			else
-            		        				$("#comment_div_" + notification_id).hide();
-            		        		}
+            		        		if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
+        		        			{
+            		        			// this has been deleted. Skip.
+            		        			$("#container_div_" + notification_jo.id).hide();
+        		        			}
             		        		else
-            		        		{
-            		        			$("#comment_div_" + notification_id).html("Unknown item type");
-            		        		}	
+            		        		{	
+            		        			if(notification_jo.type*1 >= 3 && notification_jo.type*1 <= 9)
+                		        		{	
+                		        			if(notification_jo.hn_root_id !== null)
+                		        			{
+                		        				var act_html = "";
+                		        				act_html = act_html + "	<table style=\"width:100%\">";
+                		        				act_html = act_html + "		<tr>";
+                		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
+                		        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)") // hacky
+                		        					act_html = act_html + "<span style=\"color:#ff6600\">&#9733;</span> ";
+                		        				else
+                		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
+                		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
+                		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
+                		        				act_html = act_html + "			</td>";
+                		        				act_html = act_html + "			<td style=\"text-align:right\">";
+                		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id +"\" style=\"font-size:10px;color:#828282;\">show parent</a>"; 
+                		        				act_html = act_html + "			</td>";
+                		        				act_html = act_html + "		</tr>";
+                		        				act_html = act_html + "	</table>";
+                		        				$("#header_div_" + notification_jo.id).html(act_html);
+                		        				$("#header_div_" + notification_jo.id).show();
+                		        				                		        				
+                		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_id + ".json", 
+                		            		        dataType: 'json', async: true, 
+                		            		        success: function (data, status) {
+                		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && data.type === "story")
+                		            		        	{
+                		            		        		$("#title_link_" + notification_jo.id).text(data.title);
+                		            		        		$("#title_link_" + notification_jo.id).click(function(){
+                		            		        			if(typeof data.url !== "undefined" && data.url !== null && data.url !== "")
+                		            		        				chrome.tabs.create({url: data.url});
+                		            		        			else
+                		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
+                		            		        		});
+                		            		        		$("#comments_link_" + notification_jo.id).click(function(){
+                		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
+                		            		        		});
+                		            		        		$("#item_link_" + notification_jo.id).click(function(){
+                		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + notification_jo.hn_target_id});
+                		            		        		});
+                		            		        	}
+                		            		        	else if (data === null)
+                		            		        	{
+                		            		        		$("#title_link_" + notification_jo.id).text("deleted");
+                		            		        		$("#title_link_" + notification_jo.id).css("font-style", "italic");
+                		            		        		$("#comments_link_" + notification_jo.id).text("deleted");
+                		            		        		$("#comments_link_" + notification_jo.id).css("font-style", "italic");
+                		            		        	}	
+                		            		        },
+                		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_jo.id);
+                		            		        	console.log(textStatus, errorThrown);
+                		            		        }
+                		            			});
+                		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+                		        				{	
+                		        					$("#show_parent_link_" + notification_jo.id).click(function(){
+                		        						$("#comment_div_" + notification_jo.id).css("padding-left", "25px");
+                    		        					$("#parent_div_" + notification_jo.id).html("<img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\">");
+                    		        					$("#parent_div_" + notification_jo.id).show();
+                    		        					$("#show_parent_link_" + notification_jo.id).text("");
+                    		        					$.ajax({ 
+                    		        						type: 'GET', 
+                    		        						url: "https://hacker-news.firebaseio.com/v0/item/" + data.parent + ".json", 
+                    		        				        dataType: 'json', 
+                    		        				        async: true, 
+                    		        				        success: function (data, status) {
+                    		        				        	if(data.type === "comment")
+                    		        				        	{
+                    		        				        		var p_html = "<div style=\"padding-bottom:5px;font-weight:bold\">" + data.by + " <a class=\"newtab\" href=\"https://news.ycombinator.com/item?id=" + data.id + "\">commented</a>:</div>";
+                    		        				        		p_html = p_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
+                    		        				        		$("#parent_div_" + notification_jo.id).html(p_html);
+                    		        				        		$("a").click(function(event) {
+                                        		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+                                        		        				{
+                                        		        					event.processed = true;
+                                        		        					var c = $(this).attr('class');
+                                        		        					if(c == "newtab")
+                                        		        					{
+                                        		        						var h = $(this).attr('href');
+                                        		        						doNewtabClick(h);
+                                        		        					}
+                                        		        				}
+                                        		        			});
+                    		        				        	}
+                    		        				        	else if(data.type === "story")
+                    		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this story.</div>");
+                    		        				        },
+                    		        				        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        		            		        	console.log(textStatus, errorThrown);
+                        		            		        }
+                        		            			});
+                    		        					return false;
+                    		        				});
+                		        				}
+                		        			}
+                		        			else
+                		        				$("#header_div_" + notification_jo.id).html("<a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> wrote a comment at \"Unknown title\"");
+                		        			
+                		        			var c_html = "<div style=\"padding-bottom:5px;font-weight:bold\">";
+                		        			if(notification_jo.type === "3")
+            		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was upvoted ";
+            		        				else if(notification_jo.type === "4")
+            		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was downvoted ";
+            		        				else if(notification_jo.type === "7" || notification_jo.type === "9")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>.";
+            		        				else if(notification_jo.type === "5")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">replied</a> to you:";
+            		        				else if(notification_jo.type === "6")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a> on your story:";
+            		        				else if(notification_jo.type === "8")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a>:";
+                		        			c_html = c_html + "</div>";
+                		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
+                		        			{
+                		        				c_html = c_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=") + "<br><br><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a>";
+                		        				$("#comment_div_" + notification_jo.id).html(c_html);
+                		        				$("a").click(function(event) {
+                    		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+                    		        				{
+                    		        					event.processed = true;
+                    		        					var c = $(this).attr('class');
+                    		        					if(c == "newtab")
+                    		        					{
+                    		        						var h = $(this).attr('href');
+                    		        						doNewtabClick(h);
+                    		        					}
+                    		        				}
+                    		        			});
+                		        			}
+                		        			else
+                		        				$("#comment_div_" + notification_jo.id).html(c_html);
+                		        		}
+                		        		else
+                		        		{
+                		        			$("#comment_div_" + notification_jo.id).html("Unknown item type");
+                		        		}	
+        		        			}
             		        		
             		        		$("#screenname_link_" + notification_jo.id).click({value:notification_jo.triggerer}, function(event){
         		        				chrome.tabs.create({url: "https://news.ycombinator.com/user?id=" + event.data.value});
@@ -290,7 +355,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        	}	
             		        },
             		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            		        	$("#comment_div_" + notification_id).text("Unable to retrieve HN comment. (ajax)");
+            		        	$("#comment_div_" + notification_jo.id).text("Unable to retrieve HN comment. (ajax)");
             		        	console.log(textStatus, errorThrown);
             		        }
             			});	
