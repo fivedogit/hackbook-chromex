@@ -611,26 +611,19 @@ function drawTTUButton(top, bottom) {
  // Specify a 2d drawing context.
  var context = canvas.getContext("2d");
  
- var top_fg = "white";
+ var top_fg = "black"; // assume the top-color is light since HN's top wording is black and it's unlikely users would choose dark on dark for their topcolor
  var bottom_fg = "white";
  var top_bg = "#ff6600";
  if(user_jo && typeof user_jo.hn_topcolor !== "undefined" && user_jo.hn_topcolor !== null)
- {
-	 top_bg = user_jo.hn_topcolor;
-	 var r0 = parseInt(top_bg.substring(0,2),16);
-	 var g0 = parseInt(top_bg.substring(2,4),16);
-	 var b0 = parseInt(top_bg.substring(4,6),16);
-	 top_bg = "#" + top_bg;
-	 if(r0*1 + g0*1 + b0*1 > 384) // if the user's topcolor is light, make the foreground dark
-		 top_fg = "black";
-	 else						  // else vice versa
-		 top_fg = "white";
- }
+	 top_bg = "#" + user_jo.hn_topcolor;
  var bottom_bg = "black";
 
  context.fillStyle = top_bg;
- context.fillRect (0, 0, 19, 8); 
- context.fillStyle = bottom_bg;
+ context.fillRect (0, 0, 19, 8);
+ if (bottom === "NOTIFICATION") // if this is a NOTIFICATION, fill the whole alert with topcolor
+	 context.fillStyle = top_bg;
+ else
+	 context.fillStyle = bottom_bg;
  context.fillRect (0, 8, 19, 19); 
  var imageData = context.getImageData(0, 0, 19, 19);
  var pix = imageData.data;
