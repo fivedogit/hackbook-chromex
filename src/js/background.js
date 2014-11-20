@@ -55,9 +55,9 @@ chrome.runtime.onMessage.addListener(
 	  else if(request.method == "getCounts") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
 		  if(user_jo && typeof user_jo.notification_count !== "undefined" && user_jo.notification_count !== null && typeof user_jo.newsfeed_count !== "undefined" && user_jo.newsfeed_count !== null)
-			  sendResponse({notification_count: user_jo.notification_count, newsfeed_count: user_jo.newsfeed_count});
+			  sendResponse({no: user_jo.notification_count, nf: user_jo.newsfeed_count});
 		  else
-			  sendResponse({notification_count: null, newsfeed_count: null});
+			  sendResponse({no: 0, nf: 0});
 	  } 
 	  else if(request.method == "sendRedirect") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
@@ -394,7 +394,6 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 			currentURL = tab.url;
 			currentId = tab.id;
 			currentHostname = getStandardizedHostname(currentURL);
-			//drawTTUButton("   ", "   "); // clear out anything that's there now
 			doButtonGen();
 		}
 	});
@@ -416,7 +415,7 @@ function drawNotificationNumber()
 		if(n === 0)
 			return false; // we didn't draw anything
 
-		drawTTUButton(n, "NOTIFICATION");
+		drawHButton("#" + user_jo.hn_topcolor, "black", null, n);
 		return true; // we drew a notification number
 	}	
 }
@@ -690,29 +689,54 @@ function drawTTUButton(top, bottom) {
  });
 }
 
-function drawHButton(background_color, h_color, aframe) {
+function drawHButton(background_color, h_color, aframe, number)
+{
+	var x_offset = 0;
+	if(typeof number === "undefined")
+		number = 0; // signifying nothing to be shown.
+	else if(number > 0)
+		x_offset = -3;
 	
 	 // Get the canvas element.
-	 var canvas = document.getElementById("button_canvas");
+	var canvas = document.getElementById("button_canvas");
 	 // Specify a 2d drawing context.
-	 var context = canvas.getContext("2d");
+	var context = canvas.getContext("2d");
 	// var bg_r = "0x7e";
 	// var bg_g = "0x7e";
 	// var bg_b = "0x7e";
-	 if(devel == true)
-		 background_color = "black";
-	 context.fillStyle = background_color;
-	 context.fillRect (0, 0, 19, 19); 
+	
+	
+		
+	context.fillStyle = background_color;
+	context.fillRect (0, 0, 19, 19); 
 	 
-	 context.fillStyle = h_color;
-	 context.fillRect (7, 4, 3, 15); // H left
-	 context.fillRect (8, 3, 2, 1); // H left tilt top
-	 context.fillRect (13, 10, 3, 9); // H right
-	 context.fillRect (11, 8, 3, 1); // H crossbar top row 1
-	 context.fillRect (10, 9, 5, 2); // H crossbar bottom rows 2/3
+	context.fillStyle = "gray";
+	context.fillRect (0, 0, 19, 1);
+	context.fillRect (18, 0, 1, 19);
+	context.fillRect (0, 18, 19, 1);
+	context.fillRect (0, 0, 1, 19);
+	
+	context.fillStyle = h_color;
+	context.fillRect (7+x_offset, 4, 3, 15); // H left
+	context.fillRect (8+x_offset, 3, 2, 1); // H left tilt top
+	context.fillRect (13+x_offset, 10, 3, 9); // H right
+	context.fillRect (11+x_offset, 8, 3, 1); // H crossbar top row 1
+	context.fillRect (10+x_offset, 9, 5, 2); // H crossbar bottom rows 2/3
 	 
 	 if(aframe !== null)
 		 context.fillRect ((aframe*2+-1), (aframe*-.6+7), 2, 2);
+	 
+	 if(number > 0)
+	 {
+		 if(number > 9)
+			 number = 9;
+		 context.fillStyle = "black";
+		 context.font = "8px Silkscreen";
+		 if(number === 1)
+			 context.fillText(number+"",12,7);
+		 else
+			 context.fillText(number+"",11,7);
+	 }	 
 	 
 	 var imageData = context.getImageData(0, 0, 19, 19);
 	 var pix = imageData.data;
@@ -729,7 +753,7 @@ function drawHButton(background_color, h_color, aframe) {
 	 		pix[i+3] = a; // i+3 is alpha (the fourth element)
 	 	}
 	 }
-
+	 
 	 chrome.browserAction.setIcon({
 	   imageData: imageData
 	 });
