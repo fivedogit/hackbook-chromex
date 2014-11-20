@@ -146,42 +146,40 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         			if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2")
         			{
         				var act_html = "";
-        				act_html = act_html + "<div style=\"padding-bottom:5px;\">";
         				act_html = act_html + "	<table style=\"width:100%\">";
         				act_html = act_html + "		<tr>";
         				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-        				act_html = act_html + agoIt(notification_jo.action_msfe);
+        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)") // hacky
+        					act_html = act_html + "				<span style=\"color:#" + bg.user_jo.hn_topcolor + "\">&#9733;</span> ";
+        				else
+        					act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
+        				act_html = act_html + agoIt(notification_jo.action_msfe) + " ";
         				act_html = act_html + "			</td>";
-        				act_html = act_html + "			<td style=\"text-align:right\"></td>"; // no parent for types 0/1/2
         				act_html = act_html + "		</tr>";
         				act_html = act_html + "	</table>";
-        				act_html = act_html + "</div>";
-        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)")
-        					act_html = act_html + "<span style=\"color:#" + bg.user_jo.hn_topcolor + "\">&#9733;</span>";
-        				else
-        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span>";
-        				if(notification_jo.type === "0")
-        					act_html = act_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you";
-        				else if(notification_jo.type === "1" )
-        					act_html = act_html + " Your karma increased by " + notification_jo.karma_change + " points";
-        				else if(notification_jo.type === "2" )
-        					act_html = act_html + " Your karma decreased by " + notification_jo.karma_change + " points";
         				$("#header_div_" + notification_jo.id).html(act_html);
         				$("#header_div_" + notification_jo.id).show();
-        				if(notification_jo.type === "0")
-        					$("#comment_div_" + notification_jo.id).hide();
-        				else if(notification_jo.type === "1" || notification_jo.type === "2")
+        				if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2")
         				{
         					var c_html = "";
-        					c_html = c_html + "View your <a href=\"#\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> or <a href=\"#\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>";
-        					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, the HN API doesn't allow Hackbook to know which of your items was up or downvoted.</div>";
+        					if(notification_jo.type === "0")
+            					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
+            				else if(notification_jo.type === "1" )
+            					c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
+            				else if(notification_jo.type === "2" )
+            					c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
+        					if(notification_jo.type === "1" || notification_jo.type === "2")
+            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your items was up or downvoted. View your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> and <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>.</div>";
         					$("#comment_div_" + notification_jo.id).html(c_html);
-        					$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
-        						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
-        					});
-        					$("#view_your_submissions_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
-        						chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + event.data.value});
-        					});
+        					if(notification_jo.type === "1" || notification_jo.type === "2")
+            				{
+        						$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
+            						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
+            					});
+            					$("#view_your_submissions_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
+            						chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + event.data.value});
+            					});
+            				}
         				}
         				$("#screenname_link_" + notification_jo.id).click({value:notification_jo.triggerer}, function(event){
 	        				chrome.tabs.create({url: "https://news.ycombinator.com/user?id=" + event.data.value});

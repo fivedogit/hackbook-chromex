@@ -323,10 +323,9 @@ function resetNewsfeedCount() // error message always goes to utility_message_td
 	});
 }
 
-function followOrUnfollowUser(target_screenname, method) // which = "followUser" or "unfollowUser"
+function followOrUnfollowUser(target_screenname, method, msg_dom_id) // which = "followUser" or "unfollowUser"
 {
-	if(tabmode === "thread")
-		$("[id=follow_link_" + target_screenname + "]").text("processing");
+	$("[id=" + msg_dom_id + "]").text("processing...");
 	$.ajax({
 	    type: 'GET',
 	    url: endpoint,
@@ -345,32 +344,40 @@ function followOrUnfollowUser(target_screenname, method) // which = "followUser"
         		{
         			bg.user_jo = null;
         			updateLogstat();
-        			$("[id=follow_link_" + target_screenname + "]").text("login expired");
+        			$("[id=" + msg_dom_id + "]").text("login expired");
         		}
             	else
-            		$("[id=follow_link_" + target_screenname + "]").text(data.message);
+            	{
+            		$("[id=" + msg_dom_id + "]").text(data.message);
+            		if(tabmode === "profile")
+            		{
+            			setTimeout(function() {
+            				$("[id=" + msg_dom_id + "]").text("");
+            			},1500);
+            		}
+            	}
 	        }
 	        else if (data.response_status === "success")
 	        {
 	        	bg.getUser(true);
 	        	if(tabmode === "thread")
 	        	{
-	        		$("[id=follow_link_" + target_screenname + "]").unbind();
+	        		$("[id=" + msg_dom_id + "]").unbind();
 	        		if(method === "unfollowUser")
 	        		{
-	        			$("[id=follow_link_" + target_screenname + "]").text("follow");
-		        		$("[id=follow_link_" + target_screenname + "]").click({target_screenname: target_screenname}, function(event) { 
+	        			$("[id=" + msg_dom_id + "]").text("follow");
+		        		$("[id=" + msg_dom_id + "]").click({target_screenname: target_screenname}, function(event) { 
 		        			event.stopImmediatePropagation();
-		        			followOrUnfollowUser(event.data.target_screenname, "followUser");
+		        			followOrUnfollowUser(event.data.target_screenname, "followUser", msg_dom_id);
 			    			return false;
 			    		});
 	        		}	
 	        		else if(method === "followUser")
 	        		{	
-	        			$("[id=follow_link_" + target_screenname + "]").text("unfollow");
-		        		$("[id=follow_link_" + target_screenname + "]").click({target_screenname: target_screenname}, function(event) { 
+	        			$("[id=" + msg_dom_id + "]").text("unfollow");
+		        		$("[id=" + msg_dom_id + "]").click({target_screenname: target_screenname}, function(event) { 
 		        			event.stopImmediatePropagation();
-		        			followOrUnfollowUser(event.data.target_screenname, "unfollowUser");
+		        			followOrUnfollowUser(event.data.target_screenname, "unfollowUser", msg_dom_id);
 			    			return false;
 			    		});
 	        		}
@@ -385,7 +392,7 @@ function followOrUnfollowUser(target_screenname, method) // which = "followUser"
 	        }
 	    },
 	    error: function (XMLHttpRequest, textStatus, errorThrown) {
-	    	$("[id=follow_link_" + target_screenname + "]").text("AJAX error");
+	    	$("[id=" + msg_dom_id + "]").text("AJAX error");
 	        console.log(textStatus, errorThrown);
 	    }
 	});

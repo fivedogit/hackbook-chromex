@@ -185,8 +185,7 @@ function getProfile()
 				});
 				$("#unfollow_" + bg.user_jo.following[x] + "_link").click({value:bg.user_jo.following[x]}, function(event) {
 					$("#unfollow_" + event.data.value + "_link").unbind();
-					$("#unfollow_" + event.data.value + "_link").text("processing...");
-					followOrUnfollowUser(event.data.value, "unfollowUser");
+					followOrUnfollowUser(event.data.value, "unfollowUser", "unfollow_" + event.data.value + "_link");
 					return false;
 				});
 				x++;
@@ -201,8 +200,7 @@ function getProfile()
 		});
 		
 		$("#add_follow_go_button").click(function () {
-			followOrUnfollowUser($("#add_follow_input").val(), "followUser");
-			$("#add_follow_result_span").text("Processing...");
+			followOrUnfollowUser($("#add_follow_input").val(), "followUser", "add_follow_result_span");
 			return false;
 		});
 

@@ -127,7 +127,7 @@ function gotThread()
 				$("[id=follow_link_" + bg.t_jo.by + "]").text("follow");
 				$("[id=follow_link_" + bg.t_jo.by + "]").click({target_screenname: bg.t_jo.by}, function(event) { 
 					event.stopImmediatePropagation();
-					followOrUnfollowUser(event.data.target_screenname, "followUser");
+					followOrUnfollowUser(event.data.target_screenname, "followUser", "follow_link_" + event.data.target_screenname);
 					return false;
 				});
 			}
@@ -136,7 +136,7 @@ function gotThread()
 				$("[id=follow_link_" + bg.t_jo.by + "]").text("unfollow");
 				$("[id=follow_link_" + bg.t_jo.by + "]").click({target_screenname: bg.t_jo.by}, function(event) {
 					event.stopImmediatePropagation();
-					followOrUnfollowUser(event.data.target_screenname, "unfollowUser");
+					followOrUnfollowUser(event.data.target_screenname, "unfollowUser", "follow_link_" + event.data.target_screenname);
 					return false;
 				});
 			}
@@ -389,7 +389,7 @@ function writeComment(container_id, feeditem_jo, dom_id)
 		$("[id=follow_link_" + feeditem_jo.by + "]").text("follow");
     	$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) {
     		event.stopImmediatePropagation();
-    		followOrUnfollowUser(event.data.target_screenname, "followUser");
+    		followOrUnfollowUser(event.data.target_screenname, "followUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});
 	}
@@ -398,7 +398,7 @@ function writeComment(container_id, feeditem_jo, dom_id)
 		$("[id=follow_link_" + feeditem_jo.by + "]").text("unfollow");
 		$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) { 
 			event.stopImmediatePropagation();
-    		followOrUnfollowUser(event.data.target_screenname, "unfollowUser");
+    		followOrUnfollowUser(event.data.target_screenname, "unfollowUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});
 	}
