@@ -76,10 +76,10 @@ function getProfile()
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">notification mode: </td>";
 		main_div_string = main_div_string + "				<td colspan=2 style=\"text-align:left\">";
 		main_div_string = main_div_string + "				<select id=\"notificationmode_selector\">";
-		main_div_string = main_div_string + "					<option value=\"notifications_only\">notifications only</option>";
-		main_div_string = main_div_string + "					<option SELECTED value=\"newsfeed_and_notifications\">newsfeed and notifications</option>";
+		main_div_string = main_div_string + "					<option value=\"notifications_only\">my stuff only</option>";
+		main_div_string = main_div_string + "					<option SELECTED value=\"newsfeed_and_notifications\">newsfeed and my stuff</option>";
 		main_div_string = main_div_string + "				</select> ";
-		main_div_string = main_div_string + "				<a href=\"#\" id=\"notificationmode_explainer_link\">?</a> <span id=\"notificationmode_result_td\"></span>";
+		main_div_string = main_div_string + "				(<a href=\"#\" id=\"notificationmode_explainer_link\">?</a>) <span id=\"notificationmode_result_td\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"notificationmode_explainer_td\"></td>";
@@ -89,10 +89,16 @@ function getProfile()
 		main_div_string = main_div_string + "						<option SELECTED value=\"stealth\">stealth</option>";
 		main_div_string = main_div_string + "						<option value=\"notifications_only\">notifications only</option>";
 		main_div_string = main_div_string + "					</select> ";
-		main_div_string = main_div_string + "					<a href=\"#\" id=\"urlcheckingmode_explainer_link\">?</a> <span id=\"urlcheckingmode_result_span\"></span>";
+		main_div_string = main_div_string + "					(<a href=\"#\" id=\"urlcheckingmode_explainer_link\">?</a>) <span id=\"urlcheckingmode_result_span\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"urlcheckingmode_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">karma pool TTL: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\"></span></form>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";
+		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left;color:#828282;width:25%;vertical-align:top\">";
 		main_div_string = main_div_string + "					following:";
@@ -192,7 +198,48 @@ function getProfile()
 			}	
 		}
 			
-	    	
+		$("#karma_pool_ttl_input").val(bg.user_jo.karma_pool_ttl_mins);
+		$("#karma_pool_ttl_form").submit( function (event) {
+			$("#karma_pool_result_span").text("processing...");
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "karma_pool_ttl",
+		            value: $("#karma_pool_ttl_input").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#karma_pool_result_span").text(data.message);
+		        		$("#karma_pool_ttl_input").val("");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		$("#karma_pool_result_span").text("updated");
+		        	}
+		        	setTimeout(function(){$("#karma_pool_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#karma_pool_result_span").text("ajax error");
+		        	setTimeout(function(){$("#karma_pool_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+			return false;
+		});
 		
 	 	$("#add_follow_link").click(function () {
 			$("#add_follow_tr").show();
@@ -378,6 +425,10 @@ function getProfile()
 		$("#urlcheckingmode_explainer_link").click(function () {
 			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
 					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
+		});
+		 
+		$("#karma_pool_explainer_link").click(function () {
+			$("#karma_pool_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">To prevent +1/-1 karma spam, Hackbook pools your karma changes together every X minutes.</div>");
 		});
 	}
 }

@@ -708,6 +708,8 @@ function drawHButton(background_color, h_color, aframe, number)
 	
 		
 	context.fillStyle = background_color;
+	if(devel === true)
+		context.fillStyle = "pink";
 	context.fillRect (0, 0, 19, 19); 
 	 
 	context.fillStyle = "gray";
