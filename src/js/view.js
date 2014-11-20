@@ -5,7 +5,10 @@
 	 bs = bs + "<center>";
 	 bs = bs + "<table style=\"background-color:#f6f6ef;width:600px;padding:6px;border:0px solid black;border-spacing:0px\">";
 	 bs = bs + "	<tr>";
-	 bs = bs + "		<td id=\"header_td\" bgcolor=\"#ff6600\">";
+	 if(bg.user_jo && typeof bg.user_jo.hn_topcolor !== "undefined" && bg.user_jo.hn_topcolor !== null)
+		 bs = bs + "		<td id=\"header_td\" bgcolor=\"#" + bg.user_jo.hn_topcolor + "\">";
+	 else
+		 bs = bs + "		<td id=\"header_td\" bgcolor=\"#ff6600\">";
 	 bs = bs + "			<table style=\"padding:2px\">";
 	 bs = bs + "				<tr>";
 	 bs = bs + "					<td style=\"width:18px;padding-right:4px;\">";
@@ -31,7 +34,10 @@
 	 bs = bs + "					</td></tr>"; // csf = comment submission form
 	 bs = bs + "			</table>";
 	 bs = bs + "			<div id=\"main_div\" style=\"width:100%;background-color:white\"><div style=\"padding:20px;\"></div></div>";
-	 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#ff6600;height:3px;\"></div>";
+	 if(bg.user_jo && typeof bg.user_jo.hn_topcolor !== "undefined" && bg.user_jo.hn_topcolor !== null)
+		 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#" + bg.user_jo.hn_topcolor + ";height:3px;\"></div>";
+	 else
+		 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#ff6600;height:3px;\"></div>";
 	 bs = bs + "			<div id=\"footer_div\" style=\"background-color:white;height:15px;font-size:11px;text-align:center;padding:10px 0px 3px 0px;color:#828282;font-style:italic\">";
 	 bs = bs + "				Please send bug reports, feature requests and general thoughts to c@mailcyr.us.";
 	 bs = bs + "			</div>";
@@ -80,19 +86,18 @@ function updateLogstat()
 	if (bg.user_jo !== null)
 	{
 		var hstr = "";
-		hstr = hstr + "<a href=\"#\" id=\"profile_link\">" + bg.user_jo.screenname + "</a> ";
-		hstr = hstr + "(" + bg.user_jo.hn_karma + ") | <a href=\"#\" id=\"logout_link\">logout</a>";
+		hstr = hstr + "<a href=\"#\" id=\"profile_link\">&#9881; " + bg.user_jo.screenname + "</a> ";
+		hstr = hstr + "(" + bg.user_jo.hn_karma + ")";// <a href=\"#\" id=\"gear_link\">&#9881;</a>";
 		$("#logstat_td").html(hstr); //OK
-		$("#profile_link").click( function (event) { event.preventDefault();
+		$("#profile_link").click( function () { 
 			viewProfile();
-			//chrome.tabs.create({url: "https://news.ycombinator.com/user?id=" + bg.user_jo.screenname});
+			return false;
 		});
-		$("#logout_link").click( function (event) { event.preventDefault();
-			chrome.runtime.sendMessage({method: "logout"}, function(response) {
-			  bg.user_jo = null;
-			  doOverlay();
-			});
-		});
+		
+		/*$("#gear_link").click( function () { 
+			viewProfile();
+			return false;
+		});*/
 		
 		$("#notification_count_span").text(bg.user_jo.notification_count);
 		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);

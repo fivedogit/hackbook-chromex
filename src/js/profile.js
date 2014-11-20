@@ -62,7 +62,7 @@ function getProfile()
     	main_div_string = main_div_string + "<tr>";
     	main_div_string = main_div_string + "	<td>";
     	main_div_string = main_div_string + "		<table style=\"width:auto;border-collapse:separate;border-spacing:4px\">";
-    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">user:</td><td style=\"text-align:left\"><span id=\"profile_page_screenname_span\"></span></td><td></td></tr>";
+    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">user:</td><td style=\"text-align:left\"><span id=\"profile_page_screenname_span\"></span> - <a href=\"#\" id=\"logout_link\">logout</a></td><td></td></tr>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">karma:</td><td style=\"text-align:left\" id=\"profile_page_karma_td\"></td><td></td></tr>";
     /*	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">HN \"new\" header: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
@@ -159,6 +159,13 @@ function getProfile()
 		
 		$("#profile_page_comments_link").click( function (event) {	event.preventDefault();
 			chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + bg.user_jo.screenname});
+		});
+		
+		$("#logout_link").click( function (event) { event.preventDefault();
+			chrome.runtime.sendMessage({method: "logout"}, function(response) {
+				bg.user_jo = null;
+				doOverlay();
+			});
 		});
 		
 		if(typeof bg.user_jo.following === "undefined" || bg.user_jo.following === null)

@@ -154,7 +154,8 @@ chrome.runtime.onMessage.addListener(
 					url: endpoint, 
 					data: {
 						method: "verifyHNUser",
-			            screenname: request.detected_screenname
+			            screenname: request.detected_screenname,
+			            topcolor: request.topcolor
 			        },
 			        dataType: 'json', 
 			        timeout: 33000,
@@ -613,6 +614,18 @@ function drawTTUButton(top, bottom) {
  var top_fg = "white";
  var bottom_fg = "white";
  var top_bg = "#ff6600";
+ if(user_jo && typeof user_jo.hn_topcolor !== "undefined" && user_jo.hn_topcolor !== null)
+ {
+	 top_bg = user_jo.hn_topcolor;
+	 var r0 = parseInt(top_bg.substring(0,2),16);
+	 var g0 = parseInt(top_bg.substring(2,4),16);
+	 var b0 = parseInt(top_bg.substring(4,6),16);
+	 top_bg = "#" + top_bg;
+	 if(r0*1 + g0*1 + b0*1 > 384) // if the user's topcolor is light, make the foreground dark
+		 top_fg = "black";
+	 else						  // else vice versa
+		 top_fg = "white";
+ }
  var bottom_bg = "black";
 
  context.fillStyle = top_bg;

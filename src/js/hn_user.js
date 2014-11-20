@@ -94,12 +94,24 @@ chrome.runtime.sendMessage({
             }, function(response) {});
         });
     } else if (response.hn_login_step === 2) {
+    	
+    	function rgb2hex(rgb) {
+    	    if (/^[0-9A-F]{6}$/i.test(rgb)) return rgb;
+
+    	    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    	    function hex(x) {
+    	        return ("0" + parseInt(x).toString(16)).slice(-2);
+    	    }
+    	    return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    	}
+    	
         var elements_of_pagetop_class = $(".pagetop");
         var kids = null;
         var kid = null;
         var href = null;
         var detected_screenname = null;
         var hn_screenname_found = false;
+        var topcolor = "ff6600";
         if (elements_of_pagetop_class.length && elements_of_pagetop_class.length > 0) {
             for (var x = 0; x < elements_of_pagetop_class.length && hn_screenname_found === false; x++) {
                 if ($(elements_of_pagetop_class[x]).children()) {
@@ -112,6 +124,9 @@ chrome.runtime.sendMessage({
                                 var i = href.indexOf("id=") + 3;
                                 detected_screenname = href.substr(i);
                                 hn_screenname_found = true;
+                                topcolor = rgb2hex($(kid).parent().parent().parent().parent().parent().parent().css("background-color"));
+                                if(!(/^[0-9A-F]{6}$/i.test(topcolor))) // if the topcolor isn't formatted correctly, just reset to default orange.
+                                	topcolor = "ff6600";
                             }
                         }
                     }
@@ -130,7 +145,7 @@ chrome.runtime.sendMessage({
         h = h + "</tr>";
         $('textarea[name=about]').parent().prepend(h);
         var tabid = 0;
-        chrome.runtime.sendMessage({method: "tellBackendToCheckUser", detected_screenname: detected_screenname}, function(response) {
+        chrome.runtime.sendMessage({method: "tellBackendToCheckUser", detected_screenname: detected_screenname, topcolor: topcolor}, function(response) {
 
         });
         
