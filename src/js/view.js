@@ -86,18 +86,18 @@ function updateLogstat()
 	if (bg.user_jo !== null)
 	{
 		var hstr = "";
-		hstr = hstr + "<a href=\"#\" id=\"profile_link\">&#9881; " + bg.user_jo.screenname + "</a> ";
-		hstr = hstr + "(" + bg.user_jo.hn_karma + ")";// <a href=\"#\" id=\"gear_link\">&#9881;</a>";
+		hstr = hstr + "<a href=\"#\" id=\"profile_link\">" + bg.user_jo.screenname + "</a> ";
+		hstr = hstr + "(" + bg.user_jo.hn_karma + ") <a href=\"#\" id=\"gear_link\"><img style=\"width:16px;height:16px;vertical-align:middle\" src=\"images/gear_64.png\"></a>";// <a href=\"#\" id=\"gear_link\">&#9881;</a>";
 		$("#logstat_td").html(hstr); //OK
 		$("#profile_link").click( function () { 
 			viewProfile();
 			return false;
 		});
 		
-		/*$("#gear_link").click( function () { 
+		$("#gear_link").click( function () { 
 			viewProfile();
 			return false;
-		});*/
+		});
 		
 		$("#notification_count_span").text(bg.user_jo.notification_count);
 		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);

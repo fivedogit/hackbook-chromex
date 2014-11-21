@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		    				return b - a;
 		    			});
 		        		
-		        		while(x < most_followed_users.length/2)
+		        		while(x < most_followed_users.length/3)
 		        		{
 		        			if(most_followed_users[x].id === "fivedogit")
 		        				us = us + "<span style=\"color:#ff6600\">&#9733;</span>";
@@ -137,6 +137,20 @@ document.addEventListener('DOMContentLoaded', function () {
 		        			x++;
 		        		}	
 		        		$("#most_followed_left_td").html(us);
+		        		us="";
+		        		while(x < most_followed_users.length/3*2)
+		        		{
+		        			if(most_followed_users[x].id === "fivedogit")
+		        				us = us + "<span style=\"color:#ff6600\">&#9733;</span>";
+		        			us = us + "<a href=\"https://news.ycombinator.com/user?id=" + most_followed_users[x].id + "\" style=\"font-weight:bold\">" + most_followed_users[x].id + "</a>" +  " (<span id=\"follower_count_span_" + most_followed_users[x].id + "\">" + most_followed_users[x].num_followers + "</span>) - <a href=\"#\" id=\"follow_user_link_" + most_followed_users[x].id + "\">";
+		        			if(typeof following === "undefined" || following === null || following.indexOf(most_followed_users[x].id) === -1)
+		        				us = us + "follow";
+		        			else
+		        				us = us + "unfollow";
+		        			us = us + "</a><br>";
+		        			x++;
+		        		}	
+		        		$("#most_followed_center_td").html(us);
 		        		us="";
 		        		while(x < most_followed_users.length)
 		        		{
@@ -193,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		            $("#most_followed_td").html("error: ajax");
 		        }
 			});
-		  
+		  /*
 			$("#random_users_td").html("<img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\">");
 			$.ajax({ 
 				type: 'GET', 
@@ -281,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		            console.log(textStatus, errorThrown);
 		            $("#random_users_td").html("error: ajax");
 		        }
-			});
+			});*/
 		});
 	});
 });
