@@ -117,28 +117,20 @@ chrome.runtime.onMessage.addListener(
 			        success: function (data, status) {
 			        	if(data.response_status === "success")
 			        	{	
-			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: data.token}, function(response) {});
-			        		});
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: data.token, manual_or_automatic: request.manual_or_automatic}, function(response) {});
 			        	}
 			        	else if(data.response_status === "error")
 			        	{
-			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
-			        		});
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
 			        	}	
 			        	else
 			        	{
-			        		chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-			        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
-			        		});
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
 			        	}
 			        },
 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
-			            console.log(textStatus, errorThrown);
-			            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
-		        		});
+			        	console.log("getHNAuthToken ajax error");
+			            chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
 			        }
 			  });
 		  });
@@ -184,10 +176,7 @@ chrome.runtime.onMessage.addListener(
 			        },
 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
 			        	console.log("verifyHNUser ajax error");
-			            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-		        			chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
-		        		});
-			            console.log(textStatus, errorThrown);
+			        	chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 			        }
 				});
 		  });
@@ -351,6 +340,20 @@ chrome.runtime.onMessage.addListener(
 	  {
 		  likedislikemode = request.likedislikemode
 		  sendResponse({message: "success"});
+	  }
+	  else if(request.method === "getHideEmbeddedCounts") // don't need a getter for this as the receiver page can get this directly from cookie
+	  {
+		  if(user_jo)
+			  sendResponse({hide_embedded_counts: user_jo.hide_embedded_counts});
+		  else
+			  sendResponse({hide_embedded_counts: false});
+	  }
+	  else if(request.method === "getHideInlineFollow") // don't need a getter for this as the receiver page can get this directly from cookie
+	  {
+		  if(user_jo)
+			  sendResponse({hide_inline_follow: user_jo.hide_inline_follow});
+		  else
+			  sendResponse({hide_inline_follow: false});
 	  }
   });
 

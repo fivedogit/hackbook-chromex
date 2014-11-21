@@ -64,15 +64,6 @@ function getProfile()
     	main_div_string = main_div_string + "		<table style=\"width:auto;border-collapse:separate;border-spacing:4px\">";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">user:</td><td style=\"text-align:left\"><span id=\"profile_page_screenname_span\"></span> - <a href=\"#\" id=\"logout_link\">logout</a></td><td></td></tr>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">karma:</td><td style=\"text-align:left\" id=\"profile_page_karma_td\"></td><td></td></tr>";
-    /*	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">HN \"new\" header: </td>";
-		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
-		main_div_string = main_div_string + "					<select id=\"hide_hn_new_selector\">";
-		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
-		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
-		main_div_string = main_div_string + "					</select> ";
-		main_div_string = main_div_string + "					<span id=\"hide_hn_new_result_span\"></span>";
-		main_div_string = main_div_string + "				</td>";
-		main_div_string = main_div_string + "			</tr>";*/
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">notification mode: </td>";
 		main_div_string = main_div_string + "				<td colspan=2 style=\"text-align:left\">";
 		main_div_string = main_div_string + "				<select id=\"notificationmode_selector\">";
@@ -89,13 +80,13 @@ function getProfile()
 		main_div_string = main_div_string + "						<option SELECTED value=\"stealth\">stealth</option>";
 		main_div_string = main_div_string + "						<option value=\"notifications_only\">notifications only</option>";
 		main_div_string = main_div_string + "					</select> ";
-		main_div_string = main_div_string + "					(<a href=\"#\" id=\"urlcheckingmode_explainer_link\">?</a>) <span id=\"urlcheckingmode_result_span\"></span>";
+		main_div_string = main_div_string + "					(<a href=\"#\" id=\"urlcheckingmode_explainer_link\">?</a>) <span id=\"urlcheckingmode_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"urlcheckingmode_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">karma pool TTL: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
-		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\"></span></form>";
+		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span></form>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
@@ -119,10 +110,10 @@ function getProfile()
 			main_div_string = main_div_string + "<a href=\"#\" id=\"unfollow_" + bg.user_jo.following[x] + "_link\">" + bg.user_jo.following[x] + "</a>";
 		}
 		main_div_string = main_div_string + "				</td>";
-		main_div_string = main_div_string + "						</tr>";
+		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "						<tr id=\"add_follow_tr\" style=\"display:none\">";
 		main_div_string = main_div_string + "							<td style=\"text-align:left;color:#828282;width:25%\"></td>";
-		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;color:#828282;\"><input type=text style=\"width:150px\" id=\"add_follow_input\"> <input id=\"add_follow_go_button\" type=\"button\" value=\"add\"> <span id=\"add_follow_result_span\"></span></td>";
+		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;color:#828282;\"><input type=text style=\"width:150px\" id=\"add_follow_input\"> <input id=\"add_follow_go_button\" type=\"button\" value=\"add\"> <span id=\"add_follow_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span></td>";
 		main_div_string = main_div_string + "						</tr>";
 		main_div_string = main_div_string + "						<tr><td style=\"text-align:left;color:#828282\">followers: </td>";
 		main_div_string = main_div_string + "							<td colspan=2 style=\"text-align:left;font-size:11px\">";
@@ -140,7 +131,27 @@ function getProfile()
 		}
 		main_div_string = main_div_string + "							</td>";
 		main_div_string = main_div_string + "						</tr>";
-		main_div_string = main_div_string + "						</tr>";
+		main_div_string = main_div_string + "			<tr><td colspan=3 style=\"text-align:left;color:black;padding-top:10px\">HN page modifications<span style=\"padding-left:8px;font-style:italic;color:#828282;font-size:10px\">hide these if Hackbook conflicts with other extensions</span></td></tr>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">embedded counts: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<select id=\"hide_embedded_counts_selector\">";
+		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
+		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
+		main_div_string = main_div_string + "					</select> (<a href=\"#\" id=\"hide_embedded_counts_explainer_link\">?</a>)";
+		main_div_string = main_div_string + "					<span id=\"hide_embedded_counts_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";
+		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"hide_embedded_counts_explainer_td\"></td>";
+    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">inline follow: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<select id=\"hide_inline_follow_selector\">";
+		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
+		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
+		main_div_string = main_div_string + "					</select> ";
+		main_div_string = main_div_string + "					<span id=\"hide_inline_follow_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";
+		main_div_string = main_div_string + "			<tr><td colspan=3 style=\"padding-top:10px\"></td></tr>"; // spacer row 
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\"></td><td style=\"text-align:left;\"><a href=\"#\" id=\"profile_page_savedstories_link\">saved stories</a></td><td></td></tr>";
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\"></td><td style=\"text-align:left;\"><a href=\"#\" id=\"profile_page_submissions_link\">submissions</a></td><td></td></tr>";
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\"></td><td style=\"text-align:left;\"><a href=\"#\" id=\"profile_page_comments_link\">comments</a></td><td></td></tr>";
@@ -227,6 +238,7 @@ function getProfile()
 		        	}
 		        	else
 		        	{
+		        		bg.user_jo.karma_pool_ttl_mins = $("#karma_pool_ttl_input").val()*1;
 		        		$("#karma_pool_result_span").text("updated");
 		        	}
 		        	setTimeout(function(){$("#karma_pool_result_span").text("");},3000);
@@ -256,24 +268,12 @@ function getProfile()
 			return false;
 		});
 		
-		/*
-		if (bg.user_jo.hide_hn_new === false)
-			$("#hide_hn_new_selector").val("show");
-		else if (bg.user_jo.hide_hn_new === true)
-			$("#hide_hn_new_selector").val("hide");*/
+		if (bg.user_jo.hide_embedded_counts === false)
+			$("#hide_embedded_counts_selector").val("show");
+		else if (bg.user_jo.hide_embedded_counts === true)
+			$("#hide_embedded_counts_selector").val("hide");
 		
-		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
-			$("#notificationmode_selector").val("newsfeed_and_notifications");
-		else if (bg.user_jo.notification_mode === "notifications_only")
-			$("#notificationmode_selector").val("notifications_only");
-		
-		if (bg.user_jo.url_checking_mode === "stealth")
-			$("#urlcheckingmode_selector").val("stealth");
-		else if (bg.user_jo.url_checking_mode === "notifications_only")
-			$("#urlcheckingmode_selector").val("notifications_only");
-		
-		/*
-		$("#hide_hn_new_selector").change(function () {
+		$("#hide_embedded_counts_selector").change(function () {
 			$.ajax({
 				type: 'GET',
 				url: endpoint,
@@ -281,20 +281,20 @@ function getProfile()
 		            method: "setUserPreference",
 		            screenname: screenname,          
 		            this_access_token: this_access_token,  
-		            which: "hide_hn_new",
-		            value: $("#hide_hn_new_selector").val() 
+		            which: "hide_embedded_counts",
+		            value: $("#hide_embedded_counts_selector").val() 
 		        },
 		        dataType: 'json',
 		        async: true,
 		        success: function (data, status) {
 		        	if (data.response_status === "error")
 		        	{
-		        		$("#hide_hn_new_result_span").text(data.message);
+		        		$("#hide_embedded_counts_result_span").text(data.message);
 		        		// on error, reset the selector to the bg.user_jo value
-		        		if (bg.user_jo.hide_hn_new === false)
-		        			$("#hide_hn_new_selector").val("show");
-		        		else if (bg.user_jo.hide_hn_new === true)
-		        			$("#hide_hn_new_selector").val("hide");
+		        		if (bg.user_jo.hide_embedded_counts === false)
+		        			$("#hide_embedded_counts_selector").val("show");
+		        		else if (bg.user_jo.hide_embedded_counts === true)
+		        			$("#hide_embedded_counts_selector").val("hide");
 		        		displayMessage(data.message, "red", "utility_message_td");
 		            	if(data.error_code && data.error_code === "0000")
 		        		{
@@ -305,24 +305,83 @@ function getProfile()
 		        	}
 		        	else
 		        	{
-		        		if($("#hide_hn_new_selector").val() === "show")
-		        			bg.user_jo.hide_hn_new = false;
-		        		else if($("#hide_hn_new_selector").val() === "hide")
-		        			bg.user_jo.hide_hn_new = true;
-		        		$("#hide_hn_new_result_span").text("updated");
+		        		if($("#hide_embedded_counts_selector").val() === "show")
+		        			bg.user_jo.hide_embedded_counts = false;
+		        		else if($("#hide_embedded_counts_selector").val() === "hide")
+		        			bg.user_jo.hide_embedded_counts = true;
+		        		$("#hide_embedded_counts_result_span").text("Updated. Refresh HN pages.");
 		        		bg.doButtonGen();
 		        	}
-		        	setTimeout(function(){$("#hide_hn_new_result_span").text("");},3000);
+		        	setTimeout(function(){$("#hide_embedded_counts_result_span").text("");},3000);
 		        }
 		        ,
 		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		        	$("#hide_hn_new_result_span").text("ajax error");
-		        	setTimeout(function(){$("#hide_hn_new_result_span").text("");},3000);
+		        	$("#hide_embedded_counts_result_span").text("ajax error");
+		        	setTimeout(function(){$("#hide_embedded_counts_result_span").text("");},3000);
 		            console.log(textStatus, errorThrown);
 		        }
 			});
-		});*/
+		});
 		
+		if (bg.user_jo.hide_inline_follow === false)
+			$("#hide_inline_follow_selector").val("show");
+		else if (bg.user_jo.hide_inline_follow === true)
+			$("#hide_inline_follow_selector").val("hide");
+		
+		$("#hide_inline_follow_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "hide_inline_follow",
+		            value: $("#hide_inline_follow_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#hide_inline_follow_result_span").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.hide_inline_follow === false)
+		        			$("#hide_inline_follow_selector").val("show");
+		        		else if (bg.user_jo.hide_inline_follow === true)
+		        			$("#hide_inline_follow_selector").val("hide");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		if($("#hide_inline_follow_selector").val() === "show")
+		        			bg.user_jo.hide_inline_follow = false;
+		        		else if($("#hide_inline_follow_selector").val() === "hide")
+		        			bg.user_jo.hide_inline_follow = true;
+		        		$("#hide_inline_follow_result_span").text("Updated. Refresh HN pages.");
+		        		bg.doButtonGen();
+		        	}
+		        	setTimeout(function(){$("#hide_inline_follow_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#hide_inline_follow_result_span").text("ajax error");
+		        	setTimeout(function(){$("#hide_inline_follow_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});
+		
+		if (bg.user_jo.url_checking_mode === "stealth")
+			$("#urlcheckingmode_selector").val("stealth");
+		else if (bg.user_jo.url_checking_mode === "notifications_only")
+			$("#urlcheckingmode_selector").val("notifications_only");
 		
 		$("#urlcheckingmode_selector").change(function () {
 			$.ajax({
@@ -371,6 +430,11 @@ function getProfile()
 			});
 		});
 		
+		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
+			$("#notificationmode_selector").val("newsfeed_and_notifications");
+		else if (bg.user_jo.notification_mode === "notifications_only")
+			$("#notificationmode_selector").val("notifications_only");
+		
 		$("#notificationmode_selector").change(function () {
 			$.ajax({
 				type: 'GET',
@@ -417,7 +481,7 @@ function getProfile()
 		        }
 			});
 		});
-	    
+
 		$("#notificationmode_explainer_link").click(function () {
 			$("#notificationmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">When do you want the button to indicate new activity? Only when you have new notifications (for your stuff) or also when you have new news feed items (i.e. when those you're following do stuff)?</div>");
 		});
@@ -429,6 +493,10 @@ function getProfile()
 		 
 		$("#karma_pool_explainer_link").click(function () {
 			$("#karma_pool_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">To prevent +1/-1 karma spam, Hackbook pools your karma changes together every X minutes.</div>");
+		});
+		
+		$("#hide_embedded_counts_explainer_link").click(function () {
+			$("#hide_embedded_counts_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">This is the \"feed (x) | notif. (y)\" thing at the top of every HN page.</div>");
 		});
 	}
 }

@@ -4,7 +4,7 @@
 //alert("calling getHNLoginStep");
 chrome.runtime.sendMessage({method: "getHNLoginStep"}, function(response) { 
 	//alert("inside hn.js script, received response.hn_login_step=" + response.hn_login_step);
-	if(response.hn_login_step === 1)
+	if(response.hn_login_step === 0.5)
 	{
 		var elements_of_pagetop_class = $(".pagetop");
 		var kids = null;

@@ -106,7 +106,7 @@ function updateLogstat()
 	{
 		$("#logstat_td").html("<a href=\"#\" id=\"login_link\">login</a>"); //OK
 		$("#login_link").click( function (event) {	event.preventDefault();
-			bg.hn_login_step = 1;
+			bg.hn_login_step = 0.5;
 			bg.hn_existing_about = "";
 			chrome.tabs.create({url: "https://news.ycombinator.com/login"});
 		});
