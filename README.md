@@ -2,13 +2,17 @@
 
 Hackbook lets you follow HN users and creates a news feed of their activity, like Facebook but more like Twitter. It'll also notify you when your stuff is replied to, others follow you and your karma changes.
 
-![Hackbook Explainer](https://s3.amazonaws.com/cyrus-general/main_explainer.png)
+![overview screenshot](https://s3.amazonaws.com/cyrus-general/main_explainer.png)
 
-![Hackbook thread screenshot](https://s3.amazonaws.com/cyrus-general/thread.png)
+![feed screenshot](https://s3.amazonaws.com/cyrus-general/feed.png)
 
-![Hackbook notifications screenshot](https://s3.amazonaws.com/cyrus-general/notifications.png)
+![notifications screenshot](https://s3.amazonaws.com/cyrus-general/personal_notifications.png)
 
-![Hackbook inline follow screenshot](https://s3.amazonaws.com/cyrus-general/inline_follow.png)
+![thread screenshot](https://s3.amazonaws.com/cyrus-general/comment_overlay_640x400.png)
+
+![settings screenshot](https://s3.amazonaws.com/cyrus-general/settings_tab.png)
+
+![inline follow screenshot](https://s3.amazonaws.com/cyrus-general/inline_follow.png)
 
 ---------------
 

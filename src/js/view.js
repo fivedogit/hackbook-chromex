@@ -39,7 +39,7 @@
 	 else
 		 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#ff6600;height:3px;\"></div>";
 	 bs = bs + "			<div id=\"footer_div\" style=\"background-color:white;height:15px;font-size:11px;text-align:center;padding:10px 0px 3px 0px;color:#828282;font-style:italic\">";
-	 bs = bs + "				Please send bug reports, feature requests and general thoughts to c@mailcyr.us.";
+	 bs = bs + "				Version " + chrome.app.getDetails().version + ". Please send bug reports, feature requests and feedback to c@mailcyr.us.";
 	 bs = bs + "			</div>";
 	 bs = bs + "		</td>";
 	 bs = bs + "	</tr>";
