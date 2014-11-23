@@ -505,7 +505,7 @@ function getThread(url_at_function_call, updatebutton)
 	        	        	{
 	        	        		threadstatus=0;
 	        	        		//alert("drawing red HN ajax");
-	        	        		drawHButton("gray", "darkred");
+	        	        		drawHButton("gray", "red");
 	        	        	}
 	        	            console.log(textStatus, errorThrown);
 	        	        }
@@ -516,7 +516,7 @@ function getThread(url_at_function_call, updatebutton)
         	{
         		console.log("searchForHNItem response_status=error");
         		//alert("drawing red searchForHNItem response_status error");
-        		drawHButton("gray", "midnightblue");
+        		drawHButton("gray", "red");
         	}	
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -584,7 +584,7 @@ function finishThread(url_at_function_call)
 		if(typeof t_jo === "undefined" || t_jo === null)
 		{
 			//alert("drawing red finishThread t_jo undefined or null");
-			drawHButton("gray", "blue");
+			drawHButton("gray", "darkred");
 		}
 		else if(typeof t_jo !== "undefined" && t_jo !== null)
 		{
