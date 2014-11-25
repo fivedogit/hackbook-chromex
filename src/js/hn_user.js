@@ -268,7 +268,7 @@ chrome.runtime.sendMessage({
             method: "setHNLoginStep",
             hn_login_step: 0
         }, function(response) {
-            alert("There was an error logging you in to Hackbook.\nSometimes there is latency from the HN API.\nMy apologies. Please try again one more time.");
+            
         });
     }
 });

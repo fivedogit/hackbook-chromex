@@ -16,11 +16,19 @@ function doNotificationsTab()
 	var h = "<table style=\"width:100%\">";
 	h = h + "	<tr>";
 	h = h + "		<td style=\"text-align:left\">Notifications</td>";
-	h = h + "		<td style=\"text-align:right\"><a href=\"#\" id=\"5star_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Rate Hackbook &#9733;&#9733;&#9733;&#9733;&#9733;</a></td>";
+	var randomint = Math.floor(Math.random() * 3);
+	// on 0, do nothing.
+	if (randomint === 1)
+		h = h + "		<td style=\"text-align:right\"><img src=\"images/twitter-bird_32x27.png\" style=\"width:18px;height:16px;vertical-align:middle\"> <a href=\"#\" id=\"twitter_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Share Hackbook on Twitter</a></td>";
+	else if (randomint === 2)
+		h = h + "		<td style=\"text-align:right\"><img src=\"images/chrome.jpg\" style=\"width:16px;height:16px;vertical-align:middle\"> <a href=\"#\" id=\"5star_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Rate Hackbook &#9733;&#9733;&#9733;&#9733;&#9733;</a></td>";
 	h = h + "	</tr>";
 	h = h + "</table>";
 	
 	$("#utility_header_td").html(h);
+	$("#twitter_link").click( function (event) {	event.preventDefault();
+		chrome.tabs.create({url: "https://twitter.com/intent/tweet?text=Your%20tweet%20text%20goes%20here.&url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fhackbook%2Flogdfcelflpgcbfebibbeajmhpofckjh"});
+	});
 	$("#5star_link").click( function (event) {	event.preventDefault();
 		chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hackbook/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
 	});
@@ -165,19 +173,20 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         					if(notification_jo.type === "0")
             					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
             				else if(notification_jo.type === "1" )
+            				{	
             					c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
+        						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
+            				}
             				else if(notification_jo.type === "2" )
+            				{
             					c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
-        					if(notification_jo.type === "1" || notification_jo.type === "2")
-            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your items was up or downvoted. View your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> and <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a>.</div>";
+            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
+            				}
         					$("#comment_div_" + notification_jo.id).html(c_html);
         					if(notification_jo.type === "1" || notification_jo.type === "2")
             				{
         						$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
             						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
-            					});
-            					$("#view_your_submissions_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
-            						chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + event.data.value});
             					});
             				}
         				}

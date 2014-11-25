@@ -166,16 +166,19 @@ chrome.runtime.onMessage.addListener(
 			        	else if(data.response_status === "error")
 			        	{
 			        		console.log("verifyHNUser ajax success but r_s error");
-			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
+			        		alert(data.message);
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false, alert_msg: data.message}, function(response) {});
 			        	}	
 			        	else
 			        	{
 			        		console.log("verifyHNUser ajax success but r_s neither success nor error");
+			        		alert("verifyHNUser ajax success but r_s neither success nor error");
 			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 			        	}
 			        },
 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
 			        	console.log("verifyHNUser ajax error");
+			        	alert("There was an error logging you in to Hackbook.\nSometimes there is latency from the HN API.\nMy apologies. Please try again one more time.");
 			        	chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 			        }
 				});

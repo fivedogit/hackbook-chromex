@@ -102,6 +102,7 @@ function getProfile()
 		else
 		{
 			var x = 0;
+			bg.user_jo.following.sort();
 			while(x < bg.user_jo.following.length - 1)
 			{
 				main_div_string = main_div_string + "<a href=\"#\" id=\"unfollow_" + bg.user_jo.following[x] + "_link\">" + bg.user_jo.following[x] + "</a>, ";
@@ -122,6 +123,7 @@ function getProfile()
 		else
 		{
 			var x = 0;
+			bg.user_jo.followers.sort();
 			while(x < bg.user_jo.followers.length - 1)
 			{
 				main_div_string = main_div_string + bg.user_jo.followers[x] + ", ";
