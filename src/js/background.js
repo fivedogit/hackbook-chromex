@@ -409,19 +409,20 @@ function drawNotificationNumber()
 {
 	if(user_jo)
 	{
-		var n = 0;
-		if(user_jo.url_checking_mode === "notifications_only")
-			n = user_jo.notification_count;
+		if(user_jo.notification_mode === "notifications_only")
+		{
+			if(user_jo.notification_count === 0)
+				return false; // we didn't draw anything
+			else
+				drawHButton("#" + user_jo.hn_topcolor, "black", null, user_jo.notification_count, 0);
+		}
 		else 
-			n = user_jo.notification_count + user_jo.newsfeed_count;
-		
-		if(n>9)
-			n = 9;
-		
-		if(n === 0)
-			return false; // we didn't draw anything
-
-		drawHButton("#" + user_jo.hn_topcolor, "black", null, n);
+		{
+			if(user_jo.newsfeed_count === 0 && user_jo.notification_count === 0)
+				return false; // we didn't draw anything
+			else 
+				drawHButton("#" + user_jo.hn_topcolor, "black", null, user_jo.newsfeed_count, user_jo.notification_count);
+		}
 		return true; // we drew a notification number
 	}	
 }
@@ -695,15 +696,40 @@ function drawTTUButton(top, bottom) {
  });
 }
 
-function drawHButton(background_color, h_color, aframe, number)
+function drawHButton(background_color, h_color, aframe, leftnumber, rightnumber)
 {
 	var x_offset = 0;
-	if(typeof number === "undefined")
-		number = 0; // signifying nothing to be shown.
-	else if(number > 0)
+	var left = 0;
+	var right = 0;
+	if(typeof leftnumber === "undefined" && typeof rightnumber === "undefined")
+	{
+		left = 0; // signifying nothing to be shown.
+		right = 0;
+	}
+	else if((typeof leftnumber === "undefined" || leftnumber === null || leftnumber === 0) && typeof rightnumber !== "undefined" && rightnumber !== null && rightnumber > 0) // left is 0, right > 0
+	{
+		left = 0; // signifying nothing to be shown.
+		right = rightnumber;
 		x_offset = -3;
-	
-	 // Get the canvas element.
+	}	
+	else if((typeof rightnumber === "undefined" || rightnumber === null || rightnumber === 0) && typeof leftnumber !== "undefined" && leftnumber !== null && leftnumber > 0) // right is 0, left > 0
+	{
+		left = leftnumber;
+		right = 0;
+		x_offset = 1;
+	}
+	else if(typeof leftnumber !== "undefined" && leftnumber !== null && leftnumber > 0 && typeof rightnumber !== "undefined" && rightnumber !== null && rightnumber > 0) // both are > 0
+	{
+		left = leftnumber;
+		right = rightnumber;
+		x_offset = 1;
+	}	
+	else
+	{
+		// something bizarre. This clause may even be dead code. In any case, do nothing.
+	}
+
+	// Get the canvas element.
 	var canvas = document.getElementById("button_canvas");
 	 // Specify a 2d drawing context.
 	var context = canvas.getContext("2d");
@@ -734,16 +760,28 @@ function drawHButton(background_color, h_color, aframe, number)
 	 if(aframe !== null)
 		 context.fillRect ((aframe*2+-1), (aframe*-.6+7), 2, 2);
 	 
-	 if(number > 0)
+	 if(leftnumber > 0)
 	 {
-		 if(number > 9)
-			 number = 9;
+		 if(leftnumber > 9)
+			 leftnumber = 9;
 		 context.fillStyle = "black";
 		 context.font = "8px Silkscreen";
-		 if(number === 1)
-			 context.fillText(number+"",12,7);
+		 if(leftnumber === 1)
+			 context.fillText(leftnumber+"",2,7);
 		 else
-			 context.fillText(number+"",11,7);
+			 context.fillText(leftnumber+"",1,7);
+	 }	 
+	 
+	 if(rightnumber > 0)
+	 {
+		 if(rightnumber > 9)
+			 rightnumber = 9;
+		 context.fillStyle = "black";
+		 context.font = "8px Silkscreen";
+		 if(rightnumber === 1)
+			 context.fillText(rightnumber+"",13,7);
+		 else
+			 context.fillText(rightnumber+"",12,7);
 	 }	 
 	 
 	 var imageData = context.getImageData(0, 0, 19, 19);
