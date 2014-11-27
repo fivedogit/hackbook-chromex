@@ -217,9 +217,11 @@ function writeUnifiedCommentContainer(id_to_use, dom_id, action) // main_div_HAS
 	unified = unified + "	<div style=\"padding:6px\">";
 	unified = unified + "		<div id=\"message_div_" + id_to_use + "\" class=\"container_message\"></div>"; // hidden unless message displayed
 	unified = unified + "		<div id=\"header_div_" + id_to_use + "\" class=\"container_header\"></div>"; // hidden except for notification page
-	unified = unified + "		<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
-	unified = unified + "		<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
-	unified = unified + "		<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
+	unified = unified + "		<div id=\"parent_comment_child_container_div_" + id_to_use + "\">";
+	unified = unified + "			<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
+	unified = unified + "			<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
+	unified = unified + "			<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
+	unified = unified + "		</div>";
 	unified = unified + "	</div>";
 	unified = unified + "</div>";
 	if(action === "append")

@@ -213,7 +213,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        		{	
             		        			if(notification_jo.type*1 >= 3 && notification_jo.type*1 <= 9)
                 		        		{	
-                		        			if(notification_jo.hn_root_id !== null)
+                		        			if(notification_jo.hn_root_story_id !== null)
                 		        			{
                 		        				var act_html = "";
                 		        				act_html = act_html + "	<table style=\"width:100%\">";
@@ -228,14 +228,17 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        				act_html = act_html + "			</td>";
                 		        				act_html = act_html + "			<td style=\"text-align:right\">";
                 		        				if(typeof data.parent !== "undefined" && data.parent !== null)
-                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id +"\" style=\"font-size:10px;color:#828282;\">show parent</a>"; 
+                		        				{
+                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">show parent</a>";
+                		        					//act_html = act_html + "				<a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">show branch</a>";
+                		        				}
                 		        				act_html = act_html + "			</td>";
                 		        				act_html = act_html + "		</tr>";
                 		        				act_html = act_html + "	</table>";
                 		        				$("#header_div_" + notification_jo.id).html(act_html);
                 		        				$("#header_div_" + notification_jo.id).show();
                 		        				                		        				
-                		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_id + ".json", 
+                		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
                 		            		        dataType: 'json', async: true, 
                 		            		        success: function (data, status) {
                 		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && data.type === "story")
@@ -307,6 +310,11 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                         		            			});
                     		        					return false;
                     		        				});
+                		        					
+                		        					//$("#show_branch_link_" + notification_jo.id).click({id:notification_jo.id},function(event){
+                		        					//	alert("click");
+                		        					//	$("#parent_comment_child_container_div_" + event.data.id).html("preparing this item for full branch");                		        						
+                		        					//});
                 		        				}
                 		        			}
                 		        			else
