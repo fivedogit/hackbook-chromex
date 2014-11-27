@@ -188,10 +188,12 @@ function prepareGetAndPopulateThreadPortion()
 			var tempcomments = bg.t_jo.children;
 			bg.t_jo.children = tempcomments;
 			// loop the comment id list and doThreadItem for each one
+			var random_id = "";
 			for(var x=beginindex; x < endindex && x < bg.t_jo.children.length; x++) 
 			{
-				writeUnifiedCommentContainer(bg.t_jo.children[x], "main_div", "append");
-				doThreadItem(bg.t_jo.children[x], "comment_div_" + bg.t_jo.children[x]);
+				random_id = makeid(8);
+				writeUnifiedCommentContainer(random_id, "main_div", "append");
+				doThreadItem(bg.t_jo.children[x], "comment_div_" + bg.t_jo.children[x], "message_div_" + bg.t_jo.children[x], 0);
 			}
 			// if we've reached the end, show "end of comments" message
 			if (x < bg.t_jo.children.length)
@@ -209,31 +211,31 @@ function prepareGetAndPopulateThreadPortion()
 }
 
 
-function writeUnifiedCommentContainer(id_to_use, dom_id, action) // main_div_HASH, append/before/after/prepend, etc
+function writeUnifiedCommentContainer(id_to_use, anchor_dom_id, anchor_action) // main_div_HASH, append/before/after/prepend, etc
 {
-	var unified = "";
-	unified = unified + "<div id=\"container_div_" + id_to_use + "\" style=\"background-color:white;\">";
-	unified = unified + "	<div id=\"horizline_div_" + id_to_use + "\" class=\"complete-horiz-line-div\"></div>"; // always shown
-	unified = unified + "	<div style=\"padding:6px\">";
-	unified = unified + "		<div id=\"message_div_" + id_to_use + "\" class=\"container_message\"></div>"; // hidden unless message displayed
-	unified = unified + "		<div id=\"header_div_" + id_to_use + "\" class=\"container_header\"></div>"; // hidden except for notification page
-	unified = unified + "		<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
-	unified = unified + "		<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
-	unified = unified + "		<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
-	unified = unified + "	</div>";
-	unified = unified + "</div>";
-	if(action === "append")
-		$("#" + dom_id).append(unified);
-	else if(action === "prepend")
-		$("#" + dom_id).prepend(unified);
-	else if(action === "after")
-		$("#" + dom_id).after(unified);
-	else if(action === "before")
-		$("#" + dom_id).before(unified);
+	var s = "";
+	s = s + "<div id=\"container_div_" + id_to_use + "\">";
+	s = s + "	<div id=\"horizline_div_" + id_to_use + "\" class=\"complete-horiz-line-div\"></div>"; // always shown
+	s = s + "	<div style=\"padding:6px\">";
+	s = s + "		<div id=\"message_div_" + id_to_use + "\" class=\"container_message\"></div>"; // hidden unless message displayed
+	s = s + "		<div id=\"header_div_" + id_to_use + "\" class=\"container_header\"></div>"; // hidden except for notification page
+	s = s + "		<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
+	s = s + "		<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
+	s = s + "		<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
+	s = s + "	</div>";
+	s = s + "</div>";
+	if(anchor_action === "append")
+		$("#" + anchor_dom_id).append(s);
+	else if(anchor_action === "prepend")
+		$("#" + anchor_dom_id).prepend(s);
+	else if(anchor_action === "after")
+		$("#" + anchor_dom_id).after(s);
+	else if(anchor_action === "before")
+		$("#" + anchor_dom_id).before(s);
 }
 
 
-function doThreadItem(comment_id, dom_id, level) // type = "initialpop", "newcomment", "reply"
+function doThreadItem(comment_id, comment_dom_id, message_dom_id, level) // type = "initialpop", "newcomment", "reply"
 {
 	if(typeof level === "undefined" || level === null)
 		level = 0;
@@ -249,15 +251,15 @@ function doThreadItem(comment_id, dom_id, level) // type = "initialpop", "newcom
     		//{	
         		if(data.deleted && data.deleted === true)
         		{
-        			$("#comment_div_" + comment_id).css("font-style", "italic");
-        			$("#comment_div_" + comment_id).css("color", "#828282");
-        			$("#comment_div_" + comment_id).text("(deleted)");
+        			$("#" + comment_dom_id).css("font-style", "italic");
+        			$("#" + comment_dom_id).css("color", "#828282");
+        			$("#" + comment_dom_id).text("(deleted)");
         		}	
         		else
         		{	
-        			writeComment(container_id, data, dom_id); // l/d, delete button (if user authored it), reply
+        			writeComment(data, comment_dom_id); // l/d, delete button (if user authored it), reply
         			var indent = (level) * 30;
-        			$("#" + dom_id).css("margin-left", indent + "px");
+        			$("#" + comment_dom_id).css("margin-left", indent + "px");
     			}
         		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
         		{
@@ -265,19 +267,19 @@ function doThreadItem(comment_id, dom_id, level) // type = "initialpop", "newcom
 		    		{  
 						//alert("going to write a reply comment_id=" + data.kids[y] + " and parent_id=" + comment_id);
 						writeUnifiedCommentContainer(data.kids[y], "container_div_" + comment_id, "after");
-						doThreadItem(data.kids[y], "comment_div_" + data.kids[y], (level+1));
+						doThreadItem(data.kids[y], "comment_div_" + data.kids[y], "message_div_" + data.kids[y], (level+1));
 		    		}
         		}
     		//}
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	displayMessage("Unable to retrieve HN comment. (ajax)", "red", "message_div_" + comment_id);
+        	displayMessage("Unable to retrieve HN comment. (ajax)", "red", message_dom_id);
         	console.log(textStatus, errorThrown);
         }
 	});	
 }		
 
-function writeComment(container_id, feeditem_jo, dom_id)
+function writeComment(feeditem_jo, comment_dom_id)
 {
 	var comment_id = feeditem_jo.id; 
 		
@@ -338,7 +340,7 @@ function writeComment(container_id, feeditem_jo, dom_id)
 	tempstr = tempstr + "	</tr>";
   	tempstr = tempstr + "</table>"
   	
-	$("#" + dom_id).html(tempstr);//OK
+	$("#" + comment_dom_id).html(tempstr);//OK
 	
   	$("[id=screenname_link_" + comment_id + "]").text(feeditem_jo.by);
   	$("[id=time_ago_span_" + comment_id + "]").text(agoIt(feeditem_jo.time*1000));

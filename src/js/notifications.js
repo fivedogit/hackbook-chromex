@@ -327,7 +327,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        					{	
                 		        						$("#show_branch_link_" + notification_jo.id).click({notification_jo:notification_jo},function(event){
                 		        							$("#parent_and_branch_td_" + notification_jo.id).html("");
-                		        							$("#container_div_" + event.data.notification_jo.id).css("background-color", "#fffed6");
+                		        							$("#container_div_" + event.data.notification_jo.id).wrap("<div id=\"wrapper_div_" + event.data.notification_jo.id + "\" style=\"background-color:#fffed6\"></div>");
                 		        							$("#container_div_" + event.data.notification_jo.id).attr("id", "container_div_" + event.data.notification_jo.hn_root_comment_id);
                 		        							$("#horizline_div_" + event.data.notification_jo.id).attr("id", "horizline_div_" + event.data.notification_jo.hn_root_comment_id);
                 		        							$("#message_div_" + event.data.notification_jo.id).attr("id", "message_div_" + event.data.notification_jo.hn_root_comment_id);
@@ -338,7 +338,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        							$("#comment_div_" + event.data.notification_jo.id).attr("id", "comment_div_" + event.data.notification_jo.hn_root_comment_id);
                 		        							$("#comment_div_" + event.data.notification_jo.hn_root_comment_id).html("<div style=\"text-align:center;padding:20px\"><img src=\"images/ajaxSnake.gif\"></div>");
                 		        							$("#child_div_" + event.data.notification_jo.id).attr("id", "child_div_" + event.data.notification_jo.hn_root_comment_id);
-                		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, "comment_div_" + event.data.notification_jo.hn_root_comment_id, 0);
+                		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, "comment_div_" + event.data.notification_jo.hn_root_comment_id, "message_div_" + event.data.notification_jo.hn_root_comment_id, 0);
                 		        							return false;
                 		        						});
                 		        					}
