@@ -217,11 +217,9 @@ function writeUnifiedCommentContainer(id_to_use, dom_id, action) // main_div_HAS
 	unified = unified + "	<div style=\"padding:6px\">";
 	unified = unified + "		<div id=\"message_div_" + id_to_use + "\" class=\"container_message\"></div>"; // hidden unless message displayed
 	unified = unified + "		<div id=\"header_div_" + id_to_use + "\" class=\"container_header\"></div>"; // hidden except for notification page
-	unified = unified + "		<div id=\"parent_comment_child_container_div_" + id_to_use + "\">";
-	unified = unified + "			<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
-	unified = unified + "			<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
-	unified = unified + "			<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
-	unified = unified + "		</div>";
+	unified = unified + "		<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
+	unified = unified + "		<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
+	unified = unified + "		<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
 	unified = unified + "	</div>";
 	unified = unified + "</div>";
 	if(action === "append")
@@ -240,15 +238,15 @@ function doThreadItem(comment_id, dom_id, level) // type = "initialpop", "newcom
 	if(typeof level === "undefined" || level === null)
 		level = 0;
 	var container_id = comment_id;
-
 	$.ajax({ 
 		type: 'GET', 
 		url: "https://hacker-news.firebaseio.com/v0/item/" + comment_id + ".json", 
         dataType: 'json', 
         async: true, 
         success: function (data, status) {
-        	if(tabmode === "thread") // as these come in, only process them if we're still on the thread tab
-    		{	
+        	// I think it's ok to leave this commented out since no other tabs are going to have these divs to target. Notification and feed tabs will have divs with notification ids
+        	//if(tabmode === "thread") // as these come in, only process them if we're still on the thread tab 
+    		//{	
         		if(data.deleted && data.deleted === true)
         		{
         			$("#comment_div_" + comment_id).css("font-style", "italic");
@@ -270,7 +268,7 @@ function doThreadItem(comment_id, dom_id, level) // type = "initialpop", "newcom
 						doThreadItem(data.kids[y], "comment_div_" + data.kids[y], (level+1));
 		    		}
         		}
-    		}
+    		//}
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
         	displayMessage("Unable to retrieve HN comment. (ajax)", "red", "message_div_" + comment_id);
@@ -390,7 +388,6 @@ function writeComment(container_id, feeditem_jo, dom_id)
 	{
 		$("[id=follow_link_" + feeditem_jo.by + "]").text("follow");
     	$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) {
-    		event.stopImmediatePropagation();
     		followOrUnfollowUser(event.data.target_screenname, "followUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});
@@ -399,7 +396,6 @@ function writeComment(container_id, feeditem_jo, dom_id)
 	{
 		$("[id=follow_link_" + feeditem_jo.by + "]").text("unfollow");
 		$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) { 
-			event.stopImmediatePropagation();
     		followOrUnfollowUser(event.data.target_screenname, "unfollowUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});

@@ -226,12 +226,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
                 		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
                 		        				act_html = act_html + "			</td>";
-                		        				act_html = act_html + "			<td style=\"text-align:right\">";
+                		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
                 		        				if(typeof data.parent !== "undefined" && data.parent !== null)
                 		        				{
-                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">show parent</a>";
-                		        					//act_html = act_html + "				<a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">show branch</a>";
+                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
+                		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
+                		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0 &&
+                		        							(notification_jo.hn_root_comment_id !== data.id || (notification_jo.hn_root_comment_id === data.id && typeof data.children !== "undefined" && data.children !== null && data.children.length > 0)))
+                    		        					act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
                 		        				}
+                		        				
                 		        				act_html = act_html + "			</td>";
                 		        				act_html = act_html + "		</tr>";
                 		        				act_html = act_html + "	</table>";
@@ -276,7 +280,13 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        						$("#comment_div_" + notification_jo.id).css("padding-left", "25px");
                     		        					$("#parent_div_" + notification_jo.id).html("<img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\">");
                     		        					$("#parent_div_" + notification_jo.id).show();
-                    		        					$("#show_parent_link_" + notification_jo.id).text("");
+                    		        					if($("#parent_and_branch_td_" + notification_jo.id).text().indexOf("branch") !== -1)
+                    		        					{
+                    		        						$("#show_parent_link_" + notification_jo.id).text("");
+                    		        						$("#separator_span_" + notification_jo.id).text("");
+                    		        					}
+                    		        					else
+                    		        						$("#parent_and_branch_td_" + notification_jo.id).text("");
                     		        					$.ajax({ 
                     		        						type: 'GET', 
                     		        						url: "https://hacker-news.firebaseio.com/v0/item/" + data.parent + ".json", 
@@ -311,10 +321,27 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                     		        					return false;
                     		        				});
                 		        					
-                		        					//$("#show_branch_link_" + notification_jo.id).click({id:notification_jo.id},function(event){
-                		        					//	alert("click");
-                		        					//	$("#parent_comment_child_container_div_" + event.data.id).html("preparing this item for full branch");                		        						
-                		        					//});
+                		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
+                		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0 &&
+                		        							(notification_jo.hn_root_comment_id !== data.id || (notification_jo.hn_root_comment_id === data.id && typeof data.children !== "undefined" && data.children !== null && data.children.length > 0)))
+                		        					{	
+                		        						$("#show_branch_link_" + notification_jo.id).click({notification_jo:notification_jo},function(event){
+                		        							$("#parent_and_branch_td_" + notification_jo.id).html("");
+                		        							$("#container_div_" + event.data.notification_jo.id).css("background-color", "#fffed6");
+                		        							$("#container_div_" + event.data.notification_jo.id).attr("id", "container_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#horizline_div_" + event.data.notification_jo.id).attr("id", "horizline_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#message_div_" + event.data.notification_jo.id).attr("id", "message_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#header_div_" + event.data.notification_jo.id).attr("id", "header_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#parent_div_" + event.data.notification_jo.id).hide(); // in case they've clicked "parent" first.
+                		        							$("#parent_div_" + event.data.notification_jo.id).attr("id", "parent_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#comment_div_" + event.data.notification_jo.id).css("padding-left", "0px"); // in case they've clicked "parent" first
+                		        							$("#comment_div_" + event.data.notification_jo.id).attr("id", "comment_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							$("#comment_div_" + event.data.notification_jo.hn_root_comment_id).html("<div style=\"text-align:center;padding:20px\"><img src=\"images/ajaxSnake.gif\"></div>");
+                		        							$("#child_div_" + event.data.notification_jo.id).attr("id", "child_div_" + event.data.notification_jo.hn_root_comment_id);
+                		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, "comment_div_" + event.data.notification_jo.hn_root_comment_id, 0);
+                		        							return false;
+                		        						});
+                		        					}
                 		        				}
                 		        			}
                 		        			else

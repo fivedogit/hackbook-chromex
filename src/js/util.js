@@ -360,7 +360,14 @@ function followOrUnfollowUser(target_screenname, method, msg_dom_id) // which = 
 	        else if (data.response_status === "success")
 	        {
 	        	bg.getUser(true);
-	        	if(tabmode === "thread")
+	        	if(tabmode === "profile")
+	        	{
+	        		setTimeout(function() {
+	        			viewProfile();
+	        		}, 1500);
+	        		
+	        	}
+	        	else // thread, feed, notifications
 	        	{
 	        		$("[id=" + msg_dom_id + "]").unbind();
 	        		if(method === "unfollowUser")
@@ -381,13 +388,6 @@ function followOrUnfollowUser(target_screenname, method, msg_dom_id) // which = 
 			    			return false;
 			    		});
 	        		}
-	        	}
-	        	else if(tabmode === "profile")
-	        	{
-	        		setTimeout(function() {
-	        			viewProfile();
-	        		}, 1500);
-	        		
 	        	}
 	        }
 	    },
