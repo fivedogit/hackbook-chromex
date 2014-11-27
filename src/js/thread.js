@@ -188,12 +188,12 @@ function prepareGetAndPopulateThreadPortion()
 			var tempcomments = bg.t_jo.children;
 			bg.t_jo.children = tempcomments;
 			// loop the comment id list and doThreadItem for each one
-			var random_id = "";
+			var semirandom_id = "";
 			for(var x=beginindex; x < endindex && x < bg.t_jo.children.length; x++) 
 			{
-				random_id = makeid(8);
-				writeUnifiedCommentContainer(random_id, "main_div", "append");
-				doThreadItem(bg.t_jo.children[x], "comment_div_" + bg.t_jo.children[x], "message_div_" + bg.t_jo.children[x], 0);
+				semirandom_id = bg.t_jo.children[x] + "-" + makeid(3);
+				writeUnifiedCommentContainer(semirandom_id, "main_div", "append");
+				doThreadItem(bg.t_jo.children[x], semirandom_id, "container_div_" + semirandom_id, 0);
 			}
 			// if we've reached the end, show "end of comments" message
 			if (x < bg.t_jo.children.length)
@@ -210,18 +210,17 @@ function prepareGetAndPopulateThreadPortion()
 	}
 }
 
-
-function writeUnifiedCommentContainer(id_to_use, anchor_dom_id, anchor_action) // main_div_HASH, append/before/after/prepend, etc
+function writeUnifiedCommentContainer(semirandom_id, anchor_dom_id, anchor_action) // main_div_HASH, append/before/after/prepend, etc
 {
 	var s = "";
-	s = s + "<div id=\"container_div_" + id_to_use + "\">";
-	s = s + "	<div id=\"horizline_div_" + id_to_use + "\" class=\"complete-horiz-line-div\"></div>"; // always shown
+	s = s + "<div id=\"container_div_" + semirandom_id + "\">";
+	s = s + "	<div id=\"horizline_div_" + semirandom_id + "\" class=\"complete-horiz-line-div\"></div>"; // always shown
 	s = s + "	<div style=\"padding:6px\">";
-	s = s + "		<div id=\"message_div_" + id_to_use + "\" class=\"container_message\"></div>"; // hidden unless message displayed
-	s = s + "		<div id=\"header_div_" + id_to_use + "\" class=\"container_header\"></div>"; // hidden except for notification page
-	s = s + "		<div id=\"parent_div_" + id_to_use + "\" class=\"container_parent\"></div>"; //hidden except for notification page
-	s = s + "		<div id=\"comment_div_" + id_to_use + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
-	s = s + "		<div id=\"child_div_" + id_to_use + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
+	s = s + "		<div id=\"message_div_" + semirandom_id + "\" class=\"container_message\"></div>"; // hidden unless message displayed
+	s = s + "		<div id=\"header_div_" + semirandom_id + "\" class=\"container_header\"></div>"; // hidden except for notification page
+	s = s + "		<div id=\"parent_div_" + semirandom_id + "\" class=\"container_parent\"></div>"; //hidden except for notification page
+	s = s + "		<div id=\"comment_div_" + semirandom_id + "\" class=\"container_comment\"><div style=\"text-align:center\"><img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\"></div></div>"; // always shown except for like/dislike on notification page
+	s = s + "		<div id=\"child_div_" + semirandom_id + "\" class=\"container_child\"></div>"; // always hidden except when someone replies on notification page
 	s = s + "	</div>";
 	s = s + "</div>";
 	if(anchor_action === "append")
@@ -234,12 +233,10 @@ function writeUnifiedCommentContainer(id_to_use, anchor_dom_id, anchor_action) /
 		$("#" + anchor_dom_id).before(s);
 }
 
-
-function doThreadItem(comment_id, comment_dom_id, message_dom_id, level) // type = "initialpop", "newcomment", "reply"
+function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level) // type = "initialpop", "newcomment", "reply"
 {
 	if(typeof level === "undefined" || level === null)
 		level = 0;
-	var container_id = comment_id;
 	$.ajax({ 
 		type: 'GET', 
 		url: "https://hacker-news.firebaseio.com/v0/item/" + comment_id + ".json", 
@@ -251,39 +248,40 @@ function doThreadItem(comment_id, comment_dom_id, message_dom_id, level) // type
     		//{	
         		if(data.deleted && data.deleted === true)
         		{
-        			$("#" + comment_dom_id).css("font-style", "italic");
-        			$("#" + comment_dom_id).css("color", "#828282");
-        			$("#" + comment_dom_id).text("(deleted)");
+        			$("#comment_div_" + semirandom_id).css("font-style", "italic");
+        			$("#comment_div_" + semirandom_id).css("color", "#828282");
+        			$("#comment_div_" + semirandom_id).text("(deleted)");
         		}	
         		else
         		{	
-        			writeComment(data, comment_dom_id); // l/d, delete button (if user authored it), reply
+        			writeComment(data, semirandom_id);
         			var indent = (level) * 30;
-        			$("#" + comment_dom_id).css("margin-left", indent + "px");
+        			$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
     			}
         		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
         		{
+        			var nested_semirandom_id = "";
 					for(var y=0; y < data.kids.length; y++) 
 		    		{  
-						//alert("going to write a reply comment_id=" + data.kids[y] + " and parent_id=" + comment_id);
-						writeUnifiedCommentContainer(data.kids[y], "container_div_" + comment_id, "after");
-						doThreadItem(data.kids[y], "comment_div_" + data.kids[y], "message_div_" + data.kids[y], (level+1));
+						nested_semirandom_id = data.kids[y] + "-" + makeid(3);
+						writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
+						doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1));
 		    		}
         		}
     		//}
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	displayMessage("Unable to retrieve HN comment. (ajax)", "red", message_dom_id);
+        	displayMessage("Unable to retrieve HN comment. (ajax)", "red", "message_div_" + semirandom_id);
         	console.log(textStatus, errorThrown);
         }
 	});	
 }		
 
-function writeComment(feeditem_jo, comment_dom_id)
+function writeComment(feeditem_jo, semirandom_id)
 {
-	var comment_id = feeditem_jo.id; 
-		
-	// NOTE: I tried changing comment_id to a random string, but it broke the saved text mechanism.
+	// NOTE: I tried changing semirandom_id to a random string, but it broke the saved text mechanism.
+	// I've now switched to comment_id-semirandom_id so that the uniqueness is still there (Even if the same comment appears twice, as it can on notification/feed items)
+	// but the save text can be put in using the comment_id prefix. 
 	
 	var writeReplyTD = false;
 	var tempstr = "";
@@ -295,13 +293,13 @@ function writeComment(feeditem_jo, comment_dom_id)
 	tempstr = tempstr + "			<table style=\"border:0px solid red;border-collapse:collapse\">";
 	tempstr = tempstr + "				<tr>";
 	tempstr = tempstr + "					<td style=\"padding-bottom:0px;border:0px solid black\"> ";
-	tempstr = tempstr + "						<a href=\"#\" id=\"like_link_" + comment_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_up.gif") + "\"></a>";
+	tempstr = tempstr + "						<a href=\"#\" id=\"like_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_up.gif") + "\"></a>";
 	tempstr = tempstr + "					</td>";
 	tempstr = tempstr + "				</tr>";			
 	tempstr = tempstr + "				<tr>";
 	tempstr = tempstr + "					<td style=\"padding-top:0px;border:0px solid black\"> ";
 	if(bg.user_jo && bg.user_jo.hn_karma >=500)
-		tempstr = tempstr + "					<a href=\"#\" id=\"dislike_link_" + comment_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_down.gif") + "\"></a>";
+		tempstr = tempstr + "					<a href=\"#\" id=\"dislike_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_down.gif") + "\"></a>";
 	tempstr = tempstr + "					</td>";
 	tempstr = tempstr + "				</tr>";			
 	tempstr = tempstr + "			</table>";
@@ -313,24 +311,24 @@ function writeComment(feeditem_jo, comment_dom_id)
 	tempstr = tempstr + "						<table style=\"width:100%;float:left;border:0px solid brown;vertical-align:middle; border-collapse: separate\">";
 	tempstr = tempstr + "							<tr> ";
 	tempstr = tempstr + "		  					 	<td style=\"vertical-align:middle;text-align:left;color:#828282;font-size:11px\">";
-	tempstr = tempstr + "		  					 		<a href=\"#\" id=\"screenname_link_" + comment_id + "\" style=\"color:#828282\"></a>";
+	tempstr = tempstr + "		  					 		<a href=\"#\" id=\"screenname_link_" + semirandom_id + "\" style=\"color:#828282\"></a>";
 	if(bg.user_jo)
 		tempstr = tempstr + "		  					 		 (<a href=\"#\" id=\"follow_link_" + feeditem_jo.by + "\" style=\"color:#828282\">follow</a>)";
-	tempstr = tempstr + "		  					 		 - <span id=\"time_ago_span_" + comment_id + "\" style=\"padding:5px;\"></span>";
+	tempstr = tempstr + "		  					 		 - <span id=\"time_ago_span_" + semirandom_id + "\" style=\"padding:5px;\"></span>";
 	tempstr = tempstr + "		  					 	</td>";
 	tempstr = tempstr + "							</tr>";
 	tempstr = tempstr + "  						</table>";
 	tempstr = tempstr + "					</td>";
 	tempstr = tempstr + "				</tr>";
 	tempstr = tempstr + "				<tr>";
-	tempstr = tempstr + "					<td style=\"padding:5px;vertical-align:top;text-align:left;font-size:11px;\" id=\"comment_text_td_" + comment_id + "\"> ";
+	tempstr = tempstr + "					<td style=\"padding:5px;vertical-align:top;text-align:left;font-size:11px;\" id=\"comment_text_td_" + semirandom_id + "\"> ";
   	tempstr = tempstr + "					</td>";
   	tempstr = tempstr + "				</tr>";
-  	tempstr = tempstr + "				<tr id=\"reply_tr_" + comment_id + "\">";
+  	tempstr = tempstr + "				<tr id=\"reply_tr_" + semirandom_id + "\">";
   	tempstr = tempstr + "					<td style=\"padding:3px;text-align:left\"> ";
   //	alert(feeditem_jo.time*1 + " and " + bg.msfe_according_to_backend);
   	if((feeditem_jo.time*1000) > (bg.msfe_according_to_backend - 1209600000)) // this is less than 2 weeks old, show reply
-  		tempstr = tempstr + "							<a href=\"#\" id=\"reply_link_" + comment_id + "\" style=\"font-size:11px\">reply</a>";
+  		tempstr = tempstr + "							<a href=\"#\" id=\"reply_link_" + semirandom_id + "\" style=\"font-size:11px\">reply</a>";
   	else
   		$("#comment_submission_form_div").hide();
   	tempstr = tempstr + "					</td>";
@@ -340,12 +338,12 @@ function writeComment(feeditem_jo, comment_dom_id)
 	tempstr = tempstr + "	</tr>";
   	tempstr = tempstr + "</table>"
   	
-	$("#" + comment_dom_id).html(tempstr);//OK
+	$("#comment_div_" + semirandom_id).html(tempstr);//OK
 	
-  	$("[id=screenname_link_" + comment_id + "]").text(feeditem_jo.by);
-  	$("[id=time_ago_span_" + comment_id + "]").text(agoIt(feeditem_jo.time*1000));
+  	$("[id=screenname_link_" + semirandom_id + "]").text(feeditem_jo.by);
+  	$("[id=time_ago_span_" + semirandom_id + "]").text(agoIt(feeditem_jo.time*1000));
   	if(typeof feeditem_jo.text !== "undefined" && feeditem_jo.text !== null)
-  		$("[id=comment_text_td_" + comment_id + "]").html(replaceAll(feeditem_jo.text, "<a href=", "<a class=\"newtab\" href="));
+  		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(feeditem_jo.text, "<a href=", "<a class=\"newtab\" href="));
 
   	$("a").click(function(event) {
 		if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
@@ -360,28 +358,28 @@ function writeComment(feeditem_jo, comment_dom_id)
 		}
 	});
 	
-	$("[id=reply_link_" + comment_id + "]").click({value: comment_id}, function(event) { 
+	$("[id=reply_link_" + semirandom_id + "]").click({value: semirandom_id}, function(event) { 
 	 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.value});
 	 	return false;
 	});
 
-	$("[id=like_link_" + comment_id + "]").click({comment_id: comment_id}, function(event) {
-		//noteItemLikeOrDislike(event.data.comment_id, "like");
+	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id}, function(event) {
+		//noteItemLikeOrDislike(event.data.semirandom_id, "like");
 		bg.likedislikemode = "commentlike";
-		$("[id=like_link_" + event.data.comment_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
+		$("[id=like_link_" + event.data.semirandom_id + "]").html("");
+		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.semirandom_id, active: false}, function(){});
 		return false;
 	});
 		 
-	$("[id=dislike_link_" + comment_id + "]").click({comment_id: comment_id}, function(event) { 
-		//noteItemLikeOrDislike(event.data.comment_id, "dislike");
+	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id}, function(event) { 
+		//noteItemLikeOrDislike(event.data.semirandom_id, "dislike");
 		bg.likedislikemode = "commentdislike";
-		$("[id=dislike_link_" + event.data.comment_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
+		$("[id=dislike_link_" + event.data.semirandom_id + "]").html("");
+		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.semirandom_id, active: false}, function(){});
 		return false;
 	});
 	
-	$("[id=screenname_link_"+ comment_id + "]").click({value: feeditem_jo}, function(event) { 
+	$("[id=screenname_link_"+ semirandom_id + "]").click({value: feeditem_jo}, function(event) { 
 		event.preventDefault();
 		chrome.tabs.create({url:"http://news.ycombinator.com/user?id=" + event.data.value.by});
 	});	
