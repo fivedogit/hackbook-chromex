@@ -288,8 +288,8 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 	var tempstr = "";
 		
 	// show this user's info
-	if(highlight === true)
-		tempstr = tempstr + "<table style=\"border-left:1px solid #ff6600;padding:4px;\">";
+	if(highlight === true && bg.user_jo) // as of right now, highlights are only used on newsfeed and notifications tabs, which means the user is always logged in. OK to pair these for now.
+		tempstr = tempstr + "<table style=\"border-left:1px solid #" + bg.user_jo.hn_topcolor + ";padding:4px;\">";
 	else
 		tempstr = tempstr + "<table style=\"border:0px solid orange;border-collapse:collapse;\">";
 	if(indicate_root === true)
