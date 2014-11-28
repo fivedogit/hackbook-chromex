@@ -816,6 +816,7 @@ function getUser(retrieve_asynchronously)
 	}
 	var screenname = docCookies.getItem("screenname");
 	var this_access_token = docCookies.getItem("this_access_token");
+	var ext_version = chrome.runtime.getManifest().version;
 	if(screenname !== null && this_access_token !== null && this_access_token.length == 32)// the shortest possible screenname length is x@b.co = 6.
 	{
 		$.ajax({ 
@@ -824,7 +825,8 @@ function getUser(retrieve_asynchronously)
 			data: {
 	            method: "getUserSelf",
 	            screenname: screenname,							
-	            this_access_token: this_access_token	
+	            this_access_token: this_access_token,
+	            ext_version: ext_version
 	        },
 	        dataType: 'json', 
 	        async: async, 
