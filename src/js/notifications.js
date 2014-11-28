@@ -346,21 +346,12 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        							$("#show_branch_link_" + notification_jo.id).click({notification_jo:notification_jo},function(event){
                     		        							$("#parent_and_branch_td_" + notification_jo.id).html("");
                     		        							var semirandom_id = event.data.notification_jo.hn_root_comment_id + "-" + makeid(3);
+                    		        							$("#parent_div_" + event.data.notification_jo.id).remove();
                     		        							$("#comment_div_" + event.data.notification_jo.id).remove();
-                    		        							$("#container_div_" + event.data.notification_jo.id).wrap("<div id=\"wrapper_div_" + semirandom_id + "\" style=\"background-color:#fffed6\"></div>");
+                    		        							$("#child_div_" + event.data.notification_jo.id).remove();
+                    		        							$("#container_div_" + event.data.notification_jo.id).wrap("<div id=\"wrapper_div_" + semirandom_id + "\" style=\"background-color:#f0f0f0\"></div>");
                     		        							writeUnifiedCommentContainer(semirandom_id, "container_div_" + event.data.notification_jo.id, "append");
-                    		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, semirandom_id, "container_div_" + semirandom_id, 0);
-                    		        							/*$("#container_div_" + event.data.notification_jo.id).attr("id", "container_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#horizline_div_" + event.data.notification_jo.id).attr("id", "horizline_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#message_div_" + event.data.notification_jo.id).attr("id", "message_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#header_div_" + event.data.notification_jo.id).attr("id", "header_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#parent_div_" + event.data.notification_jo.id).hide(); // in case they've clicked "parent" first.
-                    		        							$("#parent_div_" + event.data.notification_jo.id).attr("id", "parent_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#comment_div_" + event.data.notification_jo.id).css("padding-left", "0px"); // in case they've clicked "parent" first
-                    		        							$("#comment_div_" + event.data.notification_jo.id).attr("id", "comment_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							$("#comment_div_" + event.data.notification_jo.hn_root_comment_id).html("<div style=\"text-align:center;padding:20px\"><img src=\"images/ajaxSnake.gif\"></div>");
-                    		        							$("#child_div_" + event.data.notification_jo.id).attr("id", "child_div_" + event.data.notification_jo.hn_root_comment_id);
-                    		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, "comment_div_" + event.data.notification_jo.hn_root_comment_id, "message_div_" + event.data.notification_jo.hn_root_comment_id, 0);*/
+                    		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, semirandom_id, "container_div_" + semirandom_id, 0, true, event.data.notification_jo.hn_target_id);
                     		        							return false;
                     		        						});
                 		        						}

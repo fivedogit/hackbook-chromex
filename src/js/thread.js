@@ -193,7 +193,7 @@ function prepareGetAndPopulateThreadPortion()
 			{
 				semirandom_id = bg.t_jo.children[x] + "-" + makeid(3);
 				writeUnifiedCommentContainer(semirandom_id, "main_div", "append");
-				doThreadItem(bg.t_jo.children[x], semirandom_id, "container_div_" + semirandom_id, 0);
+				doThreadItem(bg.t_jo.children[x], semirandom_id, "container_div_" + semirandom_id, 0, null); // don't highlight anything
 			}
 			// if we've reached the end, show "end of comments" message
 			if (x < bg.t_jo.children.length)
@@ -233,42 +233,43 @@ function writeUnifiedCommentContainer(semirandom_id, anchor_dom_id, anchor_actio
 		$("#" + anchor_dom_id).before(s);
 }
 
-function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level) // type = "initialpop", "newcomment", "reply"
+function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_root, comment_id_to_highlight) // type = "initialpop", "newcomment", "reply"
 {
 	if(typeof level === "undefined" || level === null)
 		level = 0;
+	if(typeof indicate_root === "undefined" || indicate_root === null || !(indicate_root === true || indicate_root === false))
+		indicate_root = false;
 	$.ajax({ 
 		type: 'GET', 
 		url: "https://hacker-news.firebaseio.com/v0/item/" + comment_id + ".json", 
         dataType: 'json', 
         async: true, 
         success: function (data, status) {
-        	// I think it's ok to leave this commented out since no other tabs are going to have these divs to target. Notification and feed tabs will have divs with notification ids
-        	//if(tabmode === "thread") // as these come in, only process them if we're still on the thread tab 
-    		//{	
-        		if(data.deleted && data.deleted === true)
-        		{
-        			$("#comment_div_" + semirandom_id).css("font-style", "italic");
-        			$("#comment_div_" + semirandom_id).css("color", "#828282");
-        			$("#comment_div_" + semirandom_id).text("(deleted)");
-        		}	
-        		else
-        		{	
-        			writeComment(data, semirandom_id);
-        			var indent = (level) * 30;
-        			$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
-    			}
-        		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
-        		{
-        			var nested_semirandom_id = "";
-					for(var y=0; y < data.kids.length; y++) 
-		    		{  
-						nested_semirandom_id = data.kids[y] + "-" + makeid(3);
-						writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
-						doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1));
-		    		}
-        		}
-    		//}
+        	if(data.deleted && data.deleted === true)
+    		{
+    			$("#comment_div_" + semirandom_id).css("font-style", "italic");
+    			$("#comment_div_" + semirandom_id).css("color", "#828282");
+    			$("#comment_div_" + semirandom_id).text("(deleted)");
+    		}	
+    		else
+    		{	
+    			if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
+    				writeComment(data, semirandom_id, indicate_root, true);
+    			else
+    				writeComment(data, semirandom_id, indicate_root, false);
+    			var indent = (level) * 30;
+    			$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
+			}
+    		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
+    		{
+    			var nested_semirandom_id = "";
+				for(var y=0; y < data.kids.length; y++) 
+	    		{  
+					nested_semirandom_id = data.kids[y] + "-" + makeid(3);
+					writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
+					doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1), false, comment_id_to_highlight);
+	    		}
+    		}
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
         	displayMessage("Unable to retrieve HN comment. (ajax)", "red", "message_div_" + semirandom_id);
@@ -277,7 +278,7 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level) // type =
 	});	
 }		
 
-function writeComment(feeditem_jo, semirandom_id)
+function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 {
 	// NOTE: I tried changing semirandom_id to a random string, but it broke the saved text mechanism.
 	// I've now switched to comment_id-semirandom_id so that the uniqueness is still there (Even if the same comment appears twice, as it can on notification/feed items)
@@ -287,9 +288,18 @@ function writeComment(feeditem_jo, semirandom_id)
 	var tempstr = "";
 		
 	// show this user's info
-	tempstr = tempstr + "<table style=\"border:0px solid orange;border-collapse:collapse;\">";
+	if(highlight === true)
+		tempstr = tempstr + "<table style=\"border-left:1px solid #ff6600;padding:4px;\">";
+	else
+		tempstr = tempstr + "<table style=\"border:0px solid orange;border-collapse:collapse;\">";
+	if(indicate_root === true)
+	{
+		tempstr = tempstr + "	<tr>";
+		tempstr = tempstr + "		<td colspan=2 style=\"text-align:left;padding:5px;font-weight:bold\">root comment:</td>"; 
+		tempstr = tempstr + "	</tr>";
+	}	
 	tempstr = tempstr + "	<tr>";
-	tempstr = tempstr + "		<td style=\"vertical-align:top;width:10px;text-align:center;border:0px solid green\"> <!-- avatar, left hand side -->"; 
+	tempstr = tempstr + "		<td style=\"vertical-align:top;width:10px;text-align:center;border:0px solid green\">"; 
 	tempstr = tempstr + "			<table style=\"border:0px solid red;border-collapse:collapse\">";
 	tempstr = tempstr + "				<tr>";
 	tempstr = tempstr + "					<td style=\"padding-bottom:0px;border:0px solid black\"> ";
@@ -358,30 +368,30 @@ function writeComment(feeditem_jo, semirandom_id)
 		}
 	});
 	
-	$("[id=reply_link_" + semirandom_id + "]").click({value: semirandom_id}, function(event) { 
-	 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.value});
+	$("[id=reply_link_" + semirandom_id + "]").click({comment_id: feeditem_jo.id}, function(event) { 
+	 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id});
 	 	return false;
 	});
 
-	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id}, function(event) {
+	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: feeditem_jo.id}, function(event) {
 		//noteItemLikeOrDislike(event.data.semirandom_id, "like");
 		bg.likedislikemode = "commentlike";
 		$("[id=like_link_" + event.data.semirandom_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.semirandom_id, active: false}, function(){});
+		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
 		return false;
 	});
 		 
-	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id}, function(event) { 
+	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: feeditem_jo.id}, function(event) { 
 		//noteItemLikeOrDislike(event.data.semirandom_id, "dislike");
 		bg.likedislikemode = "commentdislike";
 		$("[id=dislike_link_" + event.data.semirandom_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.semirandom_id, active: false}, function(){});
+		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
 		return false;
 	});
 	
-	$("[id=screenname_link_"+ semirandom_id + "]").click({value: feeditem_jo}, function(event) { 
-		event.preventDefault();
-		chrome.tabs.create({url:"http://news.ycombinator.com/user?id=" + event.data.value.by});
+	$("[id=screenname_link_"+ semirandom_id + "]").click({target_screenname: feeditem_jo.by}, function(event) { 
+		chrome.tabs.create({url:"http://news.ycombinator.com/user?id=" + event.data.target_screenname});
+		return false;
 	});	
 	
 	if(bg.user_jo && (!bg.user_jo.following || bg.user_jo.following.indexOf(feeditem_jo.by) == -1))
