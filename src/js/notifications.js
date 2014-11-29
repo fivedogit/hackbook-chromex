@@ -366,14 +366,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was upvoted ";
             		        				else if(notification_jo.type === "4")
             		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was downvoted ";
-            		        				else if(notification_jo.type === "7" || notification_jo.type === "9")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>.";
             		        				else if(notification_jo.type === "5")
             		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">replied</a> to you:";
             		        				else if(notification_jo.type === "6")
             		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a> on your story:";
+            		        				else if(notification_jo.type === "7")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>.";
             		        				else if(notification_jo.type === "8")
             		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a>:";
+            		        				else if(notification_jo.type === "9")
+            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">deep-replied</a> to you:";
                 		        			c_html = c_html + "</div>";
                 		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
                 		        			{

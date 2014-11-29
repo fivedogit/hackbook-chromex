@@ -89,6 +89,15 @@ function getProfile()
 		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span></form>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">deep-reply notif.: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<select id=\"hide_deep_reply_notifications_selector\">";
+		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
+		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
+		main_div_string = main_div_string + "					</select>";
+		main_div_string = main_div_string + "					<span id=\"hide_deep_reply_notifications_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left;color:#828282;width:25%;vertical-align:top\">";
@@ -163,23 +172,9 @@ function getProfile()
 		main_div_string = main_div_string + "</table>";
 		main_div_string = main_div_string + "</div>";
 		$("#main_div").html(main_div_string); //OK
-		
+					
 		$("#profile_page_screenname_span").text(bg.user_jo.screenname);
-		$("#profile_page_since_td").html(agoIt(bg.user_jo.since) + " <img src=\"" + chrome.extension.getURL("images/l18.png") + "\" style=\"border:1px solid white;height:14px;width:14px;vertical-align:middle\"> ");
-		$("#profile_page_karma_td").html(bg.user_jo.hn_karma);
-		
-		$("#profile_page_savedstories_link").click( function (event) {	event.preventDefault();
-			chrome.tabs.create({url: "https://news.ycombinator.com/saved?id=" + bg.user_jo.screenname});
-		});
-		
-		$("#profile_page_submissions_link").click( function (event) {	event.preventDefault();
-		chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + bg.user_jo.screenname});
-		});
-		
-		$("#profile_page_comments_link").click( function (event) {	event.preventDefault();
-			chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + bg.user_jo.screenname});
-		});
-		
+
 		$("#logout_link").click( function (event) { event.preventDefault();
 			chrome.runtime.sendMessage({method: "logout"}, function(response) {
 				bg.user_jo = null;
@@ -187,30 +182,123 @@ function getProfile()
 			});
 		});
 		
-		if(typeof bg.user_jo.following === "undefined" || bg.user_jo.following === null)
-		{ 
-			// do nothing
-		}
-		else
-		{
-			var x = 0;
-			while(x < bg.user_jo.following.length)
-			{
-				$("#unfollow_" + bg.user_jo.following[x] + "_link").mouseover({value:bg.user_jo.following[x]}, function(event) {
-					$("#unfollow_" + event.data.value + "_link").text("unfollow");
-				});
-				$("#unfollow_" + bg.user_jo.following[x] + "_link").mouseout({value:bg.user_jo.following[x]}, function(event) {
-					$("#unfollow_" + event.data.value + "_link").text(event.data.value);
-				});
-				$("#unfollow_" + bg.user_jo.following[x] + "_link").click({value:bg.user_jo.following[x]}, function(event) {
-					$("#unfollow_" + event.data.value + "_link").unbind();
-					followOrUnfollowUser(event.data.value, "unfollowUser", "unfollow_" + event.data.value + "_link");
-					return false;
-				});
-				x++;
-			}	
-		}
-			
+		$("#profile_page_since_td").html(agoIt(bg.user_jo.since) + " <img src=\"" + chrome.extension.getURL("images/l18.png") + "\" style=\"border:1px solid white;height:14px;width:14px;vertical-align:middle\"> ");
+		
+		$("#profile_page_karma_td").html(bg.user_jo.hn_karma);
+		
+		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
+			$("#notificationmode_selector").val("newsfeed_and_notifications");
+		else if (bg.user_jo.notification_mode === "notifications_only")
+			$("#notificationmode_selector").val("notifications_only");
+		
+		$("#notificationmode_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "notification_mode",
+		            value: $("#notificationmode_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#notificationmode_result_td").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
+		            		$("#notificationmode_selector").val("newsfeed_and_notifications");
+		        		else if (bg.user_jo.notification_mode === "notifications_only")
+		            		$("#notificationmode_selector").val("notifications_only");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		bg.user_jo.notification_mode = $("#notificationmode_selector").val();
+		        		$("#notificationmode_result_td").text("updated");
+		        		bg.doButtonGen();
+		        	}
+		        	setTimeout(function(){$("#notificationmode_result_td").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#notificationmode_result_td").text("ajax error");
+		        	setTimeout(function(){$("#notificationmode_result_td").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});
+
+		$("#notificationmode_explainer_link").click(function () {
+			$("#notificationmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">When do you want the button to indicate new activity? Only when you have new notifications (for your stuff) or also when you have new news feed items (i.e. when those you're following do stuff)?</div>");
+		});
+		
+		if (bg.user_jo.url_checking_mode === "stealth")
+			$("#urlcheckingmode_selector").val("stealth");
+		else if (bg.user_jo.url_checking_mode === "notifications_only")
+			$("#urlcheckingmode_selector").val("notifications_only");
+		
+		$("#urlcheckingmode_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "url_checking_mode",
+		            value: $("#urlcheckingmode_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#urlcheckingmode_result_span").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.url_checking_mode === "stealth")
+		            		$("#urlcheckingmode_selector").val("stealth");
+		        		else if (bg.user_jo.url_checking_mode === "notifications_only")
+		            		$("#urlcheckingmode_selector").val("notifications_only");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		bg.user_jo.url_checking_mode = $("#urlcheckingmode_selector").val();
+		        		$("#urlcheckingmode_result_span").text("updated");
+		        		bg.doButtonGen();
+		        	}
+		        	setTimeout(function(){$("#urlcheckingmode_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#urlcheckingmode_result_span").text("ajax error");
+		        	setTimeout(function(){$("#urlcheckingmode_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});
+		
+		$("#urlcheckingmode_explainer_link").click(function () {
+			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
+					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
+		});
+		
 		$("#karma_pool_ttl_input").val(bg.user_jo.karma_pool_ttl_mins);
 		$("#karma_pool_ttl_form").submit( function (event) {
 			$("#karma_pool_result_span").text("processing...");
@@ -254,6 +342,89 @@ function getProfile()
 			});
 			return false;
 		});
+		
+		$("#karma_pool_explainer_link").click(function () {
+			$("#karma_pool_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">To prevent +1/-1 karma spam, Hackbook pools your karma changes together every X minutes.</div>");
+		});
+		
+		if (bg.user_jo.hide_deep_reply_notifications === false)
+			$("#hide_deep_reply_notifications_selector").val("show");
+		else if (bg.user_jo.hide_deep_reply_notifications === true)
+			$("#hide_deep_reply_notifications_selector").val("hide");
+		
+		$("#hide_deep_reply_notifications_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "hide_deep_reply_notifications",
+		            value: $("#hide_deep_reply_notifications_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#hide_deep_reply_notifications_result_span").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.hide_deep_reply_notifications === false)
+		        			$("#hide_deep_reply_notifications_selector").val("show");
+		        		else if (bg.user_jo.hide_deep_reply_notifications === true)
+		        			$("#hide_deep_reply_notifications_selector").val("hide");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		if($("#hide_deep_reply_notifications_selector").val() === "show")
+		        			bg.user_jo.hide_deep_reply_notifications = false;
+		        		else if($("#hide_deep_reply_notifications_selector").val() === "hide")
+		        			bg.user_jo.hide_deep_reply_notifications = true;
+		        		$("#hide_deep_reply_notifications_result_span").text("Updated.");
+		        		bg.doButtonGen();
+		        	}
+		        	setTimeout(function(){$("#hide_deep_reply_notifications_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#hide_deep_reply_notifications_result_span").text("ajax error");
+		        	setTimeout(function(){$("#hide_deep_reply_notifications_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});
+		
+		if(typeof bg.user_jo.following === "undefined" || bg.user_jo.following === null)
+		{ 
+			// do nothing
+		}
+		else
+		{
+			var x = 0;
+			while(x < bg.user_jo.following.length)
+			{
+				$("#unfollow_" + bg.user_jo.following[x] + "_link").mouseover({value:bg.user_jo.following[x]}, function(event) {
+					$("#unfollow_" + event.data.value + "_link").text("unfollow");
+				});
+				$("#unfollow_" + bg.user_jo.following[x] + "_link").mouseout({value:bg.user_jo.following[x]}, function(event) {
+					$("#unfollow_" + event.data.value + "_link").text(event.data.value);
+				});
+				$("#unfollow_" + bg.user_jo.following[x] + "_link").click({value:bg.user_jo.following[x]}, function(event) {
+					$("#unfollow_" + event.data.value + "_link").unbind();
+					followOrUnfollowUser(event.data.value, "unfollowUser", "unfollow_" + event.data.value + "_link");
+					return false;
+				});
+				x++;
+			}	
+		}
 		
 	 	$("#add_follow_link").click(function () {
 			$("#add_follow_tr").show();
@@ -325,6 +496,10 @@ function getProfile()
 			});
 		});
 		
+		$("#hide_embedded_counts_explainer_link").click(function () {
+			$("#hide_embedded_counts_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">This is the \"feed (x) | notif. (y)\" thing at the top of every HN page.</div>");
+		});
+		
 		if (bg.user_jo.hide_inline_follow === false)
 			$("#hide_inline_follow_selector").val("show");
 		else if (bg.user_jo.hide_inline_follow === true)
@@ -380,125 +555,16 @@ function getProfile()
 			});
 		});
 		
-		if (bg.user_jo.url_checking_mode === "stealth")
-			$("#urlcheckingmode_selector").val("stealth");
-		else if (bg.user_jo.url_checking_mode === "notifications_only")
-			$("#urlcheckingmode_selector").val("notifications_only");
-		
-		$("#urlcheckingmode_selector").change(function () {
-			$.ajax({
-				type: 'GET',
-				url: endpoint,
-				data: {
-		            method: "setUserPreference",
-		            screenname: screenname,          
-		            this_access_token: this_access_token,  
-		            which: "url_checking_mode",
-		            value: $("#urlcheckingmode_selector").val() 
-		        },
-		        dataType: 'json',
-		        async: true,
-		        success: function (data, status) {
-		        	if (data.response_status === "error")
-		        	{
-		        		$("#urlcheckingmode_result_span").text(data.message);
-		        		// on error, reset the selector to the bg.user_jo value
-		        		if (bg.user_jo.url_checking_mode === "stealth")
-		            		$("#urlcheckingmode_selector").val("stealth");
-		        		else if (bg.user_jo.url_checking_mode === "notifications_only")
-		            		$("#urlcheckingmode_selector").val("notifications_only");
-		        		displayMessage(data.message, "red", "utility_message_td");
-		            	if(data.error_code && data.error_code === "0000")
-		        		{
-		        			displayMessage("Your login has expired. Please relog.", "red");
-		        			bg.user_jo = null;
-		        			updateLogstat();
-		        		}
-		        	}
-		        	else
-		        	{
-		        		bg.user_jo.url_checking_mode = $("#urlcheckingmode_selector").val();
-		        		$("#urlcheckingmode_result_span").text("updated");
-		        		bg.doButtonGen();
-		        	}
-		        	setTimeout(function(){$("#urlcheckingmode_result_span").text("");},3000);
-		        }
-		        ,
-		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		        	$("#urlcheckingmode_result_span").text("ajax error");
-		        	setTimeout(function(){$("#urlcheckingmode_result_span").text("");},3000);
-		            console.log(textStatus, errorThrown);
-		        }
-			});
+		$("#profile_page_savedstories_link").click( function (event) {	event.preventDefault();
+			chrome.tabs.create({url: "https://news.ycombinator.com/saved?id=" + bg.user_jo.screenname});
 		});
 		
-		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
-			$("#notificationmode_selector").val("newsfeed_and_notifications");
-		else if (bg.user_jo.notification_mode === "notifications_only")
-			$("#notificationmode_selector").val("notifications_only");
-		
-		$("#notificationmode_selector").change(function () {
-			$.ajax({
-				type: 'GET',
-				url: endpoint,
-				data: {
-		            method: "setUserPreference",
-		            screenname: screenname,          
-		            this_access_token: this_access_token,  
-		            which: "notification_mode",
-		            value: $("#notificationmode_selector").val() 
-		        },
-		        dataType: 'json',
-		        async: true,
-		        success: function (data, status) {
-		        	if (data.response_status === "error")
-		        	{
-		        		$("#notificationmode_result_td").text(data.message);
-		        		// on error, reset the selector to the bg.user_jo value
-		        		if (bg.user_jo.notification_mode === "newsfeed_and_notifications")
-		            		$("#notificationmode_selector").val("newsfeed_and_notifications");
-		        		else if (bg.user_jo.notification_mode === "notifications_only")
-		            		$("#notificationmode_selector").val("notifications_only");
-		        		displayMessage(data.message, "red", "utility_message_td");
-		            	if(data.error_code && data.error_code === "0000")
-		        		{
-		        			displayMessage("Your login has expired. Please relog.", "red");
-		        			bg.user_jo = null;
-		        			updateLogstat();
-		        		}
-		        	}
-		        	else
-		        	{
-		        		bg.user_jo.notification_mode = $("#notificationmode_selector").val();
-		        		$("#notificationmode_result_td").text("updated");
-		        		bg.doButtonGen();
-		        	}
-		        	setTimeout(function(){$("#notificationmode_result_td").text("");},3000);
-		        }
-		        ,
-		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		        	$("#notificationmode_result_td").text("ajax error");
-		        	setTimeout(function(){$("#notificationmode_result_td").text("");},3000);
-		            console.log(textStatus, errorThrown);
-		        }
-			});
-		});
-
-		$("#notificationmode_explainer_link").click(function () {
-			$("#notificationmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">When do you want the button to indicate new activity? Only when you have new notifications (for your stuff) or also when you have new news feed items (i.e. when those you're following do stuff)?</div>");
+		$("#profile_page_submissions_link").click( function (event) {	event.preventDefault();
+		chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + bg.user_jo.screenname});
 		});
 		
-		$("#urlcheckingmode_explainer_link").click(function () {
-			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
-					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
-		});
-		 
-		$("#karma_pool_explainer_link").click(function () {
-			$("#karma_pool_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">To prevent +1/-1 karma spam, Hackbook pools your karma changes together every X minutes.</div>");
-		});
-		
-		$("#hide_embedded_counts_explainer_link").click(function () {
-			$("#hide_embedded_counts_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">This is the \"feed (x) | notif. (y)\" thing at the top of every HN page.</div>");
+		$("#profile_page_comments_link").click( function (event) {	event.preventDefault();
+			chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + bg.user_jo.screenname});
 		});
 	}
 }
