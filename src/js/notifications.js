@@ -158,7 +158,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				act_html = act_html + "		<tr>";
         				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
         				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)" && $("#container_div_" + notification_jo.id).css("background-color") !== "rgba(0, 0, 0, 0)") // hacky
-        					act_html = act_html + "				<span style=\"color:#" + bg.user_jo.hn_topcolor + "\">&#9733;</span> ";
+        					act_html = act_html + "				<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
         				else
         					act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
         				act_html = act_html + agoIt(notification_jo.action_msfe) + " ";
@@ -221,7 +221,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        				act_html = act_html + "		<tr>";
                 		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
                 		        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)" && $("#container_div_" + notification_jo.id).css("background-color") !== "rgba(0, 0, 0, 0)") // hacky
-                		        					act_html = act_html + "<span style=\"color:#" + bg.user_jo.hn_topcolor + "\">&#9733;</span> ";
+                		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
                 		        				else
                 		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
                 		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";

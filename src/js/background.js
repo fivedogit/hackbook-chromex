@@ -14,15 +14,13 @@ var currentId = "";
 var currentHostname = "";
 var t_jo = null;
 var threadstatus = 0;
-var top="???";
-var bottom="???";
 var msfe_according_to_backend = (new Date).getTime(); // set to local machine time to start... will be reset to backend time by first thread call.
-var allowed_hostnames;
-var thread_request_data = "";
 var hn_login_step = 0;
 var hn_existing_about = "";
 var likedislikemode = "none";
 var masterid = "none"; // this is the master user retrieval id
+var latest_ext_version = null;
+var hn_topcolor = "ff6600";
 
 (function() {
 	chrome.tabs.getSelected(null, function(tab) {
@@ -847,6 +845,9 @@ function getUser(retrieve_asynchronously)
             		if(data.user_jo) 
             		{ 	
             			user_jo = data.user_jo;
+            			latest_ext_version = data.latest_ext_version;
+            			if(typeof data.user_jo.hn_topcolor !== "undefined" && data.user_jo.hn_topcolor !== null)
+            				hn_topcolor = data.user_jo.hn_topcolor;
             			drawNotificationNumber();
             		}    
             	}

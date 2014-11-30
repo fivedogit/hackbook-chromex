@@ -5,10 +5,7 @@
 	 bs = bs + "<center>";
 	 bs = bs + "<table style=\"background-color:#f6f6ef;width:600px;padding:6px;border:0px solid black;border-spacing:0px\">";
 	 bs = bs + "	<tr>";
-	 if(bg.user_jo && typeof bg.user_jo.hn_topcolor !== "undefined" && bg.user_jo.hn_topcolor !== null)
-		 bs = bs + "		<td id=\"header_td\" bgcolor=\"#" + bg.user_jo.hn_topcolor + "\">";
-	 else
-		 bs = bs + "		<td id=\"header_td\" bgcolor=\"#ff6600\">";
+	 bs = bs + "		<td id=\"header_td\" bgcolor=\"#" + bg.hn_topcolor + "\">";
 	 bs = bs + "			<table style=\"padding:2px\">";
 	 bs = bs + "				<tr>";
 	 bs = bs + "					<td style=\"width:18px;padding-right:4px;\">";
@@ -30,16 +27,23 @@
 	 bs = bs + "					<tr><td id=\"utility_header_td\" class=\"title\" style=\"padding:8px 0px 8px 0px;\"></td></tr>"; 
 	 bs = bs + "					<tr><td id=\"utility_message_td\" style=\"text-align:left;padding:0px 0px 8px 0px;display:none\"></td></tr>";
 	 bs = bs + "					<tr><td id=\"utility_csf_td\" style=\"padding:0px 0px 8px 0px;vertical-align:middle;\">";
+	 // it feels like this shouldn't be here.
 	 bs = bs + "						<input style=\"margin-top:8px\" type=\"button\" id=\"add_comment_button\" type=button value=\"add comment\"></input>";
 	 bs = bs + "					</td></tr>"; // csf = comment submission form
 	 bs = bs + "			</table>";
 	 bs = bs + "			<div id=\"main_div\" style=\"width:100%;background-color:white\"><div style=\"padding:20px;\"></div></div>";
-	 if(bg.user_jo && typeof bg.user_jo.hn_topcolor !== "undefined" && bg.user_jo.hn_topcolor !== null)
-		 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#" + bg.user_jo.hn_topcolor + ";height:3px;\"></div>";
-	 else
-		 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#ff6600;height:3px;\"></div>";
+	 bs = bs + "			<div id=\"beforefooter_div\" style=\"background-color:#" + bg.hn_topcolor + ";height:3px;\"></div>";
 	 bs = bs + "			<div id=\"footer_div\" style=\"background-color:white;height:15px;font-size:11px;text-align:center;padding:10px 0px 3px 0px;color:#828282;font-style:italic\">";
-	 bs = bs + "				Version " + chrome.runtime.getManifest().version + ". Please send bug reports, feature requests and feedback to c@mailcyr.us.";
+	 var new_version_avail = false;
+	 if(typeof bg.latest_ext_version !== "undefined" && bg.latest_ext_version !== null)
+	 {
+		 if(chrome.runtime.getManifest().version !== bg.latest_ext_version)
+			 new_version_avail = true;
+	 }	 
+	 if(new_version_avail)
+		 bs = bs + "Version " + chrome.runtime.getManifest().version + ". <span style=\"background-color:#" + bg.hn_topcolor + ";color:black;border-radius: 3px;padding:1px 3px 1px 3px\">New version " + bg.latest_ext_version + " available.</span> <a href=\"#\" id=\"extensions_link\" style=\"color:#828282;text-decoration:underline\">Extensions</a> -> enable dev mode -> update ext now.";
+	 else
+		 bs = bs + "Version " + chrome.runtime.getManifest().version + ". Please send bug reports, feature requests and feedback to c@mailcyr.us.";
 	 bs = bs + "			</div>";
 	 bs = bs + "		</td>";
 	 bs = bs + "	</tr>";
@@ -47,30 +51,45 @@
 	 bs = bs + "</center>";
 	 $("#hackbook_div").html(bs);//OK
 
- 	$("#brand_logo").click( function (event) {	event.preventDefault();
+ 	$("#brand_logo").click( function (event) {
  		chrome.tabs.create({url: "https://news.ycombinator.com/"});
+ 		return false;
  	});
 
-	$("#brand_link").click( function (event) {	event.preventDefault();
+	$("#brand_link").click( function (event) {
 		chrome.tabs.create({url: "https://news.ycombinator.com/"});
+		return false;
 	});
  	
- 	$("#thread_tab_link").click( function (event) {	event.preventDefault();
+ 	$("#thread_tab_link").click( function (event) {
  		doThreadTab();
+ 		return false;
  	});
  	
-	$("#newsfeed_tab_link").click( function (event) {	event.preventDefault();
+	$("#newsfeed_tab_link").click( function (event) {
 		doNewsfeedTab();
+		return false;
 	});
  	
- 	$("#notifications_tab_link").click( function (event) {	event.preventDefault();
+ 	$("#notifications_tab_link").click( function (event) {
  		doNotificationsTab();
+ 		return false;
  	});
 
+ 	// it feels like this shouldn't be here.
 	$("#add_comment_button").click(function(event){
 		chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + bg.t_jo.id });
+		return false;
 	});
- 	
+	 
+	if(new_version_avail)
+	{
+		$("#extensions_link").click( function (event) {
+			chrome.tabs.create({url: "chrome://extensions/"});
+			return false;
+		}); 
+	}	 
+	
  	updateLogstat();
  }
 
