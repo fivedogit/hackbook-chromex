@@ -41,13 +41,12 @@ function fromDecimalToOtherBase ( base, decimalNumber ) {
 
 function agoIt(inc_ts_in_ms)
 {
-	//var then = Date.parse(inc_created_at);
-	//alert(then);
-	var d = new Date();
-	var now = d.getTime();
-	//alert(now);
-	var millis_ago = now - inc_ts_in_ms;
-	//alert(millis_ago);
+	if(typeof bg.msfe_according_to_backend === "undefined" || bg.msfe_according_to_backend === null) // should never happen as bg sets msfe_according_to_backend to d.getTime() on load
+	{
+		var d = new Date();
+		bg.msfe_according_to_backend = d.getTime();
+	}	
+	var millis_ago = bg.msfe_according_to_backend - inc_ts_in_ms;
 	var minutes_ago = millis_ago/60000;
 	var time_ago = 0;
 	var time_ago_units = "";
