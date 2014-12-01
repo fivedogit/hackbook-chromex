@@ -18,7 +18,6 @@ var msfe_according_to_backend = (new Date).getTime(); // set to local machine ti
 var hn_login_step = 0;
 var hn_existing_about = "";
 var likedislikemode = "none";
-var masterid = "none"; // this is the master user retrieval id
 var latest_ext_version = null;
 var hn_topcolor = "ff6600";
 
@@ -157,7 +156,7 @@ chrome.runtime.onMessage.addListener(
 			        		{
 			        			docCookies.setItem("screenname", data.screenname, 31536e3);
 								docCookies.setItem("this_access_token", data.this_access_token, 31536e3);
-								getUser(true);
+								getUser(false);
 			        		}	
 			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: data.verified}, function(response) {});
 			        	}
@@ -243,7 +242,7 @@ chrome.runtime.onMessage.addListener(
 					  	        	    chrome.tabs.sendMessage(tabs[0].id, {method: "userSuccessfullyFollowedSomeone", target_screenname:target_screenname}, function(response) {});  
 					  	        	});
 				  	        	}
-				  	        	getUser(true); // refresh the user object with this new follow
+				  	        	getUser(false); // refresh the user object with this new follow
 				  	        }
 				  	    },
 				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -315,7 +314,7 @@ chrome.runtime.onMessage.addListener(
 					  	        	    chrome.tabs.sendMessage(tabs[0].id, {method: "userSuccessfullyUnfollowedSomeone", target_screenname:target_screenname}, function(response) {});  
 					  	        	});
 				  	        	}
-				  	        	getUser(true); // refresh the user object with this new follow
+				  	        	getUser(false); // refresh the user object with this new unfollow
 				  	        }
 				  	    },
 				  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -365,8 +364,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 		chrome.tabs.getSelected(null, function(tab) { // only follow through if the updating tab is the same as the selected tab, don't want background tabs reloading and wrecking stuff
 			if(updatingtab.url === tab.url) // the one that's updating is the one we're looking at. good. proceed
 			{
-				//alert("starting user retrieval loop onUpdated");
-				startUserRetrievalLoop();
 				if(currentURL !== tab.url) //  && tab.url.indexOf("chrome-extension://") !== 0) // only do this if the update is of a new url, no point in reloading the existing url again
 				{	
 					currentURL = updatingtab.url;
@@ -390,9 +387,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
 	chrome.tabs.getSelected(null, function(tab) {
-		//getUser(); // get user on every valid tab change. This updates notifications and logstat (do not getUser on random page updates)
-		//alert("starting user retrieval loop onActivated");
-		startUserRetrievalLoop();
 		if(typeof tab.url !== "undefined" && tab.url !== null && tab.url !== "")
 		{
 			currentURL = tab.url;
@@ -803,15 +797,10 @@ function drawHButton(background_color, h_color, aframe, leftnumber, rightnumber)
 	 });
 	}
 
-function getUser(retrieve_asynchronously)
+function getUser(loop)
 {
-	
-	var async = true;
-	if(retrieve_asynchronously !== null && retrieve_asynchronously === false)
-	{
-		async = false;
-		//alert("async=" + async);
-	}
+	if(typeof loop === "undefined" || loop === null)
+		loop = false;
 	var screenname = docCookies.getItem("screenname");
 	var this_access_token = docCookies.getItem("this_access_token");
 	var ext_version = chrome.runtime.getManifest().version;
@@ -827,7 +816,7 @@ function getUser(retrieve_asynchronously)
 	            ext_version: ext_version
 	        },
 	        dataType: 'json', 
-	        async: async, 
+	        async: true, 
 	        timeout: 7000,
 	        success: function (data, status) {
 	        	if (data.response_status === "error") 
@@ -859,6 +848,12 @@ function getUser(retrieve_asynchronously)
 	        error: function (XMLHttpRequest, textStatus, errorThrown) {
 	            console.log(textStatus, errorThrown);
 	        } 
+		})
+		.then(function() {
+			if(loop)
+			{
+				setTimeout(function(){getUser(true)}, 60000);
+			}
 		});
 	}
 	else if(screenname !== null || this_access_token !== null) // if either of these is not null and we've gotten here, 
@@ -871,28 +866,6 @@ function getUser(retrieve_asynchronously)
 	{
 		user_jo = null; // proceed with user_jo = null
 	}
-}
-
-function startUserRetrievalLoop()
-{
-	// rather than get the user on every new page update or thread update only, also get it once every minute so that notifications will show up even when there is no tab or page update.
-	// Generate a new id and as long as it is the same as the masterid, get the user every minute for up to 10 minutes.
-	var newid = makeid();
-	masterid = newid;
-	getUser(true);
-	setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true);setTimeout(function(){if(masterid===newid){getUser(true)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)}else{return}},6e4)
-}
-	
-	
-function makeid(limit)
-{
-	if(typeof limit === "undefined" || limit === null)
-		limit = 32;
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < limit; i++ )
-    	text += possible.charAt(Math.floor(Math.random() * possible.length));
-    return text;
 }
 	
 // FIRSTRUN 

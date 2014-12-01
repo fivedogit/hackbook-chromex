@@ -358,7 +358,7 @@ function followOrUnfollowUser(target_screenname, method, msg_dom_id) // which = 
 	        }
 	        else if (data.response_status === "success")
 	        {
-	        	bg.getUser(true);
+	        	bg.getUser(false);
 	        	if(tabmode === "profile")
 	        	{
 	        		setTimeout(function() {

@@ -37,7 +37,7 @@
 	 var new_version_avail = false;
 	 if(typeof bg.latest_ext_version !== "undefined" && bg.latest_ext_version !== null)
 	 {
-		 if(chrome.runtime.getManifest().version !== bg.latest_ext_version)
+		 if(chrome.runtime.getManifest().version*1 < bg.latest_ext_version*1)
 			 new_version_avail = true;
 	 }	 
 	 if(new_version_avail)
