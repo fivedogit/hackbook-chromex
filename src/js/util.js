@@ -47,6 +47,8 @@ function agoIt(inc_ts_in_ms)
 		bg.msfe_according_to_backend = d.getTime();
 	}	
 	var millis_ago = bg.msfe_according_to_backend - inc_ts_in_ms;
+	if(millis_ago < 0)
+		millis_ago = 0;
 	var minutes_ago = millis_ago/60000;
 	var time_ago = 0;
 	var time_ago_units = "";

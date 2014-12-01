@@ -831,6 +831,7 @@ function getUser(loop)
             	} 
             	else if (data.response_status === "success") 
             	{	
+            		msfe_according_to_backend = data.msfe;
             		if(data.user_jo) 
             		{ 	
             			user_jo = data.user_jo;
@@ -852,7 +853,7 @@ function getUser(loop)
 		.then(function() {
 			if(loop)
 			{
-				setTimeout(function(){getUser(true)}, 60000);
+				setTimeout(function(){getUser(true)}, 30000);
 			}
 		});
 	}
