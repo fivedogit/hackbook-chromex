@@ -89,7 +89,8 @@ function getProfile()
 		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span></form>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">deep-reply notif.: </td>";
+		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">deep replies: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"hide_deep_reply_notifications_selector\">";
 		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
@@ -98,7 +99,6 @@ function getProfile()
 		main_div_string = main_div_string + "					<span id=\"hide_deep_reply_notifications_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left;color:#828282;width:25%;vertical-align:top\">";
 		main_div_string = main_div_string + "					following:";
@@ -497,7 +497,11 @@ function getProfile()
 		});
 		
 		$("#hide_embedded_counts_explainer_link").click(function () {
-			$("#hide_embedded_counts_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">This is the \"feed (x) | notif. (y)\" thing at the top of every HN page.</div>");
+			var h = "";
+			h = h + "<div style=\"padding:5px 0px 5px 0px;\">Show/hide \"feed (x) | notif. (y)\" text at the top of every HN page. ";
+			h = h + "<br>NOTE: Since these notification numbers also apppear in the Hackbook button, this feature will probably be removed. ";
+			h = h + "Email me at c@mailcyr.us if you object to this removal.</div>";
+			$("#hide_embedded_counts_explainer_td").html(h);
 		});
 		
 		if (bg.user_jo.hide_inline_follow === false)

@@ -174,13 +174,19 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
             				else if(notification_jo.type === "1" )
             				{	
-            					c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
-        						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
+            					if(notification_jo.karma_change*1 === 1)
+            						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " point</b>";
+            					else
+            						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
+        						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
             				}
             				else if(notification_jo.type === "2" )
             				{
-            					c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
-            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
+            					if(notification_jo.karma_change*1 === -1)
+            						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " point</b>";
+            					else
+            						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
+            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
             				}
         					$("#comment_div_" + notification_jo.id).html(c_html);
         					if(notification_jo.type === "1" || notification_jo.type === "2")
@@ -381,7 +387,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        			c_html = c_html + "</div>";
                 		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
                 		        			{
-                		        				c_html = c_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=") + "<br><br><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a>";
+                		        				c_html = c_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
+                		        				c_html = c_html + "<table style=\"padding-top:7px;width:100%\">";
+                		        				c_html = c_html + "	<tr>";
+                		        				c_html = c_html + "		<td style=\"text-align:left\"><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a></td>";
+                		        				c_html = c_html + "		<td style=\"text-align:right\">";
+                		        				if(notification_jo.type === "9")
+                		        					c_html = c_html + " 		<span style=\"font-size:11px;font-style:italic;color:#828282\">Deep reply notifications can be turned off <a href=\"#\" id=\"deep_reply_settings_link_" + notification_jo.id + "\" style=\"color:#828282;text-decoration:underline\">here</a>.</span>";
+                		        				c_html = c_html + "		</td>";
+                		        				c_html = c_html + "	</tr>";
+                		        				c_html = c_html + "</table>";
                 		        				$("#comment_div_" + notification_jo.id).html(c_html);
                 		        				$("a").click(function(event) {
                     		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
@@ -395,6 +410,12 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                     		        					}
                     		        				}
                     		        			});
+                		        				if(notification_jo.type === "9")
+                		        				{
+                		        					$("#deep_reply_settings_link_" + notification_jo.id).click(function(event){
+                        		        				viewProfile();
+                        		        			});
+                		        				}	
                 		        			}
                 		        			else
                 		        				$("#comment_div_" + notification_jo.id).html(c_html);
