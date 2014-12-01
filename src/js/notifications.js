@@ -255,7 +255,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
                 		            		        dataType: 'json', async: true, 
                 		            		        success: function (data, status) {
-                		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && data.type === "story")
+                		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && (data.type === "story" || data.type === "poll"))
                 		            		        	{
                 		            		        		$("#title_link_" + notification_jo.id).text(data.title);
                 		            		        		$("#title_link_" + notification_jo.id).click(function(){
@@ -323,6 +323,8 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                     		        				        	}
                     		        				        	else if(data.type === "story")
                     		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this story.</div>");
+                    		        				        	else if(data.type === "poll")
+                    		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this poll.</div>");
                     		        				        },
                     		        				        error: function (XMLHttpRequest, textStatus, errorThrown) {
                         		            		        	console.log(textStatus, errorThrown);
