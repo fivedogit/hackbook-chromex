@@ -62,7 +62,10 @@
 	});
  	
  	$("#thread_tab_link").click( function (event) {
- 		doThreadTab();
+ 		if(currentHostname === "news.ycombinator.com")
+ 			doChatTab();
+ 		else
+ 			doThreadTab();
  		return false;
  	});
  	

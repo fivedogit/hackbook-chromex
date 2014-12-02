@@ -15,7 +15,7 @@ function doNotificationsTab()
 	$("#utility_table").show();
 	var h = "<table style=\"width:100%\">";
 	h = h + "	<tr>";
-	h = h + "		<td style=\"text-align:left\">Notifications</td>";
+	h = h + "		<td style=\"text-align:left;font-size:14px;font-weight:bold\">Notifications</td>";
 	if(bg.user_jo && typeof bg.user_jo.hide_promo_links !== "undefined" && bg.user_jo.hide_promo_links !== null && bg.user_jo.hide_promo_links === false)
 	{	
 		var randomint = Math.floor(Math.random() * 3);
@@ -29,16 +29,23 @@ function doNotificationsTab()
 	h = h + "</table>";
 	
 	$("#utility_header_td").html(h);
-	$("#twitter_link").click( function (event) {	event.preventDefault();
-		chrome.tabs.create({url: "https://twitter.com/intent/tweet?text=Your%20tweet%20text%20goes%20here.&url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fhackbook%2Flogdfcelflpgcbfebibbeajmhpofckjh"});
-	});
-	$("#5star_link").click( function (event) {	event.preventDefault();
-		chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hackbook/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
-	});
+	if(bg.user_jo && typeof bg.user_jo.hide_promo_links !== "undefined" && bg.user_jo.hide_promo_links !== null && bg.user_jo.hide_promo_links === false)
+	{	
+		$("#twitter_link").click( function (event) {	event.preventDefault();
+			chrome.tabs.create({url: "https://twitter.com/intent/tweet?text=Your%20tweet%20text%20goes%20here.&url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fhackbook%2Flogdfcelflpgcbfebibbeajmhpofckjh"});
+		});
+		$("#5star_link").click( function (event) {	event.preventDefault();
+			chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hackbook/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
+		});
+	}
 	
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").hide();
 
+	if(currentHostname === "news.ycombinator.com")
+		$("#thread_tab_link").text("chat");
+	else
+		$("#thread_tab_link").text("thread");
 	$("#thread_tab_link").css("font-weight", "normal");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "bold");

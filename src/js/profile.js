@@ -16,16 +16,20 @@ function viewProfile()
 	$("#utility_table").show();
 	if(bg.user_jo)
 	{
-		$("#utility_header_td").html("Profile <a href=\"#\" id=\"view_profile_on_hn_link\" style=\"font-size:10px;color:#828282\">(view on HN)</a>");
+		$("#utility_header_td").html("<span style=\"text-align:left;font-size:14px;font-weight:bold\">Profile</span> <a href=\"#\" id=\"view_profile_on_hn_link\" style=\"font-size:10px;color:#828282\">(view on HN)</a>");
 		$("#view_profile_on_hn_link").click(function(){
 			chrome.tabs.create({url:"https://news.ycombinator.com/user?id=" + bg.user_jo.screenname});
 		});
 	}
 	else
-		$("#utility_header_td").html("Profile");
+		$("#utility_header_td").html("<span style=\"text-align:left;font-size:14px;font-weight:bold\">Profile</span>");
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").hide();
 	
+	if(currentHostname === "news.ycombinator.com")
+		$("#thread_tab_link").text("chat");
+	else
+		$("#thread_tab_link").text("thread");
 	$("#thread_tab_link").css("font-weight", "normal");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "normal");

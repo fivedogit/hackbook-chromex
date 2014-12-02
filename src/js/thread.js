@@ -17,6 +17,7 @@ function doThreadTab()
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").show();
 	
+	$("#thread_tab_link").text("thread");
 	$("#thread_tab_link").css("font-weight", "bold");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "normal");
