@@ -61,7 +61,7 @@ function getProfile()
     	main_div_string = main_div_string + "<table style=\"margin-right:auto;margin-left:auto;width:580px\">";
     	main_div_string = main_div_string + "<tr>";
     	main_div_string = main_div_string + "	<td>";
-    	main_div_string = main_div_string + "		<table style=\"width:auto;border-collapse:separate;border-spacing:4px\">";
+    	main_div_string = main_div_string + "		<table style=\"width:auto;border-collapse:separate;border-spacing:7px\">";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">user:</td><td style=\"text-align:left\"><span id=\"profile_page_screenname_span\"></span> - <a href=\"#\" id=\"logout_link\">logout</a></td><td></td></tr>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282\">karma:</td><td style=\"text-align:left\" id=\"profile_page_karma_td\"></td><td></td></tr>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">notification mode: </td>";
@@ -73,7 +73,7 @@ function getProfile()
 		main_div_string = main_div_string + "				(<a href=\"#\" id=\"notificationmode_explainer_link\">?</a>) <span id=\"notificationmode_result_td\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"notificationmode_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr id=\"notificationmode_explainer_tr\" style=\"display:none\"><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"notificationmode_explainer_td\"></td>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">URL-checking mode: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"urlcheckingmode_selector\">";
@@ -83,13 +83,13 @@ function getProfile()
 		main_div_string = main_div_string + "					(<a href=\"#\" id=\"urlcheckingmode_explainer_link\">?</a>) <span id=\"urlcheckingmode_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"urlcheckingmode_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr id=\"urlcheckingmode_explainer_tr\" style=\"display:none\"><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"urlcheckingmode_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">karma pool TTL: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<form id=\"karma_pool_ttl_form\"><input type=text id=\"karma_pool_ttl_input\" style=\"width:40px\"> minutes (<a href=\"#\" id=\"karma_pool_explainer_link\">?</a>) <span id=\"karma_pool_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span></form>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr id=\"karma_pool_explainer_tr\" style=\"display:none\"><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"karma_pool_explainer_td\"></td>";
 		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">deep replies: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"hide_deep_reply_notifications_selector\">";
@@ -97,6 +97,15 @@ function getProfile()
 		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
 		main_div_string = main_div_string + "					</select>";
 		main_div_string = main_div_string + "					<span id=\"hide_deep_reply_notifications_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
+		main_div_string = main_div_string + "				</td>";
+		main_div_string = main_div_string + "			</tr>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">promo rate/share links: </td>";
+		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
+		main_div_string = main_div_string + "					<select id=\"hide_promo_links_selector\">";
+		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
+		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
+		main_div_string = main_div_string + "					</select>";
+		main_div_string = main_div_string + "					<span id=\"hide_promo_links_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
 		main_div_string = main_div_string + "			<tr>";
@@ -152,7 +161,7 @@ function getProfile()
 		main_div_string = main_div_string + "					<span id=\"hide_embedded_counts_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
 		main_div_string = main_div_string + "				</td>";
 		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"hide_embedded_counts_explainer_td\"></td>";
+		main_div_string = main_div_string + "			<tr id=\"hide_embedded_counts_explainer_tr\" style=\"display:none\"><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"hide_embedded_counts_explainer_td\"></td>";
     	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">inline follow: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"hide_inline_follow_selector\">";
@@ -239,6 +248,7 @@ function getProfile()
 		});
 
 		$("#notificationmode_explainer_link").click(function () {
+			$("#notificationmode_explainer_tr").show();
 			$("#notificationmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">When do you want the button to indicate new activity? Only when you have new notifications (for your stuff) or also when you have new news feed items (i.e. when those you're following do stuff)?</div>");
 		});
 		
@@ -295,6 +305,7 @@ function getProfile()
 		});
 		
 		$("#urlcheckingmode_explainer_link").click(function () {
+			$("#urlcheckingmode_explainer_tr").show();
 			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
 					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
 		});
@@ -330,6 +341,7 @@ function getProfile()
 		        	{
 		        		bg.user_jo.karma_pool_ttl_mins = $("#karma_pool_ttl_input").val()*1;
 		        		$("#karma_pool_result_span").text("updated");
+		        		bg.getUser(false);
 		        	}
 		        	setTimeout(function(){$("#karma_pool_result_span").text("");},3000);
 		        }
@@ -344,6 +356,7 @@ function getProfile()
 		});
 		
 		$("#karma_pool_explainer_link").click(function () {
+			$("#karma_pool_explainer_tr").show();
 			$("#karma_pool_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">To prevent +1/-1 karma spam, Hackbook pools your karma changes together every X minutes.</div>");
 		});
 		
@@ -389,7 +402,7 @@ function getProfile()
 		        		else if($("#hide_deep_reply_notifications_selector").val() === "hide")
 		        			bg.user_jo.hide_deep_reply_notifications = true;
 		        		$("#hide_deep_reply_notifications_result_span").text("Updated.");
-		        		bg.doButtonGen();
+		        		bg.getUser(false);
 		        	}
 		        	setTimeout(function(){$("#hide_deep_reply_notifications_result_span").text("");},3000);
 		        }
@@ -397,6 +410,61 @@ function getProfile()
 		        error: function (XMLHttpRequest, textStatus, errorThrown) {
 		        	$("#hide_deep_reply_notifications_result_span").text("ajax error");
 		        	setTimeout(function(){$("#hide_deep_reply_notifications_result_span").text("");},3000);
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+		});
+		
+		if (bg.user_jo.hide_promo_links === false)
+			$("#hide_promo_links_selector").val("show");
+		else if (bg.user_jo.hide_promo_links === true)
+			$("#hide_promo_links_selector").val("hide");
+		
+		$("#hide_promo_links_selector").change(function () {
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {
+		            method: "setUserPreference",
+		            screenname: screenname,          
+		            this_access_token: this_access_token,  
+		            which: "hide_promo_links",
+		            value: $("#hide_promo_links_selector").val() 
+		        },
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		$("#hide_promo_links_result_span").text(data.message);
+		        		// on error, reset the selector to the bg.user_jo value
+		        		if (bg.user_jo.hide_promo_links === false)
+		        			$("#hide_promo_links_selector").val("show");
+		        		else if (bg.user_jo.hide_promo_links === true)
+		        			$("#hide_promo_links_selector").val("hide");
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else
+		        	{
+		        		if($("#hide_promo_links_selector").val() === "show")
+		        			bg.user_jo.hide_promo_links = false;
+		        		else if($("#hide_promo_links_selector").val() === "hide")
+		        			bg.user_jo.hide_promo_links = true;
+		        		$("#hide_promo_links_result_span").text("Updated.");
+		        		bg.getUser(false);
+		        	}
+		        	setTimeout(function(){$("#hide_promo_links_result_span").text("");},3000);
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	$("#hide_promo_links_result_span").text("ajax error");
+		        	setTimeout(function(){$("#hide_promo_links_result_span").text("");},3000);
 		            console.log(textStatus, errorThrown);
 		        }
 			});
@@ -483,7 +551,7 @@ function getProfile()
 		        		else if($("#hide_embedded_counts_selector").val() === "hide")
 		        			bg.user_jo.hide_embedded_counts = true;
 		        		$("#hide_embedded_counts_result_span").text("Updated. Refresh HN pages.");
-		        		bg.doButtonGen();
+		        		bg.getUser(false);
 		        	}
 		        	setTimeout(function(){$("#hide_embedded_counts_result_span").text("");},3000);
 		        }
@@ -497,6 +565,7 @@ function getProfile()
 		});
 		
 		$("#hide_embedded_counts_explainer_link").click(function () {
+			$("#hide_embedded_counts_explainer_tr").show();
 			var h = "";
 			h = h + "<div style=\"padding:5px 0px 5px 0px;\">Show/hide \"feed (x) | notif. (y)\" text at the top of every HN page. ";
 			h = h + "<br>NOTE: Since these notification numbers also apppear in the Hackbook button, this feature will probably be removed. ";
@@ -546,7 +615,7 @@ function getProfile()
 		        		else if($("#hide_inline_follow_selector").val() === "hide")
 		        			bg.user_jo.hide_inline_follow = true;
 		        		$("#hide_inline_follow_result_span").text("Updated. Refresh HN pages.");
-		        		bg.doButtonGen();
+		        		bg.getUser(false);
 		        	}
 		        	setTimeout(function(){$("#hide_inline_follow_result_span").text("");},3000);
 		        }

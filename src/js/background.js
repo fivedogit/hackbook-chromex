@@ -343,17 +343,17 @@ chrome.runtime.onMessage.addListener(
 	  }
 	  else if(request.method === "getHideEmbeddedCounts") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
-		  if(user_jo)
+		  if(user_jo && typeof user_jo.hide_embedded_counts !== "undefined" && user_jo.hide_embedded_counts !== null)
 			  sendResponse({hide_embedded_counts: user_jo.hide_embedded_counts});
 		  else
-			  sendResponse({hide_embedded_counts: false});
+			  sendResponse({hide_embedded_counts: true});
 	  }
 	  else if(request.method === "getHideInlineFollow") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
-		  if(user_jo)
+		  if(user_jo && typeof user_jo.hide_inline_follow !== "undefined" && user_jo.hide_inline_follow !== null)
 			  sendResponse({hide_inline_follow: user_jo.hide_inline_follow});
 		  else
-			  sendResponse({hide_inline_follow: false});
+			  sendResponse({hide_inline_follow: true});
 	  }
   });
 

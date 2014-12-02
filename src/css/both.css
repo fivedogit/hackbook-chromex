@@ -1,6 +1,6 @@
 body  { font-family:Verdana, Geneva, sans-serif; font-size:10pt; }
 table { width:100% }
-td    { font-family:Verdana, Geneva, sans-serif; font-size:10pt; padding:0px}
+td    { font-family:Verdana, Geneva, sans-serif; font-size:10pt; padding:0px; border: 0px solid black}
 
 a:link    { color:#000000; text-decoration:none; }
 a:hover    { text-decoration:underline; }
