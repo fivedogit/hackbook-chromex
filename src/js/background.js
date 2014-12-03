@@ -520,10 +520,9 @@ function getThread(url_at_function_call, updatebutton)
         	if(currentURL === url_at_function_call)
         	{
         		threadstatus=0;
+        		drawHButton("gray", "red");
         	}
             console.log(textStatus, errorThrown);
-            //alert("drawing red searchForHNItem ajax");
-            drawHButton("gray", "red");
         }
 	});	
 
