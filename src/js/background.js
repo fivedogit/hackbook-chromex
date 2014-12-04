@@ -439,7 +439,9 @@ function doButtonGen()
 	else
 	{
 		if(!isValidURLFormation(currentURL))
-		{	drawHButton("gray", "white"); return; } // no notification number, overwrite
+		{	drawHButton("gray", "white"); return; } 
+		else if(currentHostname === "news.ycombinator.com")
+		{   drawHButton("gray", "white"); return; }	
 		else
 			getThread(url_at_function_call, true); // no notification number, overwrite
 	}

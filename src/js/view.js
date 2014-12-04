@@ -13,6 +13,8 @@
 	 bs = bs + "					</td>";
 	 bs = bs + "					<td style=\"line-height:12pt; height:10px;\">";
 	 bs = bs + "							<a id=\"brand_link\" href=\"#\" style=\"font-weight:bold\">Hackbook</a><img src=\"" + chrome.extension.getURL("images/s.gif") + "\" height=\"1\" width=\"10\">";
+	 bs = bs + "							<a href=\"#\" id=\"chat_tab_link\">chat</a>";
+	 bs = bs + " | ";
 	 bs = bs + "							<a href=\"#\" id=\"thread_tab_link\">thread</a>";
 	 bs = bs + " | ";
 	 bs = bs + "							<a href=\"#\" id=\"newsfeed_tab_link\">feed</a> (<span id=\"newsfeed_count_span\">0</span>)";
@@ -61,11 +63,13 @@
 		return false;
 	});
  	
+	$("#chat_tab_link").click( function (event) {
+ 		doChatTab();
+ 		return false;
+ 	});
+	
  	$("#thread_tab_link").click( function (event) {
- 		if(currentHostname === "news.ycombinator.com")
- 			doChatTab();
- 		else
- 			doThreadTab();
+ 		doThreadTab();
  		return false;
  	});
  	

@@ -17,7 +17,7 @@ function doThreadTab()
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").show();
 	
-	$("#thread_tab_link").text("thread");
+	$("#chat_tab_link").css("font-weight", "normal");
 	$("#thread_tab_link").css("font-weight", "bold");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "normal");
@@ -32,14 +32,12 @@ function doThreadTab()
 		// count resets happen in getNotifications so the display can do the yellow background thing
 	}
 	
-	// for now, default on not logged in is "stealth" mode, showing threads. That's why this is commented out.
-/*	if(typeof bg.user_jo === "undefined" || bg.user_jo === null)
+	if(currentHostname === "news.ycombinator.com")
 	{
 		$("#utility_table").hide();
-		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">You are not logged in, so no thread will appear here.</div>");
+		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">HN comment threads are not available on news.ycombinator.com.</div>");
 	}	
-	else*/ 
-	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
+	else if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
 	{
 		$("#utility_table").hide();
 		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">You are in \"notifications only\" URL-checking mode, so no thread will appear here.</div>");

@@ -32,8 +32,8 @@ function doChatTab()
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").hide();
 
-	$("#thread_tab_link").text("chat");
-	$("#thread_tab_link").css("font-weight", "bold");
+	$("#chat_tab_link").css("font-weight", "bold");
+	$("#thread_tab_link").css("font-weight", "normal");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "normal");
 	$("#profile_link").css("font-weight", "normal");
@@ -44,37 +44,49 @@ function doChatTab()
 		$("#newsfeed_count_span").text(bg.user_jo.newsfeed_count);
 		// count resets happen in getNotifications so the display can do the yellow background thing
 	}
-	if(bg.user_jo)
-	{	
-		h = "";
-		h = h + "<div style=\"background-color:white;padding:0px 10px 0px 10px\">"; // padding
-		//h = h + "	<div style=\"overflow-y:auto;overflow-x:hidden;top:10px;left:10px;background-color:black;border:2px solid #828282;height:300;width:580px\">"; // container
-		h = h + "		<textarea id=\"chat_textarea\" style=\"font-family:Verdana, Geneva, sans-serif;vertical-align:bottom;background-color:black;color:#" + bg.hn_topcolor + ";border:2px solid #828282;height:300px;width:580px;resize:none\">Loading chat...</textarea>";
-		//h = h + "	</div>";
-		h = h + "</div>";
-		h = h + "<div style=\"background-color:white;padding:0px 10px 10px 10px\">";
-		h = h + "	<div style=\"border-right:2px solid #828282;border-bottom:2px solid #828282;border-left:2px solid #828282;background-color:black\">";
-		h = h + "		<table style=\"width:100%;border-collapse:collapse;\">";
-		h = h + "			<tr>";
-		h = h + "				<td style=\"background-color:black;color:#" + bg.hn_topcolor + ";width:10px;padding:2px 5px 2px 3px\">" + bg.user_jo.screenname + "></td>";
-		h = h + "				<td><form id=\"chat_form\" method=\"GET\" action=\"#\" name=\"chatform\"><input type=text id=\"chat_input\" style=\"font-family:Verdana, Geneva, sans-serif;background-color:black;color:#" + bg.hn_topcolor + ";border:0px solid #828282;width:100%\"></form></td>";
-		h = h + "			</tr>";
-		h = h + "		</table>";
-		h = h + " 	</div>";
-		h = h + "</div>";
-		h = h + "<div id=\"chat_error_div\" style=\"background-color:white;color:red;padding:0px 10px 20px 10px\"></div>";
-		$("#main_div").html(h);
-		$("#chat_form").submit(function () {
-			submitChatMessage($("#chat_input").val());
+	
+	/*if(currentHostname !== "news.ycombinator.com")
+	{
+		$("#utility_table").hide();
+		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">Chat is only available on <a href=\"#\" id=\"hn_chat_link\" style=\"text-decoration:underline\">news.ycombinator.com</a>.</div>");
+		$("#hn_chat_link").click(function(event){
+			chrome.tabs.create({url: "https://news.ycombinator.com"});
 			return false;
 		});
-		$("#chat_input").focus();
-		getChat();
-	}
+	}	
 	else
-	{
-		$("#main_div").html("<div style=\"padding:20px\">Log in to view the chat box.</div>"); //OK
-	}
+	{*/
+		if(bg.user_jo)
+		{	
+			h = "";
+			h = h + "<div style=\"background-color:white;padding:0px 10px 0px 10px\">"; // padding
+			h = h + "		<textarea id=\"chat_textarea\" style=\"font-family:Verdana, Geneva, sans-serif;vertical-align:bottom;background-color:black;color:#" + bg.hn_topcolor + ";border:2px solid #828282;height:300px;width:580px;resize:none\">Loading chat...</textarea>";
+			h = h + "</div>";
+			h = h + "<div style=\"background-color:white;padding:0px 10px 10px 10px\">";
+			h = h + "	<div style=\"border-right:2px solid #828282;border-bottom:2px solid #828282;border-left:2px solid #828282;background-color:black\">";
+			h = h + "		<table style=\"width:100%;border-collapse:collapse;\">";
+			h = h + "			<tr>";
+			h = h + "				<td style=\"background-color:black;color:#" + bg.hn_topcolor + ";width:10px;padding:2px 5px 2px 3px\">" + bg.user_jo.screenname + "></td>";
+			h = h + "				<td><form id=\"chat_form\" method=\"GET\" action=\"#\" name=\"chatform\"><input type=text id=\"chat_input\" style=\"font-family:Verdana, Geneva, sans-serif;background-color:black;color:#" + bg.hn_topcolor + ";border:0px solid #828282;width:100%\"></form></td>";
+			h = h + "			</tr>";
+			h = h + "		</table>";
+			h = h + " 	</div>";
+			h = h + "</div>";
+			h = h + "<div id=\"chat_error_div\" style=\"background-color:white;color:red;padding:0px 10px 0px 10px\"></div>";
+			h = h + "<div style=\"background-color:white;color:black;padding:10px 10px 20px 10px;font-style:italic;color:#828282\">Tip: You can \"@username\" mention other Hackbook users to get their attention.</div>";
+			$("#main_div").html(h);
+			$("#chat_form").submit(function () {
+				submitChatMessage($("#chat_input").val());
+				return false;
+			});
+			$("#chat_input").focus();
+			getChat();
+		}
+		else
+		{
+			$("#main_div").html("<div style=\"padding:20px\">Log in to view the chat box.</div>"); //OK
+		}
+	//}
 }
 
 function getChat()
@@ -137,7 +149,9 @@ function displayChat(chat_ja)
 	if(prev !== h)
 	{	
 		$("#chat_textarea").val(h);
-		$('#chat_textarea').scrollTop($('#chat_textarea')[0].scrollHeight);
+		var textarea = document.getElementById('chat_textarea');
+		textarea.scrollTop = textarea.scrollHeight;
+		//$('#chat_textarea').scrollTop($('#chat_textarea')[0].scrollHeight);
 	}
 }
 

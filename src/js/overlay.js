@@ -50,10 +50,10 @@ function doOverlay()
 		 doNotificationsTab();
 	 else if((typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.newsfeed_count !== "undefined" && bg.user_jo.newsfeed_count !== null && bg.user_jo.newsfeed_count > 0))
 		 doNewsfeedTab();
-	 else if(currentHostname === "news.ycombinator.com")
-		 doChatTab();
+	 //else if(currentHostname === "news.ycombinator.com")
+	 	//doChatTab();
 	 else if(bg.t_jo !== null && !isEmpty(bg.t_jo)) // if there's something
 		 doThreadTab();
 	 else
-		 doNewsfeedTab();
+		 doChatTab();
 }

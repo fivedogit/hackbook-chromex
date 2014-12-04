@@ -32,10 +32,7 @@ function doNewsfeedTab()
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").hide();
 
-	if(currentHostname === "news.ycombinator.com")
-		$("#thread_tab_link").text("chat");
-	else
-		$("#thread_tab_link").text("thread");
+	$("#chat_tab_link").css("font-weight", "normal");
 	$("#thread_tab_link").css("font-weight", "normal");
 	$("#newsfeed_tab_link").css("font-weight", "bold");
 	$("#notifications_tab_link").css("font-weight", "normal");

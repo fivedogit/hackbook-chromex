@@ -42,10 +42,7 @@ function doNotificationsTab()
 	$("#utility_message_td").hide();
 	$("#utility_csf_td").hide();
 
-	if(currentHostname === "news.ycombinator.com")
-		$("#thread_tab_link").text("chat");
-	else
-		$("#thread_tab_link").text("thread");
+	$("#chat_tab_link").css("font-weight", "normal");
 	$("#thread_tab_link").css("font-weight", "normal");
 	$("#newsfeed_tab_link").css("font-weight", "normal");
 	$("#notifications_tab_link").css("font-weight", "bold");
@@ -114,11 +111,11 @@ function getNotifications(feedmode)
 				writeUnifiedCommentContainer(sorted_ids[x], "main_div", "append");
 				if(feedmode === "notifications" && x < bg.user_jo.notification_count )
 				{
-					$("#container_div_" + sorted_ids[x]).css("background-color", "#fffed6");
+					$("#container_div_" + sorted_ids[x]).addClass("new_notification");
 				}	
 				else if(feedmode === "newsfeed" && x < bg.user_jo.newsfeed_count )
 				{
-					$("#container_div_" + sorted_ids[x]).css("background-color", "#fffed6");
+					$("#container_div_" + sorted_ids[x]).addClass("new_notification");
 				}	
 				doNotificationItem(sorted_ids[x], "comment_div_" + sorted_ids[x], feedmode);
 			}
@@ -158,16 +155,16 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         success: function (data, status) {
         	if(data.response_status === "success")
         	{	
-        		if(tabmode === feedmode) // as these come in, only process them if we're still on the notifications tab
+        		if(tabmode === feedmode) // as these come in, only process them if we're still on the correct tab
         		{	
         			var notification_jo = data.notification_jo;
-        			if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2")
+        			if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2" || notification_jo.type === "C")
         			{
         				var act_html = "";
         				act_html = act_html + "	<table style=\"width:100%\">";
         				act_html = act_html + "		<tr>";
         				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)" && $("#container_div_" + notification_jo.id).css("background-color") !== "rgba(0, 0, 0, 0)") // hacky
+        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
         					act_html = act_html + "				<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
         				else
         					act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
@@ -177,7 +174,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				act_html = act_html + "	</table>";
         				$("#header_div_" + notification_jo.id).html(act_html);
         				$("#header_div_" + notification_jo.id).show();
-        				if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2")
+        				if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2" || notification_jo.type === "C") // these have no root_story_id, root_comment_id or text
         				{
         					var c_html = "";
         					if(notification_jo.type === "0")
@@ -198,6 +195,11 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
             					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
             				}
+            				else if(notification_jo.type === "C" )
+            				{
+            					c_html = c_html + "<b>" + notification_jo.triggerer + " mentioned you in <a href=\"#\" id=\"chat_link_" + notification_jo.id + "\">chat</a></b>";
+            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">This notification will self-destruct.</div>";
+            				}
         					$("#comment_div_" + notification_jo.id).html(c_html);
         					if(notification_jo.type === "1" || notification_jo.type === "2")
             				{
@@ -205,6 +207,14 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
             					});
             				}
+        					else if(notification_jo.type === "C")
+            				{
+        						$("#chat_link_" + notification_jo.id).click(function(event) {
+        							doChatTab();
+        							return false;
+        						});
+            				}
+        						
         				}
         				$("#screenname_link_" + notification_jo.id).click({value:notification_jo.triggerer}, function(event){
 	        				chrome.tabs.create({url: "https://news.ycombinator.com/user?id=" + event.data.value});
@@ -236,7 +246,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		        				act_html = act_html + "	<table style=\"width:100%\">";
                 		        				act_html = act_html + "		<tr>";
                 		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-                		        				if($("#container_div_" + notification_jo.id).css("background-color") !== "rgb(255, 255, 255)" && $("#container_div_" + notification_jo.id).css("background-color") !== "rgba(0, 0, 0, 0)") // hacky
+                		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
                 		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
                 		        				else
                 		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
@@ -452,7 +462,44 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             			});	
         			}
         			
+        			if(notification_jo.type === "C")
+        			{
+        				$.ajax({
+        			        type: 'GET',
+        			        url: endpoint,
+        			        data: {
+        			            method: "removeItemFromNotificationIds",
+        			            notification_id: notification_jo.id,
+        			            screenname: screenname,           
+        			            this_access_token: this_access_token  
+        			        },
+        			        dataType: 'json',
+        			        async: true,
+        			        success: function (data, status) {
+        			            if (data.response_status === "error") 
+        			            {
+        			            	displayMessage(data.message, "red", "utility_message_td");
+        			            	if(data.error_code && data.error_code === "0000")
+        			        		{
+        			        			displayMessage("Your login has expired. Please relog.", "red");
+        			        			bg.user_jo = null;
+        			        			updateLogstat();
+        			        		}
+        			            }
+        			            else 
+        			            {
+        			            	// succeed silently
+        			            }
+        			        },
+        			        error: function (XMLHttpRequest, textStatus, errorThrown) {
+        			        	displayMessage("Ajax error for removeItemFromNotificationIds method.", "red", "utility_message_td");
+        			            console.log(textStatus, errorThrown);
+        			        } 
+        				});
+        			}	
+        			
         		}	
+        		
         	}
         	else if(data.response_status === "error")
         	{ 
