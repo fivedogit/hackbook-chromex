@@ -20,6 +20,7 @@ var hn_existing_about = "";
 var likedislikemode = "none";
 var latest_ext_version = null;
 var hn_topcolor = "ff6600";
+var user_retrieval_loop_is_running = false;
 
 (function() {
 	chrome.tabs.getSelected(null, function(tab) {
@@ -362,6 +363,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 	if (changeInfo.status === "loading") // also fires at "complete", which I'm ignoring here. Only need one (this one).
 	{
 		chrome.tabs.getSelected(null, function(tab) { // only follow through if the updating tab is the same as the selected tab, don't want background tabs reloading and wrecking stuff
+			if(user_retrieval_loop_is_running == false) // if the loop has died for any reason (or was never running in the first place), restart it
+				getUser(true);
 			if(updatingtab.url === tab.url) // the one that's updating is the one we're looking at. good. proceed
 			{
 				if(currentURL !== tab.url) //  && tab.url.indexOf("chrome-extension://") !== 0) // only do this if the update is of a new url, no point in reloading the existing url again
@@ -387,6 +390,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, updatingtab) {
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
 	chrome.tabs.getSelected(null, function(tab) {
+		if(user_retrieval_loop_is_running == false) // if the loop has died for any reason (or was never running in the first place), restart it
+			getUser(true);
 		if(typeof tab.url !== "undefined" && tab.url !== null && tab.url !== "")
 		{
 			currentURL = tab.url;
@@ -802,6 +807,9 @@ function getUser(loop)
 {
 	if(typeof loop === "undefined" || loop === null)
 		loop = false;
+	else if(loop === true)
+		user_retrieval_loop_is_running = true; // set this BEFORE the call to getUserSelf so we don't get double loops going.
+	
 	var screenname = docCookies.getItem("screenname");
 	var this_access_token = docCookies.getItem("this_access_token");
 	var ext_version = chrome.runtime.getManifest().version;

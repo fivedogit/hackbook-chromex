@@ -45,17 +45,17 @@ function doChatTab()
 		// count resets happen in getNotifications so the display can do the yellow background thing
 	}
 	
-	/*if(currentHostname !== "news.ycombinator.com")
+	if(currentHostname !== "news.ycombinator.com")
 	{
 		$("#utility_table").hide();
-		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">Chat is only available on <a href=\"#\" id=\"hn_chat_link\" style=\"text-decoration:underline\">news.ycombinator.com</a>.</div>");
+		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">Chat is only available while on <a href=\"#\" id=\"hn_chat_link\" style=\"text-decoration:underline\">news.ycombinator.com</a>.</div>");
 		$("#hn_chat_link").click(function(event){
 			chrome.tabs.create({url: "https://news.ycombinator.com"});
 			return false;
 		});
 	}	
 	else
-	{*/
+	{
 		if(bg.user_jo)
 		{	
 			h = "";
@@ -86,7 +86,7 @@ function doChatTab()
 		{
 			$("#main_div").html("<div style=\"padding:20px\">Log in to view the chat box.</div>"); //OK
 		}
-	//}
+	}
 }
 
 function getChat()
