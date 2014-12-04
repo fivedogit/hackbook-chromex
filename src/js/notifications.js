@@ -174,53 +174,51 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				act_html = act_html + "	</table>";
         				$("#header_div_" + notification_jo.id).html(act_html);
         				$("#header_div_" + notification_jo.id).show();
-        				if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2" || notification_jo.type === "C") // these have no root_story_id, root_comment_id or text
+        				
+        				var c_html = "";
+    					if(notification_jo.type === "0")
+        					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
+        				else if(notification_jo.type === "1" )
+        				{	
+        					if(notification_jo.karma_change*1 === 1)
+        						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " point</b>";
+        					else
+        						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
+    						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
+        				}
+        				else if(notification_jo.type === "2" )
         				{
-        					var c_html = "";
-        					if(notification_jo.type === "0")
-            					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
-            				else if(notification_jo.type === "1" )
-            				{	
-            					if(notification_jo.karma_change*1 === 1)
-            						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " point</b>";
-            					else
-            						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
-        						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
-            				}
-            				else if(notification_jo.type === "2" )
-            				{
-            					if(notification_jo.karma_change*1 === -1)
-            						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " point</b>";
-            					else
-            						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
-            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
-            				}
-            				else if(notification_jo.type === "C" )
-            				{
-            					c_html = c_html + "<b>" + notification_jo.triggerer + " mentioned you in <a href=\"#\" id=\"chat_link_" + notification_jo.id + "\">chat</a></b>";
-            					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">This notification will self-destruct.</div>";
-            				}
-        					$("#comment_div_" + notification_jo.id).html(c_html);
-        					if(notification_jo.type === "1" || notification_jo.type === "2")
-            				{
-        						$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
-            						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
-            					});
-            				}
-        					else if(notification_jo.type === "C")
-            				{
-        						$("#chat_link_" + notification_jo.id).click(function(event) {
-        							doChatTab();
-        							return false;
-        						});
-            				}
-        						
+        					if(notification_jo.karma_change*1 === -1)
+        						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " point</b>";
+        					else
+        						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
+        					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
+        				}
+        				else if(notification_jo.type === "C" )
+        				{
+        					c_html = c_html + "<b>" + notification_jo.triggerer + " mentioned you in <a href=\"#\" id=\"chat_link_" + notification_jo.id + "\">chat</a></b>";
+        					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">This notification will self-destruct.</div>";
+        				}
+    					$("#comment_div_" + notification_jo.id).html(c_html);
+    					if(notification_jo.type === "1" || notification_jo.type === "2")
+        				{
+    						$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
+        						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
+        					});
+        				}
+    					else if(notification_jo.type === "C")
+        				{
+    						$("#chat_link_" + notification_jo.id).click(function(event) {
+    							doChatTab();
+    							return false;
+    						});
         				}
         				$("#screenname_link_" + notification_jo.id).click({value:notification_jo.triggerer}, function(event){
 	        				chrome.tabs.create({url: "https://news.ycombinator.com/user?id=" + event.data.value});
 	        			});
         			}	
-        			else
+        			else if(notification_jo.type === "3" || notification_jo.type === "4" || notification_jo.type === "5" || notification_jo.type === "6" ||
+        					notification_jo.type === "7" || notification_jo.type === "8" || notification_jo.type === "9")
         			{	
         				$.ajax({ 
             				type: 'GET', 
@@ -237,213 +235,206 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         		        			}
             		        		else
             		        		{	
-            		        			if(notification_jo.type*1 >= 3 && notification_jo.type*1 <= 9)
-                		        		{	
-                		        			if(notification_jo.hn_root_story_id !== null)
-                		        			{
-                		        				var showbranch = false;
-                		        				var act_html = "";
-                		        				act_html = act_html + "	<table style=\"width:100%\">";
-                		        				act_html = act_html + "		<tr>";
-                		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-                		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
-                		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
-                		        				else
-                		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
-                		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
-                		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
-                		        				act_html = act_html + "			</td>";
-                		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
-                		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+            		        			if(notification_jo.hn_root_story_id !== null)
+            		        			{
+            		        				var showbranch = false;
+            		        				var act_html = "";
+            		        				act_html = act_html + "	<table style=\"width:100%\">";
+            		        				act_html = act_html + "		<tr>";
+            		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
+            		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
+            		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
+            		        				else
+            		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
+            		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
+            		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
+            		        				act_html = act_html + "			</td>";
+            		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
+            		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+            		        				{
+            		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
+            		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
+            		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
+            		        					{
+            		        						if(notification_jo.hn_root_comment_id !== data.id)
+            		        							showbranch = true;
+            		        						else // this is the root comment. Does it have children?
+            		        						{
+            		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
+            		        								showbranch = true;
+            		        						}
+            		        						if(showbranch)	
+            		        							act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
+            		        					}
+            		        				}
+            		        				
+            		        				act_html = act_html + "			</td>";
+            		        				act_html = act_html + "		</tr>";
+            		        				act_html = act_html + "	</table>";
+            		        				$("#header_div_" + notification_jo.id).html(act_html);
+            		        				$("#header_div_" + notification_jo.id).show();
+            		        				                		        				
+            		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
+            		            		        dataType: 'json', async: true, 
+            		            		        success: function (data, status) {
+            		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && (data.type === "story" || data.type === "poll"))
+            		            		        	{
+            		            		        		$("#title_link_" + notification_jo.id).text(data.title);
+            		            		        		$("#title_link_" + notification_jo.id).click(function(){
+            		            		        			if(typeof data.url !== "undefined" && data.url !== null && data.url !== "")
+            		            		        				chrome.tabs.create({url: data.url});
+            		            		        			else
+            		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
+            		            		        		});
+            		            		        		$("#comments_link_" + notification_jo.id).click(function(){
+            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
+            		            		        		});
+            		            		        		$("#item_link_" + notification_jo.id).click(function(){
+            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + notification_jo.hn_target_id});
+            		            		        		});
+            		            		        	}
+            		            		        	else if (data === null)
+            		            		        	{
+            		            		        		$("#title_link_" + notification_jo.id).text("deleted");
+            		            		        		$("#title_link_" + notification_jo.id).css("font-style", "italic");
+            		            		        		$("#comments_link_" + notification_jo.id).text("deleted");
+            		            		        		$("#comments_link_" + notification_jo.id).css("font-style", "italic");
+            		            		        	}	
+            		            		        },
+            		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_jo.id);
+            		            		        	console.log(textStatus, errorThrown);
+            		            		        }
+            		            			});
+            		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+            		        				{	
+            		        					$("#show_parent_link_" + notification_jo.id).click(function(){
+            		        						$("#comment_div_" + notification_jo.id).css("padding-left", "25px");
+                		        					$("#parent_div_" + notification_jo.id).html("<img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\">");
+                		        					$("#parent_div_" + notification_jo.id).show();
+                		        					if($("#parent_and_branch_td_" + notification_jo.id).text().indexOf("branch") !== -1)
+                		        					{
+                		        						$("#show_parent_link_" + notification_jo.id).text("");
+                		        						$("#separator_span_" + notification_jo.id).text("");
+                		        					}
+                		        					else
+                		        						$("#parent_and_branch_td_" + notification_jo.id).text("");
+                		        					$.ajax({ 
+                		        						type: 'GET', 
+                		        						url: "https://hacker-news.firebaseio.com/v0/item/" + data.parent + ".json", 
+                		        				        dataType: 'json', 
+                		        				        async: true, 
+                		        				        success: function (data, status) {
+                		        				        	if(data.type === "comment")
+                		        				        	{
+                		        				        		var p_html = "<div style=\"padding-bottom:5px;font-weight:bold\"><a class=\"newtab\" href=\"https://news.ycombinator.com/user?id=" + data.by + "\">" + data.by + "</a> <a class=\"newtab\" href=\"https://news.ycombinator.com/item?id=" + data.id + "\">commented</a>:</div>";
+                		        				        		p_html = p_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
+                		        				        		$("#parent_div_" + notification_jo.id).html(p_html);
+                		        				        		$("a").click(function(event) {
+                                    		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
+                                    		        				{
+                                    		        					event.processed = true;
+                                    		        					var c = $(this).attr('class');
+                                    		        					if(c == "newtab")
+                                    		        					{
+                                    		        						var h = $(this).attr('href');
+                                    		        						doNewtabClick(h);
+                                    		        					}
+                                    		        				}
+                                    		        			});
+                		        				        	}
+                		        				        	else if(data.type === "story")
+                		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this story.</div>");
+                		        				        	else if(data.type === "poll")
+                		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this poll.</div>");
+                		        				        },
+                		        				        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    		            		        	console.log(textStatus, errorThrown);
+                    		            		        }
+                    		            			});
+                		        					return false;
+                		        				});
+            		        					
+            		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
+            		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
+            		        					{
+            		        						if(notification_jo.hn_root_comment_id !== data.id)
+            		        							showbranch = true;
+            		        						else // this is the root comment. Does it have children?
+            		        						{
+            		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
+            		        								showbranch = true;
+            		        						}
+            		        						if(showbranch)	
+            		        						{
+            		        							$("#show_branch_link_" + notification_jo.id).click({notification_jo:notification_jo},function(event){
+                		        							$("#parent_and_branch_td_" + notification_jo.id).html("");
+                		        							var semirandom_id = event.data.notification_jo.hn_root_comment_id + "-" + makeid(3);
+                		        							$("#parent_div_" + event.data.notification_jo.id).remove();
+                		        							$("#comment_div_" + event.data.notification_jo.id).remove();
+                		        							$("#child_div_" + event.data.notification_jo.id).remove();
+                		        							$("#container_div_" + event.data.notification_jo.id).wrap("<div id=\"wrapper_div_" + semirandom_id + "\" style=\"background-color:#f0f0f0\"></div>");
+                		        							writeUnifiedCommentContainer(semirandom_id, "container_div_" + event.data.notification_jo.id, "append");
+                		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, semirandom_id, "container_div_" + semirandom_id, 0, true, event.data.notification_jo.hn_target_id);
+                		        							return false;
+                		        						});
+            		        						}
+            		        					}
+            		        				}
+            		        			}
+            		        			else
+            		        				$("#header_div_" + notification_jo.id).html("<a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> wrote a comment at \"Unknown title\"");
+            		        			
+            		        			var c_html = "<div style=\"padding-bottom:5px;font-weight:bold\">";
+            		        			if(notification_jo.type === "3")
+        		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was upvoted ";
+        		        				else if(notification_jo.type === "4")
+        		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was downvoted ";
+        		        				else if(notification_jo.type === "5")
+        		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">replied</a> to you:";
+        		        				else if(notification_jo.type === "6")
+        		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a> on your story:";
+        		        				else if(notification_jo.type === "7")
+        		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>.";
+        		        				else if(notification_jo.type === "8")
+        		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a>:";
+        		        				else if(notification_jo.type === "9")
+        		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">deep-replied</a> to you:";
+            		        			c_html = c_html + "</div>";
+            		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
+            		        			{
+            		        				c_html = c_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
+            		        				c_html = c_html + "<table style=\"padding-top:7px;width:100%\">";
+            		        				c_html = c_html + "	<tr>";
+            		        				c_html = c_html + "		<td style=\"text-align:left\"><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a></td>";
+            		        				c_html = c_html + "		<td style=\"text-align:right\">";
+            		        				if(notification_jo.type === "9")
+            		        					c_html = c_html + " 		<span style=\"font-size:11px;font-style:italic;color:#828282\">Deep reply notifications can be turned off <a href=\"#\" id=\"deep_reply_settings_link_" + notification_jo.id + "\" style=\"color:#828282;text-decoration:underline\">here</a>.</span>";
+            		        				c_html = c_html + "		</td>";
+            		        				c_html = c_html + "	</tr>";
+            		        				c_html = c_html + "</table>";
+            		        				$("#comment_div_" + notification_jo.id).html(c_html);
+            		        				$("a").click(function(event) {
+                		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
                 		        				{
-                		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
-                		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
-                		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
+                		        					event.processed = true;
+                		        					var c = $(this).attr('class');
+                		        					if(c == "newtab")
                 		        					{
-                		        						if(notification_jo.hn_root_comment_id !== data.id)
-                		        							showbranch = true;
-                		        						else // this is the root comment. Does it have children?
-                		        						{
-                		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
-                		        								showbranch = true;
-                		        						}
-                		        						if(showbranch)	
-                		        							act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
+                		        						var h = $(this).attr('href');
+                		        						doNewtabClick(h);
                 		        					}
                 		        				}
-                		        				
-                		        				act_html = act_html + "			</td>";
-                		        				act_html = act_html + "		</tr>";
-                		        				act_html = act_html + "	</table>";
-                		        				$("#header_div_" + notification_jo.id).html(act_html);
-                		        				$("#header_div_" + notification_jo.id).show();
-                		        				                		        				
-                		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
-                		            		        dataType: 'json', async: true, 
-                		            		        success: function (data, status) {
-                		            		        	if(data !== null && typeof data.type !== "undefined" && data.type !== null && (data.type === "story" || data.type === "poll"))
-                		            		        	{
-                		            		        		$("#title_link_" + notification_jo.id).text(data.title);
-                		            		        		$("#title_link_" + notification_jo.id).click(function(){
-                		            		        			if(typeof data.url !== "undefined" && data.url !== null && data.url !== "")
-                		            		        				chrome.tabs.create({url: data.url});
-                		            		        			else
-                		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-                		            		        		});
-                		            		        		$("#comments_link_" + notification_jo.id).click(function(){
-                		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-                		            		        		});
-                		            		        		$("#item_link_" + notification_jo.id).click(function(){
-                		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + notification_jo.hn_target_id});
-                		            		        		});
-                		            		        	}
-                		            		        	else if (data === null)
-                		            		        	{
-                		            		        		$("#title_link_" + notification_jo.id).text("deleted");
-                		            		        		$("#title_link_" + notification_jo.id).css("font-style", "italic");
-                		            		        		$("#comments_link_" + notification_jo.id).text("deleted");
-                		            		        		$("#comments_link_" + notification_jo.id).css("font-style", "italic");
-                		            		        	}	
-                		            		        },
-                		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_jo.id);
-                		            		        	console.log(textStatus, errorThrown);
-                		            		        }
-                		            			});
-                		        				if(typeof data.parent !== "undefined" && data.parent !== null)
-                		        				{	
-                		        					$("#show_parent_link_" + notification_jo.id).click(function(){
-                		        						$("#comment_div_" + notification_jo.id).css("padding-left", "25px");
-                    		        					$("#parent_div_" + notification_jo.id).html("<img src=\"" + chrome.extension.getURL("images/ajaxSnake.gif") + "\">");
-                    		        					$("#parent_div_" + notification_jo.id).show();
-                    		        					if($("#parent_and_branch_td_" + notification_jo.id).text().indexOf("branch") !== -1)
-                    		        					{
-                    		        						$("#show_parent_link_" + notification_jo.id).text("");
-                    		        						$("#separator_span_" + notification_jo.id).text("");
-                    		        					}
-                    		        					else
-                    		        						$("#parent_and_branch_td_" + notification_jo.id).text("");
-                    		        					$.ajax({ 
-                    		        						type: 'GET', 
-                    		        						url: "https://hacker-news.firebaseio.com/v0/item/" + data.parent + ".json", 
-                    		        				        dataType: 'json', 
-                    		        				        async: true, 
-                    		        				        success: function (data, status) {
-                    		        				        	if(data.type === "comment")
-                    		        				        	{
-                    		        				        		var p_html = "<div style=\"padding-bottom:5px;font-weight:bold\"><a class=\"newtab\" href=\"https://news.ycombinator.com/user?id=" + data.by + "\">" + data.by + "</a> <a class=\"newtab\" href=\"https://news.ycombinator.com/item?id=" + data.id + "\">commented</a>:</div>";
-                    		        				        		p_html = p_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
-                    		        				        		$("#parent_div_" + notification_jo.id).html(p_html);
-                    		        				        		$("a").click(function(event) {
-                                        		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-                                        		        				{
-                                        		        					event.processed = true;
-                                        		        					var c = $(this).attr('class');
-                                        		        					if(c == "newtab")
-                                        		        					{
-                                        		        						var h = $(this).attr('href');
-                                        		        						doNewtabClick(h);
-                                        		        					}
-                                        		        				}
-                                        		        			});
-                    		        				        	}
-                    		        				        	else if(data.type === "story")
-                    		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this story.</div>");
-                    		        				        	else if(data.type === "poll")
-                    		        				        		$("#parent_div_" + notification_jo.id).html("<div style=\"padding-bottom:5px\">" + data.by + " posted this poll.</div>");
-                    		        				        },
-                    		        				        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                        		            		        	console.log(textStatus, errorThrown);
-                        		            		        }
-                        		            			});
-                    		        					return false;
-                    		        				});
-                		        					
-                		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
-                		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
-                		        					{
-                		        						if(notification_jo.hn_root_comment_id !== data.id)
-                		        							showbranch = true;
-                		        						else // this is the root comment. Does it have children?
-                		        						{
-                		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
-                		        								showbranch = true;
-                		        						}
-                		        						if(showbranch)	
-                		        						{
-                		        							$("#show_branch_link_" + notification_jo.id).click({notification_jo:notification_jo},function(event){
-                    		        							$("#parent_and_branch_td_" + notification_jo.id).html("");
-                    		        							var semirandom_id = event.data.notification_jo.hn_root_comment_id + "-" + makeid(3);
-                    		        							$("#parent_div_" + event.data.notification_jo.id).remove();
-                    		        							$("#comment_div_" + event.data.notification_jo.id).remove();
-                    		        							$("#child_div_" + event.data.notification_jo.id).remove();
-                    		        							$("#container_div_" + event.data.notification_jo.id).wrap("<div id=\"wrapper_div_" + semirandom_id + "\" style=\"background-color:#f0f0f0\"></div>");
-                    		        							writeUnifiedCommentContainer(semirandom_id, "container_div_" + event.data.notification_jo.id, "append");
-                    		        							doThreadItem(event.data.notification_jo.hn_root_comment_id, semirandom_id, "container_div_" + semirandom_id, 0, true, event.data.notification_jo.hn_target_id);
-                    		        							return false;
-                    		        						});
-                		        						}
-                		        					}
-                		        				}
-                		        			}
-                		        			else
-                		        				$("#header_div_" + notification_jo.id).html("<a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> wrote a comment at \"Unknown title\"");
-                		        			
-                		        			var c_html = "<div style=\"padding-bottom:5px;font-weight:bold\">";
-                		        			if(notification_jo.type === "3")
-            		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was upvoted ";
-            		        				else if(notification_jo.type === "4")
-            		        					c_html = c_html + " Your <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a> was downvoted ";
-            		        				else if(notification_jo.type === "5")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">replied</a> to you:";
-            		        				else if(notification_jo.type === "6")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a> on your story:";
-            		        				else if(notification_jo.type === "7")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> posted a <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">story</a>.";
-            		        				else if(notification_jo.type === "8")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">commented</a>:";
-            		        				else if(notification_jo.type === "9")
-            		        					c_html = c_html + " <a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> <a href=\"#\" id=\"item_link_" + notification_jo.id + "\">deep-replied</a> to you:";
-                		        			c_html = c_html + "</div>";
-                		        			if(typeof data.text !== "undefined" && data.text !== null && data.text !== "") // 6,8,9
-                		        			{
-                		        				c_html = c_html + replaceAll(data.text, "<a href=", "<a class=\"newtab\" href=");
-                		        				c_html = c_html + "<table style=\"padding-top:7px;width:100%\">";
-                		        				c_html = c_html + "	<tr>";
-                		        				c_html = c_html + "		<td style=\"text-align:left\"><a class=\"newtab\" style=\"font-size:11px;text-decoration:underline\" href=\"http://news.ycombinator.com/item?id=" + notification_jo.hn_target_id + "\">reply</a></td>";
-                		        				c_html = c_html + "		<td style=\"text-align:right\">";
-                		        				if(notification_jo.type === "9")
-                		        					c_html = c_html + " 		<span style=\"font-size:11px;font-style:italic;color:#828282\">Deep reply notifications can be turned off <a href=\"#\" id=\"deep_reply_settings_link_" + notification_jo.id + "\" style=\"color:#828282;text-decoration:underline\">here</a>.</span>";
-                		        				c_html = c_html + "		</td>";
-                		        				c_html = c_html + "	</tr>";
-                		        				c_html = c_html + "</table>";
-                		        				$("#comment_div_" + notification_jo.id).html(c_html);
-                		        				$("a").click(function(event) {
-                    		        				if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
-                    		        				{
-                    		        					event.processed = true;
-                    		        					var c = $(this).attr('class');
-                    		        					if(c == "newtab")
-                    		        					{
-                    		        						var h = $(this).attr('href');
-                    		        						doNewtabClick(h);
-                    		        					}
-                    		        				}
+                		        			});
+            		        				if(notification_jo.type === "9")
+            		        				{
+            		        					$("#deep_reply_settings_link_" + notification_jo.id).click(function(event){
+                    		        				viewProfile();
                     		        			});
-                		        				if(notification_jo.type === "9")
-                		        				{
-                		        					$("#deep_reply_settings_link_" + notification_jo.id).click(function(event){
-                        		        				viewProfile();
-                        		        			});
-                		        				}	
-                		        			}
-                		        			else
-                		        				$("#comment_div_" + notification_jo.id).html(c_html);
-                		        		}
-                		        		else
-                		        		{
-                		        			$("#comment_div_" + notification_jo.id).html("Unknown item type");
-                		        		}	
+            		        				}	
+            		        			}
+            		        			else
+            		        				$("#comment_div_" + notification_jo.id).html(c_html);
         		        			}
             		        		
             		        		$("#screenname_link_" + notification_jo.id).click({value:notification_jo.triggerer}, function(event){
@@ -461,6 +452,10 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        }
             			});	
         			}
+        			else // unknown notification type
+        			{
+        				$("#comment_div_" + notification_jo.id).html("<div style=\"padding:25px\">Unknown notification type. If you're seeing this message frequently, please update Hackbook to the latest version. If that doesn't fix it, please email the developer at c@mailcyr.us.");
+        			}	
         			
         			if(notification_jo.type === "C")
         			{
