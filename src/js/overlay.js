@@ -55,5 +55,5 @@ function doOverlay()
 	 else if(bg.t_jo !== null && !isEmpty(bg.t_jo)) // if there's something // thread
 		 doThreadTab();
 	 else
-		 doChatTab();
+		 doNewsfeedTab();
 }

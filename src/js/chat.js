@@ -150,7 +150,8 @@ function displayChat(chat_ja)
 	{	
 		$("#chat_textarea").val(h);
 		var textarea = document.getElementById('chat_textarea');
-		textarea.scrollTop = textarea.scrollHeight;
+		if(typeof textarea !== "undefined" && textarea !== null)
+			textarea.scrollTop = textarea.scrollHeight;
 		//$('#chat_textarea').scrollTop($('#chat_textarea')[0].scrollHeight);
 	}
 }
