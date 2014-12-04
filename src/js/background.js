@@ -392,6 +392,8 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 	chrome.tabs.getSelected(null, function(tab) {
 		if(user_retrieval_loop_is_running == false) // if the loop has died for any reason (or was never running in the first place), restart it
 			getUser(true);
+		else
+			getUser(false); // get user on every valid tab change. This updates notifications and logstat (do not getUser on random page updates (i.e. don't getUser(false) in the onUpdated block)
 		if(typeof tab.url !== "undefined" && tab.url !== null && tab.url !== "")
 		{
 			currentURL = tab.url;
