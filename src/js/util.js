@@ -149,6 +149,87 @@ else
 return false;
 } 
 
+function drawTabHeader(header_title_html)
+{
+	$("#utility_table").show();
+	var h = "<table style=\"width:100%\">";
+	h = h + "	<tr>";
+	h = h + "		<td style=\"text-align:left;font-size:14px;font-weight:bold\">" + header_title_html + "</td>";
+	if(bg.user_jo && typeof bg.user_jo.hide_promo_links !== "undefined" && bg.user_jo.hide_promo_links !== null && bg.user_jo.hide_promo_links === false)
+	{	
+		var randomint = Math.floor(Math.random() * 2);
+		// on 0, do nothing.
+		h = h + "		<td style=\"text-align:right\" id=\"promo_td\">";
+		if (randomint === 0)
+		{
+			h = h + "		<img src=\"images/twitter-bird_32x27.png\" style=\"width:16px;height:14px;vertical-align:middle\"> ";
+			h = h + "		<a href=\"#\" id=\"twitter_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Share Hackbook on Twitter</a>";
+		
+		}
+		else if (randomint === 1)
+		{	
+			h = h + "		<img src=\"images/chrome.jpg\" style=\"width:16px;height:16px;vertical-align:middle\"> ";
+			h = h + "		<a href=\"#\" id=\"5star_link\" style=\"color:#828282;font-size:10px;text-decoration:underline\">Rate Hackbook &#9733;&#9733;&#9733;&#9733;&#9733;</a>";
+		}
+		h = h + "		<a href=\"#\" id=\"hide_promos_link\" style=\"color:#A2A2A2;font-style:italic;font-size:9px\">hide</a>";
+		h = h + "		</td>";
+	}
+	h = h + "	</tr>";
+	h = h + "</table>";
+	
+	$("#utility_header_td").html(h);
+	
+	if(bg.user_jo && typeof bg.user_jo.hide_promo_links !== "undefined" && bg.user_jo.hide_promo_links !== null && bg.user_jo.hide_promo_links === false)
+	{	
+		$("#twitter_link").click( function (event) {
+			chrome.tabs.create({url: "https://twitter.com/intent/tweet?text=Your%20tweet%20text%20goes%20here.&url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fhackbook%2Flogdfcelflpgcbfebibbeajmhpofckjh"});
+			return false;
+		});
+		$("#5star_link").click( function (event) {	
+			chrome.tabs.create({url: "https://chrome.google.com/webstore/detail/hackbook/logdfcelflpgcbfebibbeajmhpofckjh/reviews"});
+			return false;
+		});
+		$("#hide_promos_link").click( function (event) {
+			$("#promo_td").hide();
+			$.ajax({
+				type: 'GET',
+				url: endpoint,
+				data: {method: "setUserPreference", screenname: screenname, this_access_token: this_access_token, which: "hide_promo_links", value: "hide"},
+		        dataType: 'json',
+		        async: true,
+		        success: function (data, status) {
+		        	if (data.response_status === "error")
+		        	{
+		        		displayMessage(data.message, "red", "utility_message_td");
+		            	if(data.error_code && data.error_code === "0000")
+		        		{
+		        			displayMessage("Your login has expired. Please relog.", "red");
+		        			bg.user_jo = null;
+		        			updateLogstat();
+		        		}
+		        	}
+		        	else if (data.response_status === "success")
+		        	{
+		        		bg.user_jo.hide_promo_links = true;
+		        		bg.getUser(false);
+		        	}
+		        	else { 
+		        		// unknown response_status. This would be bad
+		        	}
+		        }
+		        ,
+		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	displayMessage("ajax error", "red", "utility_message_td");
+		            console.log(textStatus, errorThrown);
+		        }
+			});
+			return false;
+		});
+	}
+	
+	$("#utility_message_td").hide();
+	$("#utility_csf_td").hide();	
+}
 
 function displayMessage(inc_message, inc_color, dom_id, s)
 {
