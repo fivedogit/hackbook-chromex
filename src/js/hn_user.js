@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener(
                         $('input:submit').trigger("click");
                     });
                 });
-            } else {
+            } else { 
                 chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 4}, function(response) {
                     chrome.runtime.sendMessage({method: "getHNExistingAbout"}, function(response) {
                         var hn_existing_about = response.hn_existing_about;
@@ -264,11 +264,8 @@ chrome.runtime.sendMessage({
             chrome.runtime.sendMessage({method: "sendRedirect",location: chrome.extension.getURL("login_successful.html")}, function(response) {});
         });
     } else if (response.hn_login_step === 4) {
-        chrome.runtime.sendMessage({
-            method: "setHNLoginStep",
-            hn_login_step: 0
-        }, function(response) {
-            
+        chrome.runtime.sendMessage({ method: "setHNLoginStep", hn_login_step: 0.5 }, function(response) {
+        	chrome.runtime.sendMessage({method: "sendRedirect",location: "https://news.ycombinator.com/login"});
         });
     }
 });

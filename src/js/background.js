@@ -22,6 +22,7 @@ var latest_ext_version = null;
 var hn_topcolor = "ff6600";
 var user_retrieval_loop_is_running = false;
 
+
 (function() {
 	chrome.tabs.getSelected(null, function(tab) {
 		currentURL = tab.url;
