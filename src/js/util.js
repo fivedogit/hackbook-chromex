@@ -1,5 +1,5 @@
 var devel = false;
-var endpoint = "https://secure.hackbook.club/endpoint";
+var endpoint = "https://secure.hackbook.club/hackbook-backend-MySQLHibernate/endpoint";
 if(devel === true)
 	endpoint = "http://localhost:8080/hackbook-backend-MySQLHibernate/endpoint";
 
