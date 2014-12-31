@@ -441,13 +441,22 @@ function followOrUnfollowUser(target_screenname, method, msg_dom_id) // which = 
 	        }
 	        else if (data.response_status === "success")
 	        {
-	        	bg.getUser(false);
+	        	if(method === "unfollowUser")
+        		{
+        			var i = bg.user_jo.following.indexOf(target_screenname);
+        			if(i > -1)
+        				bg.user_jo.following.splice(i, 1);
+        		}	
+        		else if (method === "followUser")
+        		{
+        			var i = bg.user_jo.following.indexOf(target_screenname);
+        			if(i == -1) // it's not there, so we can push it, otherwise skip
+        				bg.user_jo.following.push(target_screenname);
+        		}	
+	        	bg.getUser(false); // don't loop // we need to re-get the user so that feed items puopulated by adding this user will now be part of the current bg.user_jo
 	        	if(tabmode === "profile")
 	        	{
-	        		setTimeout(function() {
-	        			viewProfile();
-	        		}, 1500);
-	        		
+	        		viewProfile();
 	        	}
 	        	else // thread, feed, notifications
 	        	{

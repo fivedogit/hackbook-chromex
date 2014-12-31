@@ -244,18 +244,43 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
         dataType: 'json', 
         async: true, 
         success: function (data, status) {
-        	if(data.deleted && data.deleted === true)
+        	if((typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true) || 
+        			(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true))
     		{
-    			$("#comment_div_" + semirandom_id).css("font-style", "italic");
-    			$("#comment_div_" + semirandom_id).css("color", "#828282");
-    			$("#comment_div_" + semirandom_id).text("(deleted)");
+    			var dhtml = "";
+    			if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
+    				dhtml = dhtml + "<span style=\"color:#828282\">(deleted)</span> - <a href=\"#\" id=\"show_deleted_link_" + semirandom_id + "\">show</a>";
+    			else if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
+    				dhtml = dhtml + "<span style=\"color:#828282\">(flagkilled)</span> - <a href=\"#\" id=\"show_deleted_link_" + semirandom_id + "\">show</a>";
+				$("#comment_div_" + semirandom_id).html(dhtml);
+				$("#show_deleted_link_" + semirandom_id).click({comment_id:comment_id, semirandom_id: semirandom_id}, function(event) {
+					var inside_semirandom_id = event.data.semirandom_id;
+					$.ajax({ 
+						type: 'GET', 
+						url: endpoint,
+						data: {
+							method: "getItem",
+							id: event.data.comment_id
+						},
+				        dataType: 'json', 
+				        async: true, 
+				        success: function (data, status) { 
+				        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
+				        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
+				        	else
+				        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, inside_semirandom_id, false, false);
+				        },
+				        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
+					});
+    				return false;
+    			});
     		}	
     		else
     		{	
     			if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
-    				writeComment(data, semirandom_id, indicate_root, true);
+    				writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true);
     			else
-    				writeComment(data, semirandom_id, indicate_root, false);
+    				writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false);
     			var indent = (level) * 30;
     			$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
 			}
@@ -277,7 +302,12 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
 	});	
 }		
 
-function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
+// id
+// by
+// time
+// text
+
+function writeComment(id, by, time, text, semirandom_id, indicate_root, highlight)
 {
 	// NOTE: I tried changing semirandom_id to a random string, but it broke the saved text mechanism.
 	// I've now switched to comment_id-semirandom_id so that the uniqueness is still there (Even if the same comment appears twice, as it can on notification/feed items)
@@ -322,7 +352,7 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 	tempstr = tempstr + "		  					 	<td style=\"vertical-align:middle;text-align:left;color:#828282;font-size:11px\">";
 	tempstr = tempstr + "		  					 		<a href=\"#\" id=\"screenname_link_" + semirandom_id + "\" style=\"color:#828282\"></a>";
 	if(bg.user_jo)
-		tempstr = tempstr + "		  					 		 (<a href=\"#\" id=\"follow_link_" + feeditem_jo.by + "\" style=\"color:#828282\">follow</a>)";
+		tempstr = tempstr + "		  					 		 (<a href=\"#\" id=\"follow_link_" + by + "\" style=\"color:#828282\">follow</a>)";
 	tempstr = tempstr + "		  					 		 - <span id=\"time_ago_span_" + semirandom_id + "\" style=\"padding:5px;\"></span>";
 	tempstr = tempstr + "		  					 	</td>";
 	tempstr = tempstr + "							</tr>";
@@ -335,8 +365,8 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
   	tempstr = tempstr + "				</tr>";
   	tempstr = tempstr + "				<tr id=\"reply_tr_" + semirandom_id + "\">";
   	tempstr = tempstr + "					<td style=\"padding:3px;text-align:left\"> ";
-  //	alert(feeditem_jo.time*1 + " and " + bg.msfe_according_to_backend);
-  	if((feeditem_jo.time*1000) > (bg.msfe_according_to_backend - 1209600000)) // this is less than 2 weeks old, show reply
+  //	alert(time*1 + " and " + bg.msfe_according_to_backend);
+  	if((time*1000) > (bg.msfe_according_to_backend - 1209600000)) // this is less than 2 weeks old, show reply
   		tempstr = tempstr + "							<a href=\"#\" id=\"reply_link_" + semirandom_id + "\" style=\"font-size:11px\">reply</a>";
   	else
   		$("#comment_submission_form_div").hide();
@@ -349,10 +379,10 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
   	
 	$("#comment_div_" + semirandom_id).html(tempstr);//OK
 	
-  	$("[id=screenname_link_" + semirandom_id + "]").text(feeditem_jo.by);
-  	$("[id=time_ago_span_" + semirandom_id + "]").text(agoIt(feeditem_jo.time*1000));
-  	if(typeof feeditem_jo.text !== "undefined" && feeditem_jo.text !== null)
-  		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(feeditem_jo.text, "<a href=", "<a class=\"newtab\" href="));
+  	$("[id=screenname_link_" + semirandom_id + "]").text(by);
+  	$("[id=time_ago_span_" + semirandom_id + "]").text(agoIt(time*1000));
+  	if(typeof text !== "undefined" && text !== null)
+  		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(text, "<a href=", "<a class=\"newtab\" href="));
 
   	$("a").click(function(event) {
 		if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass
@@ -367,12 +397,12 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 		}
 	});
 	
-	$("[id=reply_link_" + semirandom_id + "]").click({comment_id: feeditem_jo.id}, function(event) { 
+	$("[id=reply_link_" + semirandom_id + "]").click({comment_id: id}, function(event) { 
 	 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id});
 	 	return false;
 	});
 
-	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: feeditem_jo.id}, function(event) {
+	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) {
 		//noteItemLikeOrDislike(event.data.semirandom_id, "like");
 		bg.likedislikemode = "commentlike";
 		$("[id=like_link_" + event.data.semirandom_id + "]").html("");
@@ -380,7 +410,7 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 		return false;
 	});
 		 
-	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: feeditem_jo.id}, function(event) { 
+	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) { 
 		//noteItemLikeOrDislike(event.data.semirandom_id, "dislike");
 		bg.likedislikemode = "commentdislike";
 		$("[id=dislike_link_" + event.data.semirandom_id + "]").html("");
@@ -388,23 +418,23 @@ function writeComment(feeditem_jo, semirandom_id, indicate_root, highlight)
 		return false;
 	});
 	
-	$("[id=screenname_link_"+ semirandom_id + "]").click({target_screenname: feeditem_jo.by}, function(event) { 
+	$("[id=screenname_link_"+ semirandom_id + "]").click({target_screenname: by}, function(event) { 
 		chrome.tabs.create({url:"http://news.ycombinator.com/user?id=" + event.data.target_screenname});
 		return false;
 	});	
 	
-	if(bg.user_jo && (!bg.user_jo.following || bg.user_jo.following.indexOf(feeditem_jo.by) == -1))
+	if(bg.user_jo && (!bg.user_jo.following || bg.user_jo.following.indexOf(by) == -1))
 	{
-		$("[id=follow_link_" + feeditem_jo.by + "]").text("follow");
-    	$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) {
+		$("[id=follow_link_" + by + "]").text("follow");
+    	$("[id=follow_link_" + by + "]").click({target_screenname: by}, function(event) {
     		followOrUnfollowUser(event.data.target_screenname, "followUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});
 	}
 	else
 	{
-		$("[id=follow_link_" + feeditem_jo.by + "]").text("unfollow");
-		$("[id=follow_link_" + feeditem_jo.by + "]").click({target_screenname: feeditem_jo.by}, function(event) { 
+		$("[id=follow_link_" + by + "]").text("unfollow");
+		$("[id=follow_link_" + by + "]").click({target_screenname: by}, function(event) { 
     		followOrUnfollowUser(event.data.target_screenname, "unfollowUser", "follow_link_" + event.data.target_screenname);
 			return false;
 		});
