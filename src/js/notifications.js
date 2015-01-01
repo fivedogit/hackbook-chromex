@@ -411,7 +411,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
     		        					        		$("#comment_subdiv_" + inside_notification_jo.id).html("Hackbook was unable to retrieve the original item. Sorry.");
         		        				        	else
         		        				        	{	
-        		        				        		alert(JSON.stringify(data));
+        		        				        		//alert(JSON.stringify(data));
         		        				        		if(data.item_jo.type === "story" && data.item_jo.title)
             		        				        	{
             		        				        		$("#title_link_" + inside_notification_jo.id).text(data.item_jo.title);
