@@ -14,15 +14,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         		tempstr = tempstr + "					<td style=\"vertical-align:middle;text-align:left;border:0px solid black;padding:2px 0px 0px 2px\" > "; 
         		tempstr = tempstr + "						<table style=\"width:100%;float:left;border:0px solid brown;vertical-align:middle; border-collapse: separate\">";
         		tempstr = tempstr + "							<tr> ";
-        		tempstr = tempstr + "		  					 	<td style=\"vertical-align:middle;text-align:left;color:#828282;font-size:11px;color:red\">" + request.item_jo.by;
-        		tempstr = tempstr + "		  					 		 - <span style=\"padding:5px;\">" + request.time_ago_string + "</span>";
+        		tempstr = tempstr + "		  					 	<td style=\"vertical-align:middle;text-align:left;color:#828282;font-size:11px;color:black\">" + request.item_jo.by;
+        		tempstr = tempstr + "		  					 		 - <span style=\"padding:5px;\">" + request.time_ago_string + "</span> <span style=\"color:red;font-style:italic\">(deleted)</span>";
         		tempstr = tempstr + "		  					 	</td>";
         		tempstr = tempstr + "							</tr>";
         		tempstr = tempstr + "  						</table>";
         		tempstr = tempstr + "					</td>";
         		tempstr = tempstr + "				</tr>";
         		tempstr = tempstr + "				<tr>";
-        		tempstr = tempstr + "					<td style=\"padding:5px;vertical-align:top;text-align:left;font-size:11px;color:red\">" + request.item_jo.original_text + "</td>";
+        		tempstr = tempstr + "					<td style=\"padding:5px;vertical-align:top;text-align:left;font-size:11px;color:black\">" + request.item_jo.original_text + "</td>";
         	  	tempstr = tempstr + "				</tr>";
         	  	tempstr = tempstr + "			</table>";
         	  	tempstr = tempstr + "		</td>";

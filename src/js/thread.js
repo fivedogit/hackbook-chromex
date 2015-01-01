@@ -244,46 +244,43 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
         dataType: 'json', 
         async: true, 
         success: function (data, status) {
-        	if((typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true) || 
-        			(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true))
-    		{
-    			var dhtml = "";
-    			if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
-    				dhtml = dhtml + "<span style=\"color:#828282\">(deleted)</span> - <a href=\"#\" id=\"show_deleted_link_" + semirandom_id + "\">show</a>";
-    			else if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
-    				dhtml = dhtml + "<span style=\"color:#828282\">(flagkilled)</span> - <a href=\"#\" id=\"show_deleted_link_" + semirandom_id + "\">show</a>";
-				$("#comment_div_" + semirandom_id).html(dhtml);
-				$("#show_deleted_link_" + semirandom_id).click({comment_id:comment_id, semirandom_id: semirandom_id}, function(event) {
-					var inside_semirandom_id = event.data.semirandom_id;
-					$.ajax({ 
-						type: 'GET', 
-						url: endpoint,
-						data: {
-							method: "getItem",
-							id: event.data.comment_id
-						},
-				        dataType: 'json', 
-				        async: true, 
-				        success: function (data, status) { 
-				        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
-				        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
-				        	else
-				        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, inside_semirandom_id, false, false);
-				        },
-				        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
-					});
-    				return false;
-    			});
-    		}	
-    		else
-    		{	
-    			if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
-    				writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true);
-    			else
-    				writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false);
-    			var indent = (level) * 30;
-    			$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
-			}
+        	var isdead = false;
+        	var isdeleted = false;
+        	if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
+        		isdeleted = true;
+        	if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
+        		isdead = true;
+        	
+        	if(isdeleted === true || isdead === true)
+        	{
+        		$.ajax({ 
+					type: 'GET', 
+					url: endpoint,
+					data: {
+						method: "getItem",
+						id: comment_id
+					},
+			        dataType: 'json', 
+			        async: true, 
+			        success: function (data, status) { 
+			        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
+			        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
+			        	else
+			        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, semirandom_id, false, false, isdeleted, isdead);
+			        },
+			        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
+				});
+        	}	
+        	else
+        	{	
+        		if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
+            		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true, isdeleted, isdead);
+            	else
+            		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false, isdeleted, isdead);
+        	}
+        	var indent = (level) * 30;
+        	$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
+			//}
     		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
     		{
     			var nested_semirandom_id = "";
@@ -307,7 +304,7 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
 // time
 // text
 
-function writeComment(id, by, time, text, semirandom_id, indicate_root, highlight)
+function writeComment(id, by, time, text, semirandom_id, indicate_root, highlight, isdeleted, isdead)
 {
 	// NOTE: I tried changing semirandom_id to a random string, but it broke the saved text mechanism.
 	// I've now switched to comment_id-semirandom_id so that the uniqueness is still there (Even if the same comment appears twice, as it can on notification/feed items)
@@ -329,19 +326,23 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 	}	
 	tempstr = tempstr + "	<tr>";
 	tempstr = tempstr + "		<td style=\"vertical-align:top;width:10px;text-align:center;border:0px solid green\">"; 
-	tempstr = tempstr + "			<table style=\"border:0px solid red;border-collapse:collapse\">";
-	tempstr = tempstr + "				<tr>";
-	tempstr = tempstr + "					<td style=\"padding-bottom:0px;border:0px solid black\"> ";
-	tempstr = tempstr + "						<a href=\"#\" id=\"like_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_up.gif") + "\"></a>";
-	tempstr = tempstr + "					</td>";
-	tempstr = tempstr + "				</tr>";			
-	tempstr = tempstr + "				<tr>";
-	tempstr = tempstr + "					<td style=\"padding-top:0px;border:0px solid black\"> ";
-	if(bg.user_jo && bg.user_jo.hn_karma >=500)
-		tempstr = tempstr + "					<a href=\"#\" id=\"dislike_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_down.gif") + "\"></a>";
-	tempstr = tempstr + "					</td>";
-	tempstr = tempstr + "				</tr>";			
-	tempstr = tempstr + "			</table>";
+	// UP AND DOWN ARROWS
+	if(!isdeleted && !isdead)
+	{	
+		tempstr = tempstr + "			<table style=\"border:0px solid red;border-collapse:collapse\">";
+		tempstr = tempstr + "				<tr>";
+		tempstr = tempstr + "					<td style=\"padding-bottom:0px;border:0px solid black\"> ";
+		tempstr = tempstr + "						<a href=\"#\" id=\"like_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_up.gif") + "\"></a>";
+		tempstr = tempstr + "					</td>";
+		tempstr = tempstr + "				</tr>";			
+		tempstr = tempstr + "				<tr>";
+		tempstr = tempstr + "					<td style=\"padding-top:0px;border:0px solid black\"> ";
+		if(bg.user_jo && bg.user_jo.hn_karma >=500)
+			tempstr = tempstr + "					<a href=\"#\" id=\"dislike_link_" + semirandom_id + "\"><img src=\"" + chrome.extension.getURL("images/grayarrow_down.gif") + "\"></a>";
+		tempstr = tempstr + "					</td>";
+		tempstr = tempstr + "				</tr>";			
+		tempstr = tempstr + "			</table>";
+	}
 	tempstr = tempstr + "		</td>";
 	tempstr = tempstr + "		<td> <!-- everything else, right-hand side -->";
 	tempstr = tempstr + "			<table style=\"border:0px solid purple;border-collapse:collapse\">";
@@ -353,6 +354,10 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 	tempstr = tempstr + "		  					 		<a href=\"#\" id=\"screenname_link_" + semirandom_id + "\" style=\"color:#828282\"></a>";
 	if(bg.user_jo)
 		tempstr = tempstr + "		  					 		 (<a href=\"#\" id=\"follow_link_" + by + "\" style=\"color:#828282\">follow</a>)";
+	if(isdeleted)
+		tempstr = tempstr + " <span style=\"color:red;font-style:italic\">(deleted)</span>";
+	if(isdead)
+		tempstr = tempstr + " <span style=\"color:red;font-style:italic\">(flagkilled)</span>";
 	tempstr = tempstr + "		  					 		 - <span id=\"time_ago_span_" + semirandom_id + "\" style=\"padding:5px;\"></span>";
 	tempstr = tempstr + "		  					 	</td>";
 	tempstr = tempstr + "							</tr>";

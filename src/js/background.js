@@ -359,7 +359,6 @@ chrome.runtime.onMessage.addListener(
 	  }
 	  else if(request.method === "getParentOfItem") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
-		  //alert("bg.getParentOfItem");
 		  var tabid = 0;
 		  var index = request.index;
 		  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
@@ -393,6 +392,10 @@ chrome.runtime.onMessage.addListener(
 			 			        		var time_ago_string = agoIt(data.item_jo.time*1000);
 			 			        		chrome.tabs.sendMessage(tabid, {method: "gotParentOfItem", item_jo: data.item_jo, index:index, time_ago_string:time_ago_string}, function(response) {});
 			 			        	}
+			 			        	else
+						        	{
+						        		// fail silently
+						        	}
 			 			        },
 			 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
 			 			        	console.log("getItem ajax error");
@@ -400,28 +403,10 @@ chrome.runtime.onMessage.addListener(
 			 			        }
 			        		 });
 			        	}
-			        	else if(data.response_status === "error")
-			        	{
-			        		alert("error " + data.message);
-			        		sendResponse({parent_id: null});
-			        	}	
 			        	else
 			        	{
-			        		alert("none");
-			        		sendResponse({parent_id: null});
+			        		// fail silently
 			        	}
-			        	/*if(data.response_status === "success")
-			        	{	
-			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: data.token, manual_or_automatic: request.manual_or_automatic}, function(response) {});
-			        	}
-			        	else if(data.response_status === "error")
-			        	{
-			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
-			        	}	
-			        	else
-			        	{
-			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
-			        	}*/
 			        },
 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
 			        	console.log("getItem ajax error");
