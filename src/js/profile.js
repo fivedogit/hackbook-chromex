@@ -192,7 +192,7 @@ function getProfile()
 			});
 		});
 		
-		$("#profile_page_since_td").html(agoIt(bg.user_jo.since) + " <img src=\"" + chrome.extension.getURL("images/l18.png") + "\" style=\"border:1px solid white;height:14px;width:14px;vertical-align:middle\"> ");
+		$("#profile_page_since_td").html(bg.agoIt(bg.user_jo.since) + " <img src=\"" + chrome.extension.getURL("images/l18.png") + "\" style=\"border:1px solid white;height:14px;width:14px;vertical-align:middle\"> ");
 		
 		$("#profile_page_karma_td").html(bg.user_jo.hn_karma);
 		

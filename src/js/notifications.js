@@ -145,7 +145,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         					act_html = act_html + "				<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
         				else
         					act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
-        				act_html = act_html + agoIt(notification_jo.action_msfe) + " ";
+        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " ";
         				act_html = act_html + "			</td>";
         				act_html = act_html + "		</tr>";
         				act_html = act_html + "	</table>";
@@ -223,7 +223,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
         		        				else
         		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
-        		        				act_html = act_html + agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
+        		        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
         		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
         		        				act_html = act_html + "			</td>";
         		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";

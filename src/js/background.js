@@ -357,6 +357,79 @@ chrome.runtime.onMessage.addListener(
 		  else
 			  sendResponse({hide_inline_follow: true});
 	  }
+	  else if(request.method === "getParentOfItem") // don't need a getter for this as the receiver page can get this directly from cookie
+	  {
+		  //alert("bg.getParentOfItem");
+		  var tabid = 0;
+		  var index = request.index;
+		  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+			  tabid = tabs[0].id;
+			  $.ajax({ 
+					type: 'GET', 
+					url: endpoint, 
+					data: {
+						method: "getItem",
+			            id: request.detected_child_id
+			        },
+			        dataType: 'json',
+			        timeout: 10000,
+			        async: true, 
+			        success: function (data, status) {
+			        	if(data.response_status === "success")
+			        	{	
+			        		 $.ajax({ 
+			 					type: 'GET', 
+			 					url: endpoint, 
+			 					data: {
+			 						method: "getItem",
+			 			            id: data.item_jo.parent
+			 			        },
+			 			        dataType: 'json',
+			 			        timeout: 10000,
+			 			        async: true, 
+			 			        success: function (data, status) {
+			 			        	if(data.response_status === "success")
+			 			        	{	
+			 			        		var time_ago_string = agoIt(data.item_jo.time*1000);
+			 			        		chrome.tabs.sendMessage(tabid, {method: "gotParentOfItem", item_jo: data.item_jo, index:index, time_ago_string:time_ago_string}, function(response) {});
+			 			        	}
+			 			        },
+			 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
+			 			        	console.log("getItem ajax error");
+			 			        	// chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			 			        }
+			        		 });
+			        	}
+			        	else if(data.response_status === "error")
+			        	{
+			        		alert("error " + data.message);
+			        		sendResponse({parent_id: null});
+			        	}	
+			        	else
+			        	{
+			        		alert("none");
+			        		sendResponse({parent_id: null});
+			        	}
+			        	/*if(data.response_status === "success")
+			        	{	
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: data.token, manual_or_automatic: request.manual_or_automatic}, function(response) {});
+			        	}
+			        	else if(data.response_status === "error")
+			        	{
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			        	}	
+			        	else
+			        	{
+			        		chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			        	}*/
+			        },
+			        error: function (XMLHttpRequest, textStatus, errorThrown) {
+			        	console.log("getItem ajax error");
+			           // chrome.tabs.sendMessage(tabid, {method: "gotHNAuthToken", token: null}, function(response) {});
+			        }
+			  });
+		  });
+	  }
   });
 
 //REAL FUNCTIONS, IN EXECUTION ORDER TOP2BOTTOM (sort of) 
@@ -879,6 +952,37 @@ function getUser(loop)
 	{
 		user_jo = null; // proceed with user_jo = null
 	}
+}
+
+function agoIt(inc_ts_in_ms)
+{
+	if(typeof msfe_according_to_backend === "undefined" || msfe_according_to_backend === null) // should never happen as bg sets msfe_according_to_backend to d.getTime() on load
+	{
+		var d = new Date();
+		msfe_according_to_backend = d.getTime();
+	}	
+	var millis_ago = msfe_according_to_backend - inc_ts_in_ms;
+	if(millis_ago < 0)
+		millis_ago = 0;
+	var minutes_ago = millis_ago/60000;
+	var time_ago = 0;
+	var time_ago_units = "";
+	if(minutes_ago < 60)
+	{
+		time_ago = minutes_ago;
+		time_ago_units = "mins";
+	}
+	else if ((minutes_ago > 60) && (minutes_ago < 1440))
+	{
+		time_ago = minutes_ago / 60;
+		time_ago_units = "hrs";
+	}
+	else
+	{	
+		time_ago = minutes_ago / 1440;
+		time_ago_units = "days";
+	}
+	return (time_ago.toFixed(0) + " " + time_ago_units + " ago");
 }
 	
 // FIRSTRUN 

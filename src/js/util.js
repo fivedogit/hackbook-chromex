@@ -39,37 +39,6 @@ function fromDecimalToOtherBase ( base, decimalNumber ) {
     return tempVal.substring(tempVal.length - 7);
 }
 
-function agoIt(inc_ts_in_ms)
-{
-	if(typeof bg.msfe_according_to_backend === "undefined" || bg.msfe_according_to_backend === null) // should never happen as bg sets msfe_according_to_backend to d.getTime() on load
-	{
-		var d = new Date();
-		bg.msfe_according_to_backend = d.getTime();
-	}	
-	var millis_ago = bg.msfe_according_to_backend - inc_ts_in_ms;
-	if(millis_ago < 0)
-		millis_ago = 0;
-	var minutes_ago = millis_ago/60000;
-	var time_ago = 0;
-	var time_ago_units = "";
-	if(minutes_ago < 60)
-	{
-		time_ago = minutes_ago;
-		time_ago_units = "mins";
-	}
-	else if ((minutes_ago > 60) && (minutes_ago < 1440))
-	{
-		time_ago = minutes_ago / 60;
-		time_ago_units = "hrs";
-	}
-	else
-	{	
-		time_ago = minutes_ago / 1440;
-		time_ago_units = "days";
-	}
-	return (time_ago.toFixed(0) + " " + time_ago_units + " ago");
-}
-
 function hashFnv32a(str, asString, seed) {
     var i, l,
         hval = (seed === undefined) ? 0x811c9dc5 : seed;

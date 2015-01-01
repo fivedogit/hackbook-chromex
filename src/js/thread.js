@@ -90,9 +90,9 @@ function gotThread()
 		if(bg.user_jo)
 			happy = happy + "(<a href=\"#\" id=\"follow_link_" + bg.t_jo.by + "\" style=\"color:#828282\">follow</a>) ";
 		if(typeof bg.t_jo.children === "undefined" || bg.t_jo.children === null)
-			happy = happy + agoIt(bg.t_jo.time * 1000) + " | 0 <a href=\"#\" id=\"comments_link\" style=\"color:#828282\">comments</a>";
+			happy = happy + bg.agoIt(bg.t_jo.time * 1000) + " | 0 <a href=\"#\" id=\"comments_link\" style=\"color:#828282\">comments</a>";
 		else
-			happy = happy + agoIt(bg.t_jo.time * 1000) + " | " + bg.t_jo.children.length + " <a href=\"#\" id=\"comments_link\" style=\"color:#828282\">comments</a>";
+			happy = happy + bg.agoIt(bg.t_jo.time * 1000) + " | " + bg.t_jo.children.length + " <a href=\"#\" id=\"comments_link\" style=\"color:#828282\">comments</a>";
 		happy = happy + "		</td>";
 		happy = happy + "	</tr>";
 		happy = happy + "</table>";
@@ -380,7 +380,7 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 	$("#comment_div_" + semirandom_id).html(tempstr);//OK
 	
   	$("[id=screenname_link_" + semirandom_id + "]").text(by);
-  	$("[id=time_ago_span_" + semirandom_id + "]").text(agoIt(time*1000));
+  	$("[id=time_ago_span_" + semirandom_id + "]").text(bg.agoIt(time*1000));
   	if(typeof text !== "undefined" && text !== null)
   		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(text, "<a href=", "<a class=\"newtab\" href="));
 
