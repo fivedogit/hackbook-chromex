@@ -862,7 +862,7 @@ function drawHButton(background_color, h_color, aframe, leftnumber, rightnumber)
 	 chrome.browserAction.setIcon({
 	   imageData: imageData
 	 });
-	}
+}
 
 function getUser(loop)
 {
@@ -920,7 +920,9 @@ function getUser(loop)
 	            console.log(textStatus, errorThrown);
 	        } 
 		})
-		.then(function() {
+		// note: as written, this then() only happens on success. To do on fail, too: .then(function(){ // success stuff}, function() { // fail stuff });
+		// since a tab change will restart the loop, I don't think there's any need to provide a then() for failure.
+		.then(function() { 
 			if(loop)
 			{
 				setTimeout(function(){getUser(true)}, 30000);

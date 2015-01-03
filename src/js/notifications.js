@@ -131,6 +131,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         			var notification_jo = data.notification_jo;
         			if(notification_jo.type === "0" || notification_jo.type === "1" || notification_jo.type === "2" || notification_jo.type === "C")
         			{
+        				// Note: These are the types that have no connection to any HN item. 
         				// 0. ** Someone followed user
         				// 1. ** a comment user wrote was upvoted
         				// 2. ** a comment user wrote was downvoted
@@ -197,96 +198,110 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         			else if(notification_jo.type === "3" || notification_jo.type === "4" || notification_jo.type === "5" || notification_jo.type === "6" ||
         					notification_jo.type === "7" || notification_jo.type === "8" || notification_jo.type === "9")
         			{	
-        				// 3. ** a story user wrote was upvoted
-        				// 4. ** a story user wrote was downvoted
-        				// 5. ** a comment user wrote was commented on
-        				// 6. ** a story user wrote was commented on
-        				// 7. a user this user is following posted a story
-        				// 8. a user this user is following commented
-        				// 9. *** a user deep-replied to your *comment*
+        				// Note: These are the types that ARE connected to (an) HN item(s).
+        				// 3. upvote on story
+        				// 4. downvote on story
+        				// 5. ** comment on comment
+        				// 6. ** comment on story
+        				// 7. story posted by someone user is following
+        				// 8. ** comment posted by someone user is following 
+        				// 9. ** deep-comment on comment
+        				
+        				// ** = hn_root_story_id != hn_target_id     (must make separate call to get root story)
+        				
         				$.ajax({ 
             				type: 'GET', 
-            				url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_target_id + ".json", 
+            				url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_target_id + ".json", // hn_target_id points to the new comment or story that triggered this notification
             		        dataType: 'json', 
             		        async: true, 
             		        success: function (data, status) {
             		        	if(tabmode === feedmode) // as these come in, only process them if we're still on the notifications tab
             		    		{	
-            		        		if(notification_jo.hn_root_story_id !== null)
-        		        			{
-        		        				var showbranch = false;
-        		        				var act_html = "";
-        		        				act_html = act_html + "	<table style=\"width:100%\">";
-        		        				act_html = act_html + "		<tr>";
-        		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-        		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
-        		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
-        		        				else
-        		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
-        		        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
-        		        				act_html = act_html + " - <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282\">comments</a>";
-        		        				act_html = act_html + "			</td>";
-        		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
-        		        				if(typeof data.parent !== "undefined" && data.parent !== null)
-        		        				{
-        		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
-        		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
-        		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
-        		        					{
-        		        						if(notification_jo.hn_root_comment_id !== data.id)
-        		        							showbranch = true;
-        		        						else // this is the root comment. Does it have children?
-        		        						{
-        		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
-        		        								showbranch = true;
-        		        						}
-        		        						if(showbranch)	
-        		        							act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
-        		        					}
-        		        				}
-        		        				
-        		        				act_html = act_html + "			</td>";
-        		        				act_html = act_html + "		</tr>";
-        		        				act_html = act_html + "	</table>";
-        		        				$("#header_div_" + notification_jo.id).html(act_html);
-        		        				$("#header_div_" + notification_jo.id).show();
-        		        				                		        				
-        		        				$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
-        		            		        dataType: 'json', async: true, 
-        		            		        success: function (data, status) {
-        		            		        	if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
-        		            		        	{
-        		            		        		$("#title_link_" + notification_jo.id).text("(deleted)");
-        		            		        	}	
-        		            		        	else if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
-        		            		        	{
-        		            		        		$("#title_link_" + notification_jo.id).text("(flagkilled)");
-        		            		        	}
-        		            		        	else
-        		            		        	{	
-        		            		        		if(data !== null && typeof data.type !== "undefined" && data.type !== null && (data.type === "story" || data.type === "poll"))
-            		            		        	{
-            		            		        		$("#title_link_" + notification_jo.id).text(data.title);
-            		            		        		$("#title_link_" + notification_jo.id).click(function(){
-            		            		        			if(typeof data.url !== "undefined" && data.url !== null && data.url !== "")
-            		            		        				chrome.tabs.create({url: data.url});
-            		            		        			else
-            		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-            		            		        		});
-            		            		        		$("#comments_link_" + notification_jo.id).click(function(){
-            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + data.id});
-            		            		        		});
-            		            		        		$("#item_link_" + notification_jo.id).click(function(){
-            		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + notification_jo.hn_target_id});
-            		            		        		});
+            		        		// write the header, pointing to the             		        			
+    		        				var showbranch = false;
+    		        				var act_html = "";
+    		        				act_html = act_html + "	<table style=\"width:100%\">";
+    		        				act_html = act_html + "		<tr>";
+    		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
+    		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
+    		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
+    		        				else
+    		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
+    		        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
+    		        				act_html = act_html + " <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;padding-left:6px\">comments</a>";
+    		        				act_html = act_html + "			</td>";
+    		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
+    		        				if(typeof data.parent !== "undefined" && data.parent !== null)
+    		        				{
+    		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
+    		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
+    		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
+    		        					{
+    		        						if(notification_jo.hn_root_comment_id !== data.id)
+    		        							showbranch = true;
+    		        						else // this is the root comment. Does it have children?
+    		        						{
+    		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
+    		        								showbranch = true;
+    		        						}
+    		        						if(showbranch)	
+    		        							act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
+    		        					}
+    		        				}
+    		        				
+    		        				act_html = act_html + "			</td>";
+    		        				act_html = act_html + "		</tr>";
+    		        				act_html = act_html + "	</table>";
+    		        				$("#header_div_" + notification_jo.id).html(act_html);
+    		        				$("#header_div_" + notification_jo.id).show();
+    		        				
+    		        				if(notification_jo.type === "5" || notification_jo.type === "6" || notification_jo.type === "8" || notification_jo.type === "9")
+    		        				{
+    		        					// These are COMMENT types with a root story where hn_target_id != hn_root_story_id, so we have to retrieve the hn_root_story_id to (a) show the root story title, (b) link to it and (c) link to its comments
+    		        					// 5. ** comment on comment
+    		            				// 6. ** comment on story
+    		            				// 8. ** comment posted by someone user is following 
+    		            				// 9. ** deep-comment on comment
+    		        					if(typeof notification_jo.hn_root_story_id !== "undefined" && notification_jo.hn_root_story_id !== null) // make sure the hn_root_story_id exists
+    		        					{	
+    		        						$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
+            		            		        dataType: 'json', async: true, 
+            		            		        success: function (data, status) {
+            		            		        	if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true) 												// (a) show the story "title"
+            		            		        		$("#title_link_" + notification_jo.id).text("(deleted)");
+            		            		        	else if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true) 													// (a) show the story "title"
+            		            		        		$("#title_link_" + notification_jo.id).text("(flagkilled)");
+            		            		        	else
+            		            		        	{	
+            		            		        		if(data !== null && typeof data.type !== "undefined" && data.type !== null && (data.type === "story" || data.type === "poll"))
+                		            		        	{
+                		            		        		$("#title_link_" + notification_jo.id).text(data.title);																		// (a) show the story title
+                		            		        		$("#title_link_" + notification_jo.id).click({url:data.url, hn_root_story_id:data.id}, function(event){
+                		            		        			if(typeof event.data.url !== "undefined" && event.data.url !== null && event.data.url !== "")
+                		            		        				chrome.tabs.create({url: event.data.url});																				// (b) link to it
+                		            		        			else
+                		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.id});										// (b) link to it (no url, so link to comments)
+                		            		        		});
+                		            		        		$("#comments_link_" + notification_jo.id).click({hn_root_story_id:data.id}, function(event){
+                		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.hn_root_story_id});							// (c) link to comments
+                		            		        		});
+                		            		        	}
             		            		        	}
-        		            		        	}
-        		            		        },
-        		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-        		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_jo.id);
-        		            		        	console.log(textStatus, errorThrown);
-        		            		        }
-        		            			});
+            		            		        },
+            		            		        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            		            		        	displayMessage("Unable to retrieve title of HN story. (ajax)", "red", "message_div_" + notification_jo.id);
+            		            		        	console.log(textStatus, errorThrown);
+            		            		        }
+            		            			});
+    		        					}
+    		        					else // notification did not contain the hn_root_story_id for some strange reason. Maybe an HN API error stepping back to the root?
+    		        					{
+    		        						$("#title_link_" + notification_jo.id).text("(unknown title)");																					// (a) show the story "title"
+    		        						$("#title_link_" + notification_jo.id).removeAttr("href");																						// (b) unlink to it
+    		        						$("#comments_link_" + notification_jo.id).hide();																								// (c) hide the link to comments
+    		        					}	
+        		        				
+        		        				// if the COMMENT has a parent, then we need to provide the "show parent" and "show branch" options
         		        				if(typeof data.parent !== "undefined" && data.parent !== null)
         		        				{	
         		        					$("#show_parent_link_" + notification_jo.id).click(function(){
@@ -362,9 +377,40 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         		        						}
         		        					}
         		        				}
-        		        			}
-        		        			else
-        		        				$("#header_div_" + notification_jo.id).html("<a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> wrote a comment at \"Unknown title\"");
+    		        				}
+    		        				else // 3,4,7
+    		        				{
+    		        					// These are STORY types where hn_target_id == hn_root_story_id, so there's no need to retrieve any root (since we already have it)
+    		        					// 3. upvote on story
+    		            				// 4. downvote on story
+    		            				// 7. story posted by someone user is following
+    		        					
+    		        					if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
+    		        					{
+    		        						$("#title_link_" + notification_jo.id).text("(deleted)");																		// (a) show the story "title"
+    		        						//$("#title_link_" + notification_jo.id).removeAttr("href");																		// (b) unlink to it
+    		        						$("#comments_link_" + notification_jo.id).hide();			// there are no comments for a deleted story						// (c) unlink to comments
+    		        					}
+		            		        	else if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
+		            		        	{
+		            		        		$("#title_link_" + notification_jo.id).text("(flagkilled)");																	// (a) show the story "title"
+		            		        		//$("#title_link_" + notification_jo.id).removeAttr("href");																		// (b) unlink to it
+		            		        		$("#comments_link_" + notification_jo.id).hide();			// there are no comments for a deleted story						// (c) unlink to comments
+		            		        	}
+		            		        	else
+		            		        	{	
+		            		        		$("#title_link_" + notification_jo.id).text(data.title);																		// (a) show the story title
+		            		        		$("#title_link_" + notification_jo.id).click({url:data.url, hn_root_story_id:data.id}, function(event){
+		            		        			if(typeof event.data.url !== "undefined" && event.data.url !== null && event.data.url !== "")
+		            		        				chrome.tabs.create({url: event.data.url});																				// (b) link to it
+		            		        			else
+		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.id});										// (b) link to it (no url, so link to comments)
+		            		        		});
+		            		        		$("#comments_link_" + notification_jo.id).click({hn_target_id:notification_jo.hn_target_id}, function(event){
+		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.hn_target_id});								// (c) link to comments
+		            		        		});
+		            		        	}
+    		        				}		
         		        			
         		        			var c_html = "<div style=\"padding-bottom:5px;font-weight:bold\">";
         		        			if(notification_jo.type === "3")
@@ -384,6 +430,10 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         		        			c_html = c_html + "</div>";
         		        			c_html = c_html + "<div id=\"comment_subdiv_" + notification_jo.id + "\"></div>";
         		        			$("#comment_div_" + notification_jo.id).html(c_html);
+        		        			
+        		        			$("#item_link_" + notification_jo.id).click({hn_target_id:notification_jo.hn_target_id}, function(event) {
+        		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.hn_target_id});
+        		        			});
         		        			
         		        			if((typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true) || 
         		                			(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true))
@@ -411,17 +461,20 @@ function doNotificationItem(notification_id, dom_id, feedmode)
     		        					        		$("#comment_subdiv_" + inside_notification_jo.id).html("Hackbook was unable to retrieve the original item. Sorry.");
         		        				        	else
         		        				        	{	
-        		        				        		//alert(JSON.stringify(data));
         		        				        		if(data.item_jo.type === "story" && data.item_jo.title)
             		        				        	{
             		        				        		$("#title_link_" + inside_notification_jo.id).text(data.item_jo.title);
             		        				        		if(data.item_jo.url)
             		        				        		{
             		        				        			$("#title_link_" + inside_notification_jo.id).unbind();
-            		        				        			$("#title_link_" + inside_notification_jo.id).click({url: data.item_jo.url}, function(){
+            		        				        			$("#title_link_" + inside_notification_jo.id).click({url: data.item_jo.url}, function(event){
             		        				        				chrome.tabs.create({url: event.data.url});
                     		            		        		});
             		        				        		}
+            		        				        		if(typeof data.item_jo.text !== "undefined" && data.item_jo.text !== null && data.item_jo.text !== "")
+            		        		        					writeNotificationText(data.text, notification_jo);
+            		        				        		else
+            		        				        			$("#comment_subdiv_" + inside_notification_jo.id).hide();
             		        				        	}
             		        				        	else
             		        				        	{	
