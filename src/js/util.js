@@ -1,4 +1,4 @@
-var devel = true;
+var devel = false;
 var endpoint = "https://secure.hackbook.club/hackbook-backend-SQL/endpoint";
 if(devel === true)
 	endpoint = "http://localhost:8080/hackbook-backend-SQL/endpoint";
