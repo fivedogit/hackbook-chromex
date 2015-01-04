@@ -1,6 +1,6 @@
 #Hackbook Chrome extension source
 
-Hackbook lets you follow HN users and creates a news feed of their activity, like Facebook but more like Twitter. It'll also notify you when your stuff is replied to, others follow you and your karma changes.
+Hackbook lets you follow HN users and creates a news feed of their activity. It'll also notify you when your stuff is replied to, others follow you and your karma changes.
 
 ![overview screenshot](https://s3.amazonaws.com/cyrus-general/main_explainer3.png)
 
