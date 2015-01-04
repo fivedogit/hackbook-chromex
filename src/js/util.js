@@ -1,7 +1,7 @@
-var devel = false;
-var endpoint = "https://secure.hackbook.club/hackbook-backend-MySQLHibernate/endpoint";
+var devel = true;
+var endpoint = "https://secure.hackbook.club/hackbook-backend-SQL/endpoint";
 if(devel === true)
-	endpoint = "http://localhost:8080/hackbook-backend-MySQLHibernate/endpoint";
+	endpoint = "http://localhost:8080/hackbook-backend-SQL/endpoint";
 
 // functions found here must be loaded for the background page and the overlay. 
 
