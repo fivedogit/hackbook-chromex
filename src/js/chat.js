@@ -16,7 +16,7 @@ function doChatTab()
 		// count resets happen in getNotifications so the display can do the yellow background thing
 	}
 	
-	if(currentHostname !== "news.ycombinator.com")
+	/*if(currentHostname !== "news.ycombinator.com")
 	{
 		$("#utility_table").hide();
 		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">Chat is only available while on <a href=\"#\" id=\"hn_chat_link\" style=\"text-decoration:underline\">news.ycombinator.com</a>.</div>");
@@ -26,7 +26,7 @@ function doChatTab()
 		});
 	}	
 	else
-	{
+	{*/
 		if(bg.user_jo)
 		{	
 			h = "";
@@ -57,7 +57,7 @@ function doChatTab()
 		{
 			$("#main_div").html("<div style=\"padding:20px\">Log in to view the chat box.</div>"); //OK
 		}
-	}
+	//}
 }
 
 function getChat()
@@ -130,9 +130,13 @@ function displayChat(chat_ja)
 		return a - b;
 	});
 	
+	var date = null;
+	//date = new Date(chat_ja[chat_ja.length-1].msfe);
+	//alert(chat_ja[chat_ja.length-1].msfe + " " + date.customFormat( "#MM#-#DD# #hhh#:#mm#" ));
+	//console.log(chat_ja[chat_ja.length-1].msfe + " " + date.customFormat( "#MM#-#DD# #hhh#:#mm#" ));
 	while(x < chat_ja.length)
 	{
-		var date = new Date(chat_ja[x].msfe);
+		date = new Date(chat_ja[x].msfe);
 		if(x < chat_ja.length - 1)
 			h = h + date.customFormat( "#MM#-#DD# #hhh#:#mm#" ) + " <" + chat_ja[x].user_id + ">: " +  chat_ja[x].text + "\n";
 		else

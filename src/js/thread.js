@@ -244,53 +244,63 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
         dataType: 'json', 
         async: true, 
         success: function (data, status) {
-        	var isdead = false;
-        	var isdeleted = false;
-        	if(typeof data.deleted !== "undefined" && data.deleted !== null && data.deleted === true)
-        		isdeleted = true;
-        	if(typeof data.dead !== "undefined" && data.dead !== null && data.dead === true)
-        		isdead = true;
-        	
-        	if(isdeleted === true || isdead === true)
+        	if(data.error)
         	{
-        		$.ajax({ 
-					type: 'GET', 
-					url: endpoint,
-					data: {
-						method: "getItem",
-						id: comment_id
-					},
-			        dataType: 'json', 
-			        async: true, 
-			        success: function (data, status) { 
-			        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
-			        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
-			        	else
-			        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, semirandom_id, false, false, isdeleted, isdead);
-			        },
-			        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
-				});
+        		$("#comment_div_" + semirandom_id).css("color", "red");
+        		if(data.error === "Permission denied")
+        			$("#comment_div_" + semirandom_id).html("HN API: \"Permission denied\"");
+        		else
+        			$("#comment_div_" + semirandom_id).html("Unknown error from HN API");
         	}	
         	else
-        	{	
-        		if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
-            		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true, isdeleted, isdead);
+        	{
+        		var isdead = false;
+            	var isdeleted = false;
+            	if(data.deleted !== null && data.deleted === true)
+            		isdeleted = true;
+            	if(data.dead && data.dead === true)
+            		isdead = true;
+            	
+            	if(isdeleted === true || isdead === true)
+            	{
+            		$.ajax({ 
+    					type: 'GET', 
+    					url: endpoint,
+    					data: {
+    						method: "getItem",
+    						id: comment_id
+    					},
+    			        dataType: 'json', 
+    			        async: true, 
+    			        success: function (data, status) { 
+    			        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
+    			        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
+    			        	else
+    			        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, semirandom_id, false, false, isdeleted, isdead);
+    			        },
+    			        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
+    				});
+            	}	
             	else
-            		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false, isdeleted, isdead);
-        	}
-        	var indent = (level) * 30;
-        	$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
-			//}
-    		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
-    		{
-    			var nested_semirandom_id = "";
-				for(var y=0; y < data.kids.length; y++) 
-	    		{  
-					nested_semirandom_id = data.kids[y] + "-" + makeid(3);
-					writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
-					doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1), false, comment_id_to_highlight);
-	    		}
-    		}
+            	{	
+            		if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
+                		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true, isdeleted, isdead);
+                	else
+                		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false, isdeleted, isdead);
+            	}
+            	var indent = (level) * 30;
+            	$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
+        		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
+        		{
+        			var nested_semirandom_id = "";
+    				for(var y=0; y < data.kids.length; y++) 
+    	    		{  
+    					nested_semirandom_id = data.kids[y] + "-" + makeid(3);
+    					writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
+    					doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1), false, comment_id_to_highlight);
+    	    		}
+        		}
+        	}	
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
         	displayMessage("Unable to retrieve HN comment. (ajax)", "red", "message_div_" + semirandom_id);
@@ -368,15 +378,18 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 	tempstr = tempstr + "					<td style=\"padding:5px;vertical-align:top;text-align:left;font-size:11px;\" id=\"comment_text_td_" + semirandom_id + "\"> ";
   	tempstr = tempstr + "					</td>";
   	tempstr = tempstr + "				</tr>";
-  	tempstr = tempstr + "				<tr id=\"reply_tr_" + semirandom_id + "\">";
-  	tempstr = tempstr + "					<td style=\"padding:3px;text-align:left\"> ";
-  //	alert(time*1 + " and " + bg.msfe_according_to_backend);
-  	if((time*1000) > (bg.msfe_according_to_backend - 1209600000)) // this is less than 2 weeks old, show reply
-  		tempstr = tempstr + "							<a href=\"#\" id=\"reply_link_" + semirandom_id + "\" style=\"font-size:11px\">reply</a>";
-  	else
-  		$("#comment_submission_form_div").hide();
-  	tempstr = tempstr + "					</td>";
-  	tempstr = tempstr + "				</tr>";
+  	if(!isdeleted && !isdead)
+	{	
+  		tempstr = tempstr + "				<tr id=\"reply_tr_" + semirandom_id + "\">";
+  	  	tempstr = tempstr + "					<td style=\"padding:3px;text-align:left\"> ";
+  	  //	alert(time*1 + " and " + bg.msfe_according_to_backend);
+  	  	if((time*1000) > (bg.msfe_according_to_backend - 1209600000)) // this is less than 2 weeks old, show reply
+  	  		tempstr = tempstr + "							<a href=\"#\" id=\"reply_link_" + semirandom_id + "\" style=\"font-size:11px\">reply</a>";
+  	  	else
+  	  		$("#comment_submission_form_div").hide();
+  	  	tempstr = tempstr + "					</td>";
+  	  	tempstr = tempstr + "				</tr>";
+  	}
   	tempstr = tempstr + "			</table>";
   	tempstr = tempstr + "		</td>";
 	tempstr = tempstr + "	</tr>";
@@ -386,6 +399,8 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 	
   	$("[id=screenname_link_" + semirandom_id + "]").text(by);
   	$("[id=time_ago_span_" + semirandom_id + "]").text(bg.agoIt(time*1000));
+  	if(isdeleted || isdead)
+  		$("[id=comment_text_td_" + semirandom_id + "]").css("color", "red");
   	if(typeof text !== "undefined" && text !== null)
   		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(text, "<a href=", "<a class=\"newtab\" href="));
 
@@ -402,26 +417,29 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
 		}
 	});
 	
-	$("[id=reply_link_" + semirandom_id + "]").click({comment_id: id}, function(event) { 
-	 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id});
-	 	return false;
-	});
+  	if(!isdeleted && !isdead)
+	{	
+  		$("[id=reply_link_" + semirandom_id + "]").click({comment_id: id}, function(event) { 
+  		 	chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id});
+  		 	return false;
+  		});
 
-	$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) {
-		//noteItemLikeOrDislike(event.data.semirandom_id, "like");
-		bg.likedislikemode = "commentlike";
-		$("[id=like_link_" + event.data.semirandom_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
-		return false;
-	});
-		 
-	$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) { 
-		//noteItemLikeOrDislike(event.data.semirandom_id, "dislike");
-		bg.likedislikemode = "commentdislike";
-		$("[id=dislike_link_" + event.data.semirandom_id + "]").html("");
-		chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
-		return false;
-	});
+  		$("[id=like_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) {
+  			//noteItemLikeOrDislike(event.data.semirandom_id, "like");
+  			bg.likedislikemode = "commentlike";
+  			$("[id=like_link_" + event.data.semirandom_id + "]").html("");
+  			chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
+  			return false;
+  		});
+  			 
+  		$("[id=dislike_link_" + semirandom_id + "]").click({semirandom_id: semirandom_id, comment_id: id}, function(event) { 
+  			//noteItemLikeOrDislike(event.data.semirandom_id, "dislike");
+  			bg.likedislikemode = "commentdislike";
+  			$("[id=dislike_link_" + event.data.semirandom_id + "]").html("");
+  			chrome.tabs.create({url:"https://news.ycombinator.com/reply?id=" + event.data.comment_id, active: false}, function(){});
+  			return false;
+  		});
+	}
 	
 	$("[id=screenname_link_"+ semirandom_id + "]").click({target_screenname: by}, function(event) { 
 		chrome.tabs.create({url:"http://news.ycombinator.com/user?id=" + event.data.target_screenname});
