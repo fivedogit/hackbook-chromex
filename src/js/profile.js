@@ -152,18 +152,8 @@ function getProfile()
 		}
 		main_div_string = main_div_string + "							</td>";
 		main_div_string = main_div_string + "						</tr>";
-		main_div_string = main_div_string + "			<tr><td colspan=3 style=\"text-align:left;color:black;padding-top:10px\">HN page modifications<span style=\"padding-left:8px;font-style:italic;color:#828282;font-size:10px\">hide these if Hackbook conflicts with other extensions</span></td></tr>";
-		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">embedded counts: </td>";
-		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
-		main_div_string = main_div_string + "					<select id=\"hide_embedded_counts_selector\">";
-		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
-		main_div_string = main_div_string + "						<option SELECTED value=\"show\">show</option>";
-		main_div_string = main_div_string + "					</select> (<a href=\"#\" id=\"hide_embedded_counts_explainer_link\">?</a>)";
-		main_div_string = main_div_string + "					<span id=\"hide_embedded_counts_result_span\" style=\"font-style:italic;color:#828282;font-size:10px\"></span>";
-		main_div_string = main_div_string + "				</td>";
-		main_div_string = main_div_string + "			</tr>";
-		main_div_string = main_div_string + "			<tr id=\"hide_embedded_counts_explainer_tr\" style=\"display:none\"><td></td><td colspan=2 style=\"text-align:left;color:black;font-size:11px\" id=\"hide_embedded_counts_explainer_td\"></td>";
-    	main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">inline follow: </td>";
+		main_div_string = main_div_string + "			<tr><td colspan=3 style=\"text-align:left;color:black;padding-top:10px\">HN page modifications<span style=\"padding-left:8px;font-style:italic;color:#828282;font-size:10px\">hide if Hackbook conflicts with other extensions</span></td></tr>";
+		main_div_string = main_div_string + "			<tr><td style=\"text-align:left;color:#828282;width:25%\">inline follow: </td>";
 		main_div_string = main_div_string + "				<td style=\"text-align:left\">";
 		main_div_string = main_div_string + "					<select id=\"hide_inline_follow_selector\">";
 		main_div_string = main_div_string + "						<option value=\"hide\">hide</option>";
@@ -508,70 +498,6 @@ function getProfile()
 		$("#get_suggestions_link").click(function () {
 			chrome.tabs.create({url: chrome.extension.getURL("login_successful.html")});
 			return false;
-		});
-		
-		if (bg.user_jo.hide_embedded_counts === false)
-			$("#hide_embedded_counts_selector").val("show");
-		else if (bg.user_jo.hide_embedded_counts === true)
-			$("#hide_embedded_counts_selector").val("hide");
-		
-		$("#hide_embedded_counts_selector").change(function () {
-			$.ajax({
-				type: 'GET',
-				url: endpoint,
-				data: {
-		            method: "setUserPreference",
-		            screenname: screenname,          
-		            this_access_token: this_access_token,  
-		            which: "hide_embedded_counts",
-		            value: $("#hide_embedded_counts_selector").val() 
-		        },
-		        dataType: 'json',
-		        async: true,
-		        success: function (data, status) {
-		        	if (data.response_status === "error")
-		        	{
-		        		$("#hide_embedded_counts_result_span").text(data.message);
-		        		// on error, reset the selector to the bg.user_jo value
-		        		if (bg.user_jo.hide_embedded_counts === false)
-		        			$("#hide_embedded_counts_selector").val("show");
-		        		else if (bg.user_jo.hide_embedded_counts === true)
-		        			$("#hide_embedded_counts_selector").val("hide");
-		        		displayMessage(data.message, "red", "utility_message_td");
-		            	if(data.error_code && data.error_code === "0000")
-		        		{
-		        			displayMessage("Your login has expired. Please relog.", "red");
-		        			bg.user_jo = null;
-		        			updateLogstat();
-		        		}
-		        	}
-		        	else
-		        	{
-		        		if($("#hide_embedded_counts_selector").val() === "show")
-		        			bg.user_jo.hide_embedded_counts = false;
-		        		else if($("#hide_embedded_counts_selector").val() === "hide")
-		        			bg.user_jo.hide_embedded_counts = true;
-		        		$("#hide_embedded_counts_result_span").text("Updated. Refresh HN pages.");
-		        		bg.getUser(false);
-		        	}
-		        	setTimeout(function(){$("#hide_embedded_counts_result_span").text("");},3000);
-		        }
-		        ,
-		        error: function (XMLHttpRequest, textStatus, errorThrown) {
-		        	$("#hide_embedded_counts_result_span").text("ajax error");
-		        	setTimeout(function(){$("#hide_embedded_counts_result_span").text("");},3000);
-		            console.log(textStatus, errorThrown);
-		        }
-			});
-		});
-		
-		$("#hide_embedded_counts_explainer_link").click(function () {
-			$("#hide_embedded_counts_explainer_tr").show();
-			var h = "";
-			h = h + "<div style=\"padding:5px 0px 5px 0px;\">Show/hide \"feed (x) | notif. (y)\" text at the top of every HN page. ";
-			h = h + "<br>NOTE: Since these notification numbers also apppear in the Hackbook button, this feature will probably be removed. ";
-			h = h + "Email me at c@mailcyr.us if you object to this removal.</div>";
-			$("#hide_embedded_counts_explainer_td").html(h);
 		});
 		
 		if (bg.user_jo.hide_inline_follow === false)

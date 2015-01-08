@@ -51,28 +51,30 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
-chrome.runtime.sendMessage({
-    method: "getHNLoginStep"
-}, function(response) {
-    if (response.hn_login_step === 0) {
-        //alert("hn_login_step was 0. Do nothing.");
-    } 
-    else if (response.hn_login_step === 0.5) {
-    	 var h = "<tr>";
-         h = h + "	<td></td>";
-         h = h + "	<td>";
-         h = h + "		<div style=\"color:black;text-align:center;padding-bottom:10px\" id=\"explainer_div\">";
-         h = h + "			To verify that you own this account, Hackbook needs to add a unique token<br>";
-         h = h + "			to your \"about\" below. You can do it manually or let Hackbook do it automatically.<br>";
-         h = h + "			<div style=\"padding-top:10px;text-align:center\"><input type=\"button\" id=\"verification_cancel\" value=\"cancel\"> <input type=\"button\" id=\"verification_manual\" value=\"manual\"> <input type=\"button\" id=\"verification_automatic\" value=\"automatic\"></div>";
-         h = h + "		</div>";
-         h = h + "	</td>";
-         h = h + "</tr>";
-         $('textarea[name=about]').parent().prepend(h);
-         $("#verification_cancel").click(function(){
-        	 chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 0}, function(response) {
-        		 chrome.runtime.sendMessage({method: "sendRedirect",location: "https://news.ycombinator.com/"}, function(response) {});
-        	 });
+chrome.runtime.sendMessage({ method: "getHNLoginStep" }, 
+		function(response) 
+		{
+    		if (response.hn_login_step === 0) 
+    		{
+    			//alert("hn_login_step was 0. Do nothing.");
+    		} 
+    		else if (response.hn_login_step === 0.5) 
+    		{
+    			 var h = "<tr>";
+    	         h = h + "	<td></td>";
+    	         h = h + "	<td>";
+    	         h = h + "		<div style=\"color:black;text-align:center;padding-bottom:10px\" id=\"explainer_div\">";
+    	         h = h + "			To verify that you own this account, Hackbook needs to add a unique token<br>";
+    	         h = h + "			to your \"about\" below. You can do it manually or let Hackbook do it automatically.<br>";
+    	         h = h + "			<div style=\"padding-top:10px;text-align:center\"><input type=\"button\" id=\"verification_cancel\" value=\"cancel\"> <input type=\"button\" id=\"verification_manual\" value=\"manual\"> <input type=\"button\" id=\"verification_automatic\" value=\"automatic\"></div>";
+    	         h = h + "		</div>";
+    	         h = h + "	</td>";
+    	         h = h + "</tr>";
+    	         $('textarea[name=about]').parent().prepend(h);
+    	         $("#verification_cancel").click( function() {
+    	        	 chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 0}, function(response) {
+    	        		 chrome.runtime.sendMessage({method: "sendRedirect",location: "https://news.ycombinator.com/"}, function(response) {});
+    	        	 });
         	 return false;
          });
          $("#verification_manual").click(function(){
@@ -110,9 +112,11 @@ chrome.runtime.sendMessage({
             //alert("cs done setting bg.hn_existing_about... getting auth token from backend with detected_screenname=" + detected_screenname);
             chrome.runtime.sendMessage({method: "getHNAuthToken",detected_screenname: detected_screenname, manual_or_automatic: "automatic"}, function(response) {});
         });
-    } else if (response.hn_login_step === 2) {
-    	
-    	function rgb2hex(rgb) {
+    } 
+    else if (response.hn_login_step === 2) 
+    {
+    	function rgb2hex(rgb) 
+    	{
     	    if (/^[0-9A-F]{6}$/i.test(rgb)) return rgb;
 
     	    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
@@ -129,15 +133,21 @@ chrome.runtime.sendMessage({
         var detected_screenname = null;
         var hn_screenname_found = false;
         var topcolor = "ff6600";
-        if (elements_of_pagetop_class.length && elements_of_pagetop_class.length > 0) {
-            for (var x = 0; x < elements_of_pagetop_class.length && hn_screenname_found === false; x++) {
-                if ($(elements_of_pagetop_class[x]).children()) {
+        if (elements_of_pagetop_class.length && elements_of_pagetop_class.length > 0) 
+        {
+            for (var x = 0; x < elements_of_pagetop_class.length && hn_screenname_found === false; x++) 
+            {
+                if ($(elements_of_pagetop_class[x]).children()) 
+                {
                     kids = $(elements_of_pagetop_class[x]).children();
-                    for (var y = 0; y < kids.length && hn_screenname_found === false; y++) {
+                    for (var y = 0; y < kids.length && hn_screenname_found === false; y++) 
+                    {
                         kid = kids[y];
-                        if (kid.tagName === "A") {
+                        if (kid.tagName === "A") 
+                        {
                             href = $(kid).attr("href");
-                            if (href.indexOf("user?id=") === 0) {
+                            if (href.indexOf("user?id=") === 0) 
+                            {
                                 var i = href.indexOf("id=") + 3;
                                 detected_screenname = href.substr(i);
                                 hn_screenname_found = true;
@@ -168,102 +178,24 @@ chrome.runtime.sendMessage({
         
         // this is the 30-to-0 countdown
         $("#vss").text("30");
-        setTimeout(function() {
-            $("#vss").text("29");
-            setTimeout(function() {
-                $("#vss").text("28");
-                setTimeout(function() {
-                    $("#vss").text("27");
-                    setTimeout(function() {
-                        $("#vss").text("26");
-                        setTimeout(function() {
-                            $("#vss").text("25");
-                            setTimeout(function() {
-                                $("#vss").text("24");
-                                setTimeout(function() {
-                                    $("#vss").text("23");
-                                    setTimeout(function() {
-                                        $("#vss").text("22");
-                                        setTimeout(function() {
-                                            $("#vss").text("21");
-                                            setTimeout(function() {
-                                                $("#vss").text("20");
-                                                setTimeout(function() {
-                                                    $("#vss").text("19");
-                                                    setTimeout(function() {
-                                                        $("#vss").text("18");
-                                                        setTimeout(function() {
-                                                            $("#vss").text("17");
-                                                            setTimeout(function() {
-                                                                $("#vss").text("16");
-                                                                setTimeout(function() {
-                                                                    $("#vss").text("15");
-                                                                    setTimeout(function() {
-                                                                        $("#vss").text("14");
-                                                                        setTimeout(function() {
-                                                                            $("#vss").text("13");
-                                                                            setTimeout(function() {
-                                                                                $("#vss").text("12");
-                                                                                setTimeout(function() {
-                                                                                    $("#vss").text("11");
-                                                                                    setTimeout(function() {
-                                                                                        $("#vss").text("10");
-                                                                                        setTimeout(function() {
-                                                                                            $("#vss").text("9");
-                                                                                            setTimeout(function() {
-                                                                                                $("#vss").text("8");
-                                                                                                setTimeout(function() {
-                                                                                                    $("#vss").text("7");
-                                                                                                    setTimeout(function() {
-                                                                                                        $("#vss").text("6");
-                                                                                                        setTimeout(function() {
-                                                                                                            $("#vss").text("5");
-                                                                                                            setTimeout(function() {
-                                                                                                                $("#vss").text("4");
-                                                                                                                setTimeout(function() {
-                                                                                                                    $("#vss").text("3");
-                                                                                                                    setTimeout(function() {
-                                                                                                                        $("#vss").text("2");
-                                                                                                                        setTimeout(function() {
-                                                                                                                            $("#vss").text("1");
-                                                                                                                            setTimeout(function() {
-                                                                                                                                $("#vss").text("0")
-                                                                                                                            }, 1100)
-                                                                                                                        }, 1100)
-                                                                                                                    }, 1100)
-                                                                                                                }, 1100)
-                                                                                                            }, 1100)
-                                                                                                        }, 1100)
-                                                                                                    }, 1100)
-                                                                                                }, 1100)
-                                                                                            }, 1100)
-                                                                                        }, 1100)
-                                                                                    }, 1100)
-                                                                                }, 1100)
-                                                                            }, 1100)
-                                                                        }, 1100)
-                                                                    }, 1100)
-                                                                }, 1100)
-                                                            }, 1100)
-                                                        }, 1100)
-                                                    }, 1100)
-                                                }, 1100)
-                                            }, 1100)
-                                        }, 1100)
-                                    }, 1100)
-                                }, 1100)
-                            }, 1100)
-                        }, 1100)
-                    }, 1100)
-                }, 1100)
-            }, 1100)
-        }, 1100)
-    } else if (response.hn_login_step === 3) {
+        var countdown = 30;
+        $("#vss").text(countdown+"");
+        var countdown_loop = setInterval(function() {
+        	countdown = countdown - 1;
+        	$("#vss").text(countdown+"");
+        	if(countdown == 0)
+        		clearInterval(countdown_loop);
+        }, 1100);
+    } 
+    else if (response.hn_login_step === 3) 
+    {
         chrome.runtime.sendMessage({method: "setHNLoginStep",hn_login_step: 0}, function(response) {
             //alert("hn_login_step was 3. hn_login_step has been set to 0 and we're redirecting to login_successful.html at " + chrome.extension.getURL("login_successful.html"));
             chrome.runtime.sendMessage({method: "sendRedirect",location: chrome.extension.getURL("login_successful.html")}, function(response) {});
         });
-    } else if (response.hn_login_step === 4) {
+    } 
+    else if (response.hn_login_step === 4) 
+    {
         chrome.runtime.sendMessage({ method: "setHNLoginStep", hn_login_step: 0.5 }, function(response) {
         	chrome.runtime.sendMessage({method: "sendRedirect",location: "https://news.ycombinator.com/login"});
         });

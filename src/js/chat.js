@@ -138,9 +138,9 @@ function displayChat(chat_ja)
 	{
 		date = new Date(chat_ja[x].msfe);
 		if(x < chat_ja.length - 1)
-			h = h + date.customFormat( "#MM#-#DD# #hhh#:#mm#" ) + " <" + chat_ja[x].user_id + ">: " +  chat_ja[x].text + "\n";
+			h = h + date.customFormat( "#MM#-#DD# #hh#:#mm#" ) + " <" + chat_ja[x].user_id + ">: " +  chat_ja[x].text + "\n";
 		else
-			h = h + date.customFormat( "#MM#-#DD# #hhh#:#mm#" ) + " <" + chat_ja[x].user_id + ">: " +  chat_ja[x].text;
+			h = h + date.customFormat( "#MM#-#DD# #hh#:#mm#" ) + " <" + chat_ja[x].user_id + ">: " +  chat_ja[x].text;
 		x++;
 	}	
 	var prev = $("#chat_textarea").val();
@@ -182,6 +182,7 @@ function submitChatMessage(message)
         	}
         	else
         	{
+        		//alert(JSON.stringify(data.chat_ja));
         		if(typeof data.chat_ja !== "undefined" && data.chat_ja !== null)
         			displayChat(data.chat_ja);
         	}

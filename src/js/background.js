@@ -343,13 +343,6 @@ chrome.runtime.onMessage.addListener(
 		  likedislikemode = request.likedislikemode
 		  sendResponse({message: "success"});
 	  }
-	  else if(request.method === "getHideEmbeddedCounts") // don't need a getter for this as the receiver page can get this directly from cookie
-	  {
-		  if(user_jo && typeof user_jo.hide_embedded_counts !== "undefined" && user_jo.hide_embedded_counts !== null)
-			  sendResponse({hide_embedded_counts: user_jo.hide_embedded_counts});
-		  else
-			  sendResponse({hide_embedded_counts: true});
-	  }
 	  else if(request.method === "getHideInlineFollow") // don't need a getter for this as the receiver page can get this directly from cookie
 	  {
 		  if(user_jo && typeof user_jo.hide_inline_follow !== "undefined" && user_jo.hide_inline_follow !== null)
@@ -594,48 +587,25 @@ function getThread(url_at_function_call, updatebutton)
         }
 	});	
 
-	// the following ugly piece of code waits for up to 14 seconds for the thread to finish. Checking every .333 seconds, exiting upon completion
-	// as ugly as this is, there really isn't a better, more robust way to do animations in a chrome extension. Loops with setTimeout get really hairy. Don't judge.
-	// if there is a better way, please submit a bug report on Github or notify me on twitter (@fivedogit)
 	if(updatebutton)
 	{	
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",0);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",1);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",2);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",3);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",4);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",5);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",6);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",7);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",8);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",9);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",10);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){drawHButton("gray","white",11);}else{return;}if(threadstatus===0){finishThread(url_at_function_call);return;}
-	setTimeout(function(){if(url_at_function_call===currentURL){threadstatus=0}if(currentURL!==url_at_function_call){return;}finishThread(url_at_function_call);return;},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)},250)});
+		var frame = 0;
+		var animation_loop = setInterval(function(){
+			// end case
+			if(frame === 96 && url_at_function_call === currentURL) // we've reached last frame and are still on the correct tab
+				threadstatus = 0;
+			
+			if (url_at_function_call === currentURL)
+				drawHButton("gray", "white", (frame%12));
+			else // we're not on the right tab anymore, end loop
+			    clearInterval(animation_loop);
+			if (threadstatus === 0)
+			{
+				finishThread(url_at_function_call);
+				clearInterval(animation_loop);
+			}
+			frame++;
+		}, 100);
 	}
 }
 
