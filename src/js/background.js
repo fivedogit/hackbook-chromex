@@ -21,6 +21,7 @@ var likedislikemode = "none";
 var latest_ext_version = null;
 var hn_topcolor = "ff6600";
 var user_retrieval_loop_is_running = false;
+var updatebutton = true;
 
 
 (function() {
@@ -456,6 +457,22 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 	});
 }); 
 
+/* 
+On (tab update or tab change)
+{
+	getUser();
+	doButtonGen()
+	{
+		if(user has feed or notif counts)
+		{
+			drawNotificationNumber();
+		}
+		getThread(); // if global variable "updatebutton" is true, getThread can write animation and final result (blank or thread count). If false, it doesn't.
+		
+	}
+*/ 
+
+
 function drawNotificationNumber()
 {
 	if(user_jo)
@@ -463,16 +480,28 @@ function drawNotificationNumber()
 		if(user_jo.notification_mode === "notifications_only")
 		{
 			if(user_jo.notification_count === 0)
+			{
+				updatebutton = true; // if running, let getThread continue drawing
 				return false; // we didn't draw anything
+			}
 			else
+			{
+				updatebutton = false; // if running, stop getThread from drawing
 				drawHButton("#" + user_jo.hn_topcolor, "black", null, user_jo.notification_count, 0);
+			}
 		}
 		else 
 		{
 			if(user_jo.newsfeed_count === 0 && user_jo.notification_count === 0)
+			{
+				updatebutton = true; // if running, let getThread continue drawing
 				return false; // we didn't draw anything
+			}
 			else 
+			{
+				updatebutton = false; // if running, stop getThread from drawing
 				drawHButton("#" + user_jo.hn_topcolor, "black", null, user_jo.newsfeed_count, user_jo.notification_count);
+			}
 		}
 		return true; // we drew a notification number
 	}	
@@ -493,7 +522,7 @@ function doButtonGen()
 		if(!isValidURLFormation(currentURL))
 			return;
 		else
-			getThread(url_at_function_call, false); // don't overwrite notification number
+			getThread(url_at_function_call); // don't overwrite notification number
 	}
 	else
 	{
@@ -502,11 +531,11 @@ function doButtonGen()
 		else if(currentHostname === "news.ycombinator.com")
 		{   drawHButton("gray", "white"); return; }	
 		else
-			getThread(url_at_function_call, true); // no notification number, overwrite
+			getThread(url_at_function_call); // no notification number, overwrite
 	}
 }
 
-function getThread(url_at_function_call, updatebutton) 
+function getThread(url_at_function_call) 
 {
 	
 	// This function always calls getThread and getUserSelf (if credentials available) at the same time. 
@@ -587,7 +616,7 @@ function getThread(url_at_function_call, updatebutton)
         }
 	});	
 
-	if(updatebutton)
+	if(updatebutton) // only animate if we've not updated the button
 	{	
 		var frame = 0;
 		var animation_loop = setInterval(function(){
@@ -595,9 +624,9 @@ function getThread(url_at_function_call, updatebutton)
 			if(frame === 96 && url_at_function_call === currentURL) // we've reached last frame and are still on the correct tab
 				threadstatus = 0;
 			
-			if (url_at_function_call === currentURL)
+			if (url_at_function_call === currentURL && updatebutton) // this can change from updatebutton=true to updatebutton=false midway through animation, depending on what getUser() comes back with.
 				drawHButton("gray", "white", (frame%12));
-			else // we're not on the right tab anymore, end loop
+			else // we're not on the right tab anymore or we've drawn a notification number, end animation loop
 			    clearInterval(animation_loop);
 			if (threadstatus === 0)
 			{
