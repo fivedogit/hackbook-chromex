@@ -546,95 +546,98 @@ function getThread(url_at_function_call)
 	var mode = "stealth";
 	if(typeof user_jo !== "undefined" && user_jo !== null && typeof user_jo.url_checking_mode !== null && user_jo.url_checking_mode !== null)
 		mode = user_jo.url_checking_mode;
-	threadstatus = 1; 
-	$.ajax({ 
-		type: 'GET', 
-		url: endpoint, 
-		data: {
-			method: "searchForHNItem",
-            url: url_at_function_call,
-            mode: mode
-        },
-        dataType: 'json', 
-        async: true, 
-        success: function (data, status) {
-        	if(data.response_status === "success")
-        	{	
-        		msfe_according_to_backend = data.msfe;
-        		if(data.objectID === "-1")
-        		{
-        			// no HN item, these two conditions end the animation and call finishThread();
-	        		threadstatus=0;
-	        		t_jo = {}; // this means stop animation and there's no item
-        		}	
-        		else
-        		{
-        			//alert("Got objectID from Hackbook, querying firebase");
-        			$.ajax({ 
-	        			type: 'GET', 
-	        			url: "https://hacker-news.firebaseio.com/v0/item/" + data.objectID + ".json", 
-	        	        dataType: 'json', 
-	        	        async: true, 
-	        	        success: function (data, status) {
-	        	        	//alert("success getting object from firebase");
-	        	        	if(typeof data.kids !== "undefined")
-	        	        	{
-	        	        		data.children = data.kids;
-	        	        		delete data.kids;
-	        	        	}
-                    		t_jo = data;
-                    		threadstatus=0;
-	        	        },
-	        	        error: function (XMLHttpRequest, textStatus, errorThrown) {
-	        	        	//alert("network error getting object from firebase");
-	        	        	if(currentURL === url_at_function_call)
-	        	        	{
-	        	        		threadstatus=0;
-	        	        		//alert("drawing red HN ajax");
-	        	        		drawHButton("gray", "red");
-	        	        	}
-	        	            console.log(textStatus, errorThrown);
-	        	        }
-	        		});
-        		}	
-        	}
-        	else if(data.response_status === "error")
-        	{
-        		console.log("searchForHNItem response_status=error");
-        		//alert("drawing red searchForHNItem response_status error");
-        		drawHButton("gray", "red");
-        	}	
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-        	//alert("searchForHNItem ajax error");
-        	if(currentURL === url_at_function_call)
-        	{
-        		threadstatus=0;
-        		drawHButton("gray", "red");
-        	}
-            console.log(textStatus, errorThrown);
-        }
-	});	
-
-	if(updatebutton) // only animate if we've not updated the button
+	if(mode === "stealth")
 	{	
-		var frame = 0;
-		var animation_loop = setInterval(function(){
-			// end case
-			if(frame === 96 && url_at_function_call === currentURL) // we've reached last frame and are still on the correct tab
-				threadstatus = 0;
-			
-			if (url_at_function_call === currentURL && updatebutton) // this can change from updatebutton=true to updatebutton=false midway through animation, depending on what getUser() comes back with.
-				drawHButton("gray", "white", (frame%12));
-			else // we're not on the right tab anymore or we've drawn a notification number, end animation loop
-			    clearInterval(animation_loop);
-			if (threadstatus === 0)
-			{
-				finishThread(url_at_function_call);
-				clearInterval(animation_loop);
-			}
-			frame++;
-		}, 100);
+		threadstatus = 1; 
+		$.ajax({ 
+			type: 'GET', 
+			url: endpoint, 
+			data: {
+				method: "searchForHNItem",
+	            url: url_at_function_call,
+	            mode: mode
+	        },
+	        dataType: 'json', 
+	        async: true, 
+	        success: function (data, status) {
+	        	if(data.response_status === "success")
+	        	{	
+	        		msfe_according_to_backend = data.msfe;
+	        		if(data.objectID === "-1")
+	        		{
+	        			// no HN item, these two conditions end the animation and call finishThread();
+		        		threadstatus=0;
+		        		t_jo = {}; // this means stop animation and there's no item
+	        		}	
+	        		else
+	        		{
+	        			//alert("Got objectID from Hackbook, querying firebase");
+	        			$.ajax({ 
+		        			type: 'GET', 
+		        			url: "https://hacker-news.firebaseio.com/v0/item/" + data.objectID + ".json", 
+		        	        dataType: 'json', 
+		        	        async: true, 
+		        	        success: function (data, status) {
+		        	        	//alert("success getting object from firebase");
+		        	        	if(typeof data.kids !== "undefined")
+		        	        	{
+		        	        		data.children = data.kids;
+		        	        		delete data.kids;
+		        	        	}
+	                    		t_jo = data;
+	                    		threadstatus=0;
+		        	        },
+		        	        error: function (XMLHttpRequest, textStatus, errorThrown) {
+		        	        	//alert("network error getting object from firebase");
+		        	        	if(currentURL === url_at_function_call)
+		        	        	{
+		        	        		threadstatus=0;
+		        	        		//alert("drawing red HN ajax");
+		        	        		drawHButton("gray", "red");
+		        	        	}
+		        	            console.log(textStatus, errorThrown);
+		        	        }
+		        		});
+	        		}	
+	        	}
+	        	else if(data.response_status === "error")
+	        	{
+	        		console.log("searchForHNItem response_status=error");
+	        		//alert("drawing red searchForHNItem response_status error");
+	        		drawHButton("gray", "red");
+	        	}	
+	        },
+	        error: function (XMLHttpRequest, textStatus, errorThrown) {
+	        	//alert("searchForHNItem ajax error");
+	        	if(currentURL === url_at_function_call)
+	        	{
+	        		threadstatus=0;
+	        		drawHButton("gray", "red");
+	        	}
+	            console.log(textStatus, errorThrown);
+	        }
+		});	
+
+		if(updatebutton) // only animate if we've not updated the button
+		{	
+			var frame = 0;
+			var animation_loop = setInterval(function(){
+				// end case
+				if(frame === 96 && url_at_function_call === currentURL) // we've reached last frame and are still on the correct tab
+					threadstatus = 0;
+				
+				if (url_at_function_call === currentURL && updatebutton) // this can change from updatebutton=true to updatebutton=false midway through animation, depending on what getUser() comes back with.
+					drawHButton("gray", "white", (frame%12));
+				else // we're not on the right tab anymore or we've drawn a notification number, end animation loop
+				    clearInterval(animation_loop);
+				if (threadstatus === 0)
+				{
+					finishThread(url_at_function_call);
+					clearInterval(animation_loop);
+				}
+				frame++;
+			}, 100);
+		}
 	}
 }
 
