@@ -639,6 +639,10 @@ function getThread(url_at_function_call)
 			}, 100);
 		}
 	}
+	else
+	{
+		drawHButton("gray", "white");
+	}	
 }
 
 function finishThread(url_at_function_call) 
