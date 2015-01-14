@@ -487,7 +487,7 @@ function drawNotificationNumber()
 			else
 			{
 				updatebutton = false; // if running, stop getThread from drawing
-				drawHButton("#" + user_jo.hn_topcolor, "black", null, user_jo.notification_count, 0);
+				drawHButton("#" + user_jo.hn_topcolor, "black", null, 0, user_jo.notification_count);
 			}
 		}
 		else 
