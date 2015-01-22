@@ -527,9 +527,9 @@ function doButtonGen()
 	else
 	{
 		if(!isValidURLFormation(currentURL))
-		{	drawHButton("gray", "white"); return; } 
-		else if(currentHostname === "news.ycombinator.com")
-		{   drawHButton("gray", "white"); return; }	
+			drawHButton("gray", "white"); 
+		else if(currentURL === "https://news.ycombinator.com" || currentURL === "https://news.ycombinator.com/" || currentURL === "https://news.ycombinator.com/news")
+			drawHButton("gray", "white"); 
 		else
 			getThread(url_at_function_call); // no notification number, overwrite
 	}

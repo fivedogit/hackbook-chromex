@@ -32,16 +32,16 @@ function doThreadTab()
 		// count resets happen in getNotifications so the display can do the yellow background thing
 	}
 	
-	if(currentHostname === "news.ycombinator.com")
-	{
-		$("#utility_table").hide();
-		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">HN comment threads are not available on news.ycombinator.com.</div>");
-	}	
-	else if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
+	if(typeof bg.user_jo !== "undefined" && bg.user_jo !== null && typeof bg.user_jo.url_checking_mode !== "undefined" && bg.user_jo.url_checking_mode === "notifications_only")
 	{
 		$("#utility_table").hide();
 		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">You are in \"notifications only\" URL-checking mode, so no thread will appear here.</div>");
 	}	
+	else if(currentURL === "https://news.ycombinator.com" || currentURL === "https://news.ycombinator.com/" || currentURL === "https://news.ycombinator.com/news")
+	{
+		$("#utility_table").hide();
+		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">This is the Hacker News main page and while there are sometimes HN story items for it, they are usually mistaken. (That is, someone posted a story with \"http://news.ycombinator.com\" as the target URL. Oops!) So Hackbook doesn't display them.</div>");
+	}
 	else if(isValidURLFormation(currentURL))
 	{
 		if(bg.threadstatus === 0)
@@ -58,7 +58,7 @@ function doThreadTab()
 	else // not a valid URL formation
 	{
 		$("#utility_table").hide();
-		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">There is no Hacker News item for this URL.</div>");
+		$("#main_div").html("<div style=\"padding:40px;text-align:center;\">There is no Hacker News item for this irregular URL.</div>");
 	}
 }
 
@@ -77,10 +77,15 @@ function gotThread()
 			happy = happy + "			<br><a href=\"#\" id=\"storydislike_link\"><img src=\"" + chrome.extension.getURL("images/grayarrow_down.gif") + "\"></a>";
 		happy = happy + "		</td>";
 		happy = happy + "		<td style=\"padding-right:3px;color:#828282;border:0px solid red;\">";
-		var bi = bg.t_jo.url.indexOf("://") + 3;
-		var ei = bg.t_jo.url.indexOf("/", bg.t_jo.url.indexOf("://") + 3);
-		var hostname = bg.t_jo.url.substring(bi,ei);
-		happy = happy + bg.t_jo.title + " <span style=\"font-size:11px;color:#828282\">(" + hostname + ")</span>";
+		if(bg.t_jo.url !== "")
+		{	
+			var bi = bg.t_jo.url.indexOf("://") + 3;
+			var ei = bg.t_jo.url.indexOf("/", bg.t_jo.url.indexOf("://") + 3);
+			var hostname = bg.t_jo.url.substring(bi,ei);
+			happy = happy + bg.t_jo.title + " <span style=\"font-size:11px;color:#828282\">(" + hostname + ")</span>";
+		}
+		else
+			happy = happy + bg.t_jo.title;
 		happy = happy + "		</td>";
 		happy = happy + "	</tr>";
 		happy = happy + "	<tr>";
@@ -296,7 +301,7 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
     				for(var y=0; y < data.kids.length; y++) 
     	    		{  
     					nested_semirandom_id = data.kids[y] + "-" + makeid(3);
-    					writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "after");
+    					writeUnifiedCommentContainer(nested_semirandom_id, anchor_dom_id, "append");
     					doThreadItem(data.kids[y], nested_semirandom_id, "container_div_" + nested_semirandom_id, (level+1), false, comment_id_to_highlight);
     	    		}
         		}

@@ -1,7 +1,7 @@
 {
     "name": "Hackbook",
     "short_name": "Hackbook",
-    "version": "0.254",
+    "version": "0.255",
     "manifest_version": 2,
     "description": "Follow/unfollow, news feed and notifications for Hacker News",
     "icons": {

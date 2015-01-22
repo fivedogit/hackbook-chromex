@@ -1,7 +1,7 @@
 function doChatTab()
 {
 	tabmode = "chat";
-	drawTabHeader("General chat<div style=\"color:#828282;font-style:italic;font-size:12px;font-weight:normal\">(Available while on news.ycombinator.com pages.)</div>");
+	drawTabHeader("General chat"); //<div style=\"color:#828282;font-style:italic;font-size:12px;font-weight:normal\">(Available while on news.ycombinator.com pages.)</div>");
 
 	$("#chat_tab_link").css("font-weight", "bold");
 	$("#thread_tab_link").css("font-weight", "normal");
