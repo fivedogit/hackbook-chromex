@@ -280,7 +280,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
                 		            		        			if(typeof event.data.url !== "undefined" && event.data.url !== null && event.data.url !== "")
                 		            		        				chrome.tabs.create({url: event.data.url});																				// (b) link to it
                 		            		        			else
-                		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.id});										// (b) link to it (no url, so link to comments)
+                		            		        				chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.hn_root_story_id});										// (b) link to it (no url, so link to comments)
                 		            		        		});
                 		            		        		$("#comments_link_" + notification_jo.id).click({hn_root_story_id:data.id}, function(event){
                 		            		        			chrome.tabs.create({url: "https://news.ycombinator.com/item?id=" + event.data.hn_root_story_id});							// (c) link to comments
