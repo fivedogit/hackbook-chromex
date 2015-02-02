@@ -138,39 +138,22 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				// A. unused
         				// B. unused
         				// C. *** user was mentioned in chat
-        				var act_html = "";
-        				act_html = act_html + "	<table style=\"width:100%\">";
-        				act_html = act_html + "		<tr>";
-        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
-        					act_html = act_html + "				<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
-        				else
-        					act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
-        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " ";
-        				act_html = act_html + "			</td>";
-        				act_html = act_html + "		</tr>";
-        				act_html = act_html + "	</table>";
-        				$("#header_div_" + notification_jo.id).html(act_html);
-        				$("#header_div_" + notification_jo.id).show();
+        				writeNotificationHeader(notification_jo, "native");
         				
         				var c_html = "";
     					if(notification_jo.type === "0")
         					c_html = c_html + "<b><a href=\"#\" id=\"screenname_link_" + notification_jo.id + "\">" + notification_jo.triggerer + "</a> followed you</b><br>";
-        				else if(notification_jo.type === "1" )
+        				else if(notification_jo.type === "1" || notification_jo.type === "2")
         				{	
         					if(notification_jo.karma_change*1 === 1)
         						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " point</b>";
-        					else
+        					else if (notification_jo.karma_change*1 === -1)
+        						c_html = c_html + "<b>Your karma decreased by " + Math.abs(notification_jo.karma_change) + " point</b>";
+        					else if (notification_jo.karma_change*1 > 1)
         						c_html = c_html + "<b>Your karma increased by " + notification_jo.karma_change + " points</b>";
-    						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was upvoted.";
-        				}
-        				else if(notification_jo.type === "2" )
-        				{
-        					if(notification_jo.karma_change*1 === -1)
-        						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " point</b>";
         					else
-        						c_html = c_html + "<b>Your karma decreased by " + notification_jo.karma_change + " points</b>";
-        					c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> was downvoted.";
+        						c_html = c_html + "<b>Your karma decreased by " + Math.abs(notification_jo.karma_change) + " points</b>";
+    						c_html = c_html + "<div style=\"font-size:10px;padding-top:8px;font-style:italic;color:#828282;text-align:right\">Unfortunately, Hackbook can't know which of your <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_comments_link_" + notification_jo.id + "\">comments</a> and/or <a href=\"#\" style=\"color:#828282;text-decoration:underline\" id=\"view_your_submissions_link_" + notification_jo.id + "\">submissions</a> this change is associated with.";
         				}
         				else if(notification_jo.type === "C" )
         				{
@@ -182,6 +165,9 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				{
     						$("#view_your_comments_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
         						chrome.tabs.create({url: "https://news.ycombinator.com/threads?id=" + event.data.value});
+        					});
+    						$("#view_your_submissions_link_" + notification_jo.id).click({value:notification_jo.user_id}, function(event) {
+        						chrome.tabs.create({url: "https://news.ycombinator.com/submitted?id=" + event.data.value});
         					});
         				}
     					else if(notification_jo.type === "C")
@@ -206,9 +192,10 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         				// 7. story posted by someone user is following
         				// 8. ** comment posted by someone user is following 
         				// 9. ** deep-comment on comment
-        				
         				// ** = hn_root_story_id != hn_target_id     (must make separate call to get root story)
+        				writeNotificationHeader(notification_jo, "hn");
         				
+        				// AJAX to HN API for target item (i.e. the text, by (etc) of the item that triggered this notification)
         				$.ajax({ 
             				type: 'GET', 
             				url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_target_id + ".json", // hn_target_id points to the new comment or story that triggered this notification
@@ -217,44 +204,15 @@ function doNotificationItem(notification_id, dom_id, feedmode)
             		        success: function (data, status) {
             		        	if(tabmode === feedmode) // as these come in, only process them if we're still on the notifications tab
             		    		{	
-            		        		// write the header, pointing to the             		        			
-    		        				var showbranch = false;
-    		        				var act_html = "";
-    		        				act_html = act_html + "	<table style=\"width:100%\">";
-    		        				act_html = act_html + "		<tr>";
-    		        				act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
-    		        				if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
-    		        					act_html = act_html + "<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
-    		        				else
-    		        					act_html = act_html + "<span style=\"color:#828282\">&#9733;</span> ";
-    		        				act_html = act_html + bg.agoIt(notification_jo.action_msfe) + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
-    		        				act_html = act_html + " <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;padding-left:6px\">comments</a>";
-    		        				act_html = act_html + "			</td>";
-    		        				act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\">";
     		        				if(typeof data.parent !== "undefined" && data.parent !== null)
     		        				{
-    		        					act_html = act_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
-    		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
-    		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
-    		        					{
-    		        						if(notification_jo.hn_root_comment_id !== data.id)
-    		        							showbranch = true;
-    		        						else // this is the root comment. Does it have children?
-    		        						{
-    		        							if(typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)
-    		        								showbranch = true;
-    		        						}
-    		        						if(showbranch)	
-    		        							act_html = act_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
-    		        					}
+    		        					var parent_and_branch_html = "";
+    		        					parent_and_branch_html = parent_and_branch_html + "				<a href=\"#\" id=\"show_parent_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">parent</a>";
+    		        					if((notification_jo.hn_root_comment_id !== 0 && notification_jo.hn_root_comment_id !== data.id) || (notification_jo.hn_root_comment_id === data.id && typeof data.kids !== "undefined" && data.kids !== null && data.kids.length > 0)) // if this item IS NOT the root comment OR it IS the root comment but has kids, show branch option
+    		        							parent_and_branch_html = parent_and_branch_html + "<span id=\"separator_span_" + notification_jo.id + "\"> | </span><a href=\"#\" id=\"show_branch_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;\">branch</a>";
+    		        					$("#parent_and_branch_td_" + notification_jo.id).html(parent_and_branch_html);
     		        				}
-    		        				
-    		        				act_html = act_html + "			</td>";
-    		        				act_html = act_html + "		</tr>";
-    		        				act_html = act_html + "	</table>";
-    		        				$("#header_div_" + notification_jo.id).html(act_html);
-    		        				$("#header_div_" + notification_jo.id).show();
-    		        				
+            		        		
     		        				if(notification_jo.type === "5" || notification_jo.type === "6" || notification_jo.type === "8" || notification_jo.type === "9")
     		        				{
     		        					// These are COMMENT types with a root story where hn_target_id != hn_root_story_id, so we have to retrieve the hn_root_story_id to (a) show the root story title, (b) link to it and (c) link to its comments
@@ -262,6 +220,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
     		            				// 6. ** comment on story
     		            				// 8. ** comment posted by someone user is following 
     		            				// 9. ** deep-comment on comment
+    		        					
     		        					if(typeof notification_jo.hn_root_story_id !== "undefined" && notification_jo.hn_root_story_id !== null) // make sure the hn_root_story_id exists
     		        					{	
     		        						$.ajax({ type: 'GET', url: "https://hacker-news.firebaseio.com/v0/item/" + notification_jo.hn_root_story_id + ".json", 
@@ -354,6 +313,7 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         		        					// if notification_jo has a root_comment_id and (either the current comment is not the same as the root comment (i.e. there's more than 1 comment to show) OR this is the root comment and it has children)
         		        					if(typeof notification_jo.hn_root_comment_id !== "undefined" && notification_jo.hn_root_comment_id !== null && notification_jo.hn_root_comment_id !== 0)
         		        					{
+        		        						var showbranch = false;
         		        						if(notification_jo.hn_root_comment_id !== data.id)
         		        							showbranch = true;
         		        						else // this is the root comment. Does it have children?
@@ -565,6 +525,31 @@ function doNotificationItem(notification_id, dom_id, feedmode)
         	console.log(textStatus, errorThrown);
         } 
 	});
+}
+
+function writeNotificationHeader(notification_jo, native_or_hn)
+{
+	var act_html = "";
+	act_html = act_html + "	<table style=\"width:100%\">";
+	act_html = act_html + "		<tr>";
+	act_html = act_html + "			<td style=\"text-align:left;font-size:10px;color:#828282;\">";
+	if($("#container_div_" + notification_jo.id).hasClass("new_notification"))
+		act_html = act_html + "				<span style=\"color:#" + bg.hn_topcolor + "\">&#9733;</span> ";
+	else
+		act_html = act_html + "				<span style=\"color:#828282\">&#9733;</span> ";
+	act_html = act_html + bg.agoIt(notification_jo.action_msfe);
+	if(native_or_hn === "hn")
+	{
+		act_html = act_html + " at <a href=\"#\" id=\"title_link_" + notification_jo.id + "\">...</a>";
+		act_html = act_html + " <a href=\"#\" id=\"comments_link_" + notification_jo.id + "\" style=\"font-size:10px;color:#828282;padding-left:6px\">comments</a>";
+	}
+	act_html = act_html + "			</td>";
+	if(native_or_hn === "hn")
+		act_html = act_html + "			<td style=\"text-align:right\" id=\"parent_and_branch_td_" + notification_jo.id + "\"></td>";
+	act_html = act_html + "		</tr>";
+	act_html = act_html + "	</table>";
+	$("#header_div_" + notification_jo.id).html(act_html);
+	$("#header_div_" + notification_jo.id).show();
 }
 
 function writeNotificationText(text, notification_jo)

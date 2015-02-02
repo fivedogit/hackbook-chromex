@@ -259,6 +259,7 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
         	}	
         	else
         	{
+        		var hn_item_jo = data;
         		var isdead = false;
             	var isdeleted = false;
             	if(data.deleted !== null && data.deleted === true)
@@ -266,33 +267,41 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
             	if(data.dead && data.dead === true)
             		isdead = true;
             	
-            	if(isdeleted === true || isdead === true)
-            	{
-            		$.ajax({ 
-    					type: 'GET', 
-    					url: endpoint,
-    					data: {
-    						method: "getItem",
-    						id: comment_id
-    					},
-    			        dataType: 'json', 
-    			        async: true, 
-    			        success: function (data, status) { 
-    			        	if(data.response_status === "error" || (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")))
-    			        		$("#comment_div_" + semirandom_id).html("Hackbook was unable to retrieve the original text of this item. Sorry.");
+            	$.ajax({ 
+					type: 'GET', 
+					url: endpoint,
+					data: {
+						method: "getItem",
+						id: comment_id
+					},
+			        dataType: 'json', 
+			        async: true, 
+			        success: function (data, status) { 
+			        	if(isdeleted === true || isdead === true)
+			        	{	
+			        		if(data.response_status === "error")
+    			        		$("#comment_div_" + semirandom_id).html("This deleted item was not found in the Hackbook database, so its text cannot be displayed. Sorry.");
     			        	else
-    			        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, semirandom_id, false, false, isdeleted, isdead);
-    			        },
-    			        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
-    				});
-            	}	
-            	else
-            	{	
-            		if(typeof comment_id_to_highlight !== "undefined" && comment_id_to_highlight !== null && comment_id_to_highlight === data.id)
-                		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, true, isdeleted, isdead);
-                	else
-                		writeComment(data.id, data.by, data.time, data.text, semirandom_id, indicate_root, false, isdeleted, isdead);
-            	}
+    			        	{
+    			        		if (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === ""))
+    			        			$("#comment_div_" + semirandom_id).html("This deleted item was found in the Hackbook database, but no original text was associated with it. Sorry.");
+    			        		else
+    			        			writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, hn_item_jo.text, semirandom_id, false, false, isdeleted, isdead);
+    			        	}
+			        	}
+			        	else
+			        	{
+			        		if(data.response_status === "error") // couldn't find this item in the Hackbook database. Just show the HN API result.
+    			        		writeComment(hn_item_jo.id, hn_item_jo.by, hn_item_jo.time, null, hn_item_jo.text, semirandom_id, indicate_root, (comment_id_to_highlight === hn_item_jo.id), isdeleted, isdead);
+    			        	else if (data.response_status == "success" && (typeof data.item_jo.original_text === "undefined" || data.item_jo.original_text === null || data.item_jo.original_text === "")) // Found the item, but there was no original_text. Just show the HN API result.
+    			        		writeComment(hn_item_jo.id, hn_item_jo.by, hn_item_jo.time, null, hn_item_jo.text, semirandom_id, indicate_root, (comment_id_to_highlight === hn_item_jo.id), isdeleted, isdead);
+    			        	else
+    			        		writeComment(data.item_jo.id, data.item_jo.by, data.item_jo.time, data.item_jo.original_text, hn_item_jo.text, semirandom_id, indicate_root, (comment_id_to_highlight === hn_item_jo.id), isdeleted, isdead);
+			        	}	
+			        },
+			        error: function (XMLHttpRequest, textStatus, errorThrown) {	console.log(textStatus, errorThrown); }
+				});
+            	
             	var indent = (level) * 30;
             	$("#comment_div_" + semirandom_id).css("margin-left", indent + "px");
         		if(data.kids && data.kids.length > 0) // if this is a new reply on the notifications tab, it'll never have kids, so no worry here
@@ -314,12 +323,19 @@ function doThreadItem(comment_id, semirandom_id, anchor_dom_id, level, indicate_
 	});	
 }		
 
+function strip(html)
+{
+	var tmp = document.createElement("DIV");
+	tmp.innerHTML = html;
+	return tmp.textContent || tmp.innerText || "";
+}
+
 // id
 // by
 // time
 // text
 
-function writeComment(id, by, time, text, semirandom_id, indicate_root, highlight, isdeleted, isdead)
+function writeComment(id, by, time, original_text, current_text, semirandom_id, indicate_root, highlight, isdeleted, isdead)
 {
 	// NOTE: I tried changing semirandom_id to a random string, but it broke the saved text mechanism.
 	// I've now switched to comment_id-semirandom_id so that the uniqueness is still there (Even if the same comment appears twice, as it can on notification/feed items)
@@ -405,9 +421,29 @@ function writeComment(id, by, time, text, semirandom_id, indicate_root, highligh
   	$("[id=screenname_link_" + semirandom_id + "]").text(by);
   	$("[id=time_ago_span_" + semirandom_id + "]").text(bg.agoIt(time*1000));
   	if(isdeleted || isdead)
-  		$("[id=comment_text_td_" + semirandom_id + "]").css("color", "red");
-  	if(typeof text !== "undefined" && text !== null)
-  		$("[id=comment_text_td_" + semirandom_id + "]").html(replaceAll(text, "<a href=", "<a class=\"newtab\" href="));
+  	{
+  		$("#comment_text_td_" + semirandom_id).css("color", "red");
+  		$("#comment_text_td_" + semirandom_id).html(replaceAll(original_text, "<a href=", "<a class=\"newtab\" href="));
+  	}
+  	else if((original_text === null && current_text !== null) || (original_text !== null && current_text !== null && original_text === current_text)) // if there is only current_text or there's both and they're equal
+  	{
+  		$("#comment_text_td_" + semirandom_id).html(replaceAll(current_text, "<a href=", "<a class=\"newtab\" href="));
+  	}
+  	else if(original_text !== null && current_text !== null && original_text !== current_text) // if there's only both and they're not equal
+  	{
+  		$("#comment_text_td_" + semirandom_id).html(replaceAll(current_text, "<a href=", "<a class=\"newtab\" href=") + "<br><br><span style=\"font-style:italic;color:red\">NOTE: This comment was edited.</span> <a href=\"#\" style=\"text-decoration:underline\" id=\"showedits_link_" + semirandom_id + "\">show changes</a> <span style=\"font-style:italic\">(removes all HTML formatting)</span>");
+  		$("#comment_text_td_" + semirandom_id).click({semirandom_id: semirandom_id, original_text: original_text, current_text: current_text}, function(event){
+  			var loc_original_text = strip(event.data.original_text);
+  			var loc_current_text = strip(event.data.current_text);
+  			var dmp = new diff_match_patch();
+  			dmp.Diff_Timeout = 1.0;
+  			var d = dmp.diff_main(loc_original_text, loc_current_text);
+  			dmp.diff_cleanupSemantic(d);
+  			var ds = dmp.diff_prettyHtml(d);
+  			$("#comment_text_td_" + event.data.semirandom_id).html(ds);
+  			return false;
+  		});
+  	}
 
   	$("a").click(function(event) {
 		if(typeof event.processed === "undefined" || event.processed === null) // prevent this from firing multiple times by setting event.processed = true on first pass

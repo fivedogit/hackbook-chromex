@@ -549,12 +549,14 @@ function getThread(url_at_function_call)
 	if(mode === "stealth")
 	{	
 		threadstatus = 1; 
+		var hash = CryptoJS.SHA256(url_at_function_call);
+		//alert(hash);
 		$.ajax({ 
 			type: 'GET', 
 			url: endpoint, 
 			data: {
-				method: "searchForHNItem",
-	            url: url_at_function_call,
+				method: "searchForHNItem2",
+	            hashed_url: hash+"",
 	            mode: mode
 	        },
 	        dataType: 'json', 
