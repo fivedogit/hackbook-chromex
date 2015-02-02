@@ -535,6 +535,13 @@ function doButtonGen()
 	}
 }
 
+function getParameterByName(inc_url, name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(inc_url);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 function getThread(url_at_function_call) 
 {
 	
@@ -550,13 +557,16 @@ function getThread(url_at_function_call)
 	{	
 		threadstatus = 1; 
 		var hash = CryptoJS.SHA256(url_at_function_call);
-		//alert(hash);
+		var hn_story_id = null;
+		if(currentURL.indexOf("https://news.ycombinator.com/item") === 0) // this is an item page, include the hn_story_id in the AJAX call, so we can show the appropriate thread
+			hn_story_id = getParameterByName(currentURL, "id");
 		$.ajax({ 
 			type: 'GET', 
 			url: endpoint, 
 			data: {
-				method: "searchForHNItem2",
+				method: "searchForHNItem3",
 	            hashed_url: hash+"",
+	            hn_story_id: hn_story_id,
 	            mode: mode
 	        },
 	        dataType: 'json', 
