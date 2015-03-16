@@ -166,7 +166,7 @@ chrome.runtime.sendMessage({ method: "getHNLoginStep" },
         h = h + "		<div style=\"color:black;text-align:center\">";
         h = h + "			A unique token has been added to your \"about\" text below and Hackbook is<br>";
         h = h + "			now verifying it via the Hacker News API as proof that you own this acct.<br>";
-        h = h + "			<b>This may take up to 30 seconds.</b> Do not close the tab or window.";
+        h = h + "			<b>This may take up to 40 seconds.</b> Do not close the tab or window.";
         h = h + "		<div style=\"color:#ff6600;font-weight:bold;text-align:center;padding:10px\">PLEASE WAIT: <span id=\"vss\"></span></div>";
         h = h + "	</td>";
         h = h + "</tr>";
@@ -177,8 +177,8 @@ chrome.runtime.sendMessage({ method: "getHNLoginStep" },
         });
         
         // this is the 30-to-0 countdown
-        $("#vss").text("30");
-        var countdown = 30;
+        $("#vss").text("40");
+        var countdown = 40;
         $("#vss").text(countdown+"");
         var countdown_loop = setInterval(function() {
         	countdown = countdown - 1;

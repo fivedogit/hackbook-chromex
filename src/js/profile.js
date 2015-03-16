@@ -297,8 +297,8 @@ function getProfile()
 		
 		$("#urlcheckingmode_explainer_link").click(function () {
 			$("#urlcheckingmode_explainer_tr").show();
-			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: URLs are checked against Hackbook for possible HN story threads. <em>These URLs are not and will never be stored or analyzed in any way.</em> Hackbook source: http://github.com/fivedogit" +
-					"<br><br>NOTIFICATIONS ONLY: URLs never leave your computer, but this means Hackbook cannot display HN threads.</div>");
+			$("#urlcheckingmode_explainer_td").html("<div style=\"padding:5px 0px 5px 0px;\">STEALTH: The current URL is SHA256-hashed and checked aginst Hackbook for possible HN story threads. Hackbook's backend, which keeps a table of hashed URLs for all known HN threads, checks to see if your incoming hash is known and, if so, returns the thread. If not, the (irreversible) hash is meaningless and nothing is returned. In both cases, the hashed URL is discarded immediately."
+					+ "<br><br>NOTIFICATIONS ONLY: No URL checking occurs, hashed or otherwise, but this means Hackbook cannot display HN threads in its overlay.</div>");
 		});
 		
 		$("#karma_pool_ttl_input").val(bg.user_jo.karma_pool_ttl_mins);

@@ -150,8 +150,8 @@ chrome.runtime.onMessage.addListener(
 			            topcolor: request.topcolor
 			        },
 			        dataType: 'json', 
-			        timeout: 33000,
-			        async: true,  // not sure how to accomplish this otherwise
+			        timeout: 44000,
+			        async: true,
 			        success: function (data, status) {
 			        	if(data.response_status === "success")
 			        	{	
@@ -166,7 +166,7 @@ chrome.runtime.onMessage.addListener(
 			        	else if(data.response_status === "error")
 			        	{
 			        		console.log("verifyHNUser ajax success but r_s error");
-			        		alert(data.message);
+			        		alert("The Hackbook backend encountered an error communicating with the Hacker News API.\nThe API may be experiencing issues or it could simply be a temporary read error.\nGive it another try and it'll probably work.");
 			        		chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false, alert_msg: data.message}, function(response) {});
 			        	}	
 			        	else
@@ -178,7 +178,7 @@ chrome.runtime.onMessage.addListener(
 			        },
 			        error: function (XMLHttpRequest, textStatus, errorThrown) {
 			        	console.log("verifyHNUser ajax error");
-			        	alert("There was an error logging you in to Hackbook.\nSometimes there is latency from the HN API.\nMy apologies. Please try again one more time.");
+			        	alert("Timeout error.\nSometimes there is latency from the HN API.\nA second try usually works. Sorry.");
 			        	chrome.tabs.sendMessage(tabid, {method: "gotHNUserVerificationResponse", user_verified: false}, function(response) {});
 			        }
 				});
